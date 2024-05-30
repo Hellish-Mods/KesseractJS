@@ -1,11 +1,13 @@
 package dev.latvian.kubejs.script;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.injectables.targets.ArchitecturyTarget;
 import dev.latvian.kubejs.KubeJS;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.utils.Env;
 import net.minecraft.SharedConstants;
+import org.jetbrains.annotations.Contract;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -24,7 +26,7 @@ public class PlatformWrapper {
 		public ModInfo(String i) {
 			id = i;
 			name = id;
-			version = "0.0.0";
+			version = "unknown";
 		}
 
 		public String getId() {
@@ -35,9 +37,20 @@ public class PlatformWrapper {
 			return name;
 		}
 
+		public void setName(String name) {
+			setModName(this, name);
+			this.name = name;
+		}
+
 		public String getVersion() {
 			return version;
 		}
+	}
+
+	@ExpectPlatform
+	@Contract(value = "_ -> true | false")
+	private static boolean setModName(ModInfo info, String newName) {
+		throw new AssertionError("Not Implemented");
 	}
 
 	private static final Set<String> MOD_LIST = new LinkedHashSet<>();
