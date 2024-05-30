@@ -3,6 +3,7 @@ package dev.latvian.kubejs.script;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.injectables.targets.ArchitecturyTarget;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.utils.Env;
@@ -48,8 +49,9 @@ public class PlatformWrapper {
 	}
 
 	@ExpectPlatform
-	@Contract(value = "_ -> true | false")
-	private static boolean setModName(ModInfo info, String newName) {
+	@HideFromJS
+	@Contract(value = "_,_ -> _")
+	public static boolean setModName(ModInfo info, String newName) {
 		throw new AssertionError("Not Implemented");
 	}
 

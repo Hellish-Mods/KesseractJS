@@ -9,7 +9,7 @@ import net.fabricmc.loader.api.FabricLoader;
  */
 public class PlatformWrapperImpl {
 
-	private static boolean setModName(PlatformWrapper.ModInfo info, String newName) {
+	public static boolean setModName(PlatformWrapper.ModInfo info, String newName) {
 		try {
 			var mc = FabricLoader.getInstance().getModContainer(info.getId());
 

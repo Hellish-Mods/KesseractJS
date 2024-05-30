@@ -10,7 +10,7 @@ import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
  */
 public class PlatformWrapperImpl {
 
-	private static boolean setModName(PlatformWrapper.ModInfo info, String newName) {
+	public static boolean setModName(PlatformWrapper.ModInfo info, String newName) {
 		try {
 			var mod = ModList.get().getModContainerById(info.getId());
 
