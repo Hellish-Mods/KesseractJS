@@ -124,7 +124,7 @@ public class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public Block createObject() {
-		return new BasicBlockJS(this);
+		return this.type.createBlock(this);
 	}
 
     @Override
