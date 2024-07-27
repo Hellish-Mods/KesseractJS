@@ -16,17 +16,17 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(BlockBehaviour.class)
 public abstract class BlockBehaviourMixin implements BlockKJS {
 	@Unique
-	private BlockBuilder blockBuilderKJS;
+	private BlockBuilder kjs$blockBuilder;
 
 	@Override
 	@Nullable
 	public BlockBuilder getBlockBuilderKJS() {
-		return blockBuilderKJS;
+		return kjs$blockBuilder;
 	}
 
 	@Override
 	public void setBlockBuilderKJS(BlockBuilder b) {
-		blockBuilderKJS = b;
+		kjs$blockBuilder = b;
 	}
 
 	@Override

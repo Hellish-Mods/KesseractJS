@@ -47,6 +47,9 @@ public class MaterialListJS {
 		add("berry_bush", Material.PLANT, SoundType.SWEET_BERRY_BUSH);
 		add("lantern", Material.METAL, SoundType.LANTERN);
 
+        //kessjs
+        add("crop", Material.PLANT, SoundType.CROP);
+
 		// Legacy
 		add("rock", Material.STONE, SoundType.STONE);
 		add("iron", Material.METAL, SoundType.METAL);

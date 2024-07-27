@@ -22,7 +22,6 @@ import java.util.function.Function;
  */
 public class BasicItemJS extends Item {
 	private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
-	private ItemStack containerItem;
 	private Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
 
 	public BasicItemJS(ItemBuilder p) {

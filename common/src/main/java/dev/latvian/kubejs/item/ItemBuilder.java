@@ -9,10 +9,7 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.kubejs.item.custom.ArmorItemType;
-import dev.latvian.kubejs.item.custom.BasicItemJS;
-import dev.latvian.kubejs.item.custom.BasicItemType;
-import dev.latvian.kubejs.item.custom.ItemType;
+import dev.latvian.kubejs.item.custom.*;
 import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfos;
@@ -65,7 +62,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public transient final List<Component> tooltip;
-	public transient ItemType type;
+	public transient ItemType type = BasicItemType.INSTANCE;
 	public transient int maxStackSize;
 	public transient int maxDamage;
 	public transient int burnTime;
@@ -115,10 +112,6 @@ public class ItemBuilder extends BuilderBase<Item> {
 	public transient ArmorMaterial armorTier;
 
 	public JsonObject modelJson;
-
-	public ItemBuilder(String i) {
-		this(UtilsJS.getMCID(KubeJS.appendModId(i)));
-	}
 
 	public ItemBuilder(ResourceLocation i) {
 		super(i);
@@ -180,15 +173,13 @@ public class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Override
-	public final RegistryInfo getRegistryType() {
+	public final RegistryInfo<Item> getRegistryType() {
 		return RegistryInfos.ITEM;
 	}
 
 	@Override
 	public Item createObject() {
-		object = new BasicItemJS(this);
-		item = object;
-		return object;
+		return type.createItem(this);
 	}
 
 	@Override

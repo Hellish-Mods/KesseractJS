@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.forge;
 
 import dev.latvian.kubejs.BuiltinKubeJSPlugin;
-import dev.latvian.kubejs.event.PlatformEventHandler;
+import dev.latvian.kubejs.event.forge.PlatformEventHandlerImpl;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ClassFilter;
@@ -28,8 +28,13 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		super.addBindings(event);
 
 		if (event.type == ScriptType.STARTUP) {
-			event.addFunction("onForgeEvent", PlatformEventHandler.instance(), null, KubeJSForgeEventHandlerWrapper.class);
-		}
+            event.addFunction(
+                "onForgeEvent",
+                PlatformEventHandlerImpl::onEvent,
+                null,
+                KubeJSForgeEventHandlerWrapper.class
+            );
+        }
 
 		event.add("BiomeDictionary", BiomeDictionaryWrapper.class);
 	}
@@ -45,6 +50,6 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	 */
 	@Deprecated
 	public static Object onPlatformEvent(BindingsEvent event, Object[] args) {
-		return PlatformEventHandler.instance().call(args);
+        return PlatformEventHandlerImpl.onEvent(args);
 	}
 }

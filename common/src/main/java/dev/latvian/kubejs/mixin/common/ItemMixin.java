@@ -72,12 +72,12 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	@RemapForJS("setBurnTime")
 	public void setBurnTimeKJS(int i) {
-		FuelRegistry.register(i, (Item) (Object) this);
+		FuelRegistry.register(i, kjs$self());
 	}
 
 	@RemapForJS("getId")
 	public String getIdKJS() {
-		return KubeJSRegistries.items().getId((Item) (Object) this).toString();
+		return KubeJSRegistries.items().getId(kjs$self()).toString();
 	}
 
 	@Override

@@ -3,10 +3,9 @@ package dev.latvian.kubejs.event;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.mods.rhino.util.DynamicFunction;
 import org.jetbrains.annotations.Contract;
 
-public abstract class PlatformEventHandler implements DynamicFunction.Callback {
+public abstract class PlatformEventHandler {
 
 	@ExpectPlatform
 	@Contract(value = " -> _")

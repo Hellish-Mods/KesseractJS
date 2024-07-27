@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.registry;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.client.asset.LangEventJS;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.kubejs.generator.DataJsonGenerator;
@@ -17,7 +16,7 @@ import java.util.function.Supplier;
 
 public abstract class BuilderBase<T> implements Supplier<T> {
 	public final ResourceLocation id;
-	public String translationKey;
+	protected String translationKey;
 	public Component display;
 	protected T object;
 	public boolean overrideLangJson;
@@ -34,7 +33,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		tags = new HashSet<>();
 	}
 
-	public abstract RegistryInfo getRegistryType();
+	public abstract RegistryInfo<T> getRegistryType();
 
 	public abstract T createObject();
 
@@ -49,6 +48,9 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 
 	@Override
 	public final T get() {
+        if (object == null) {
+            object = transformObject(createObject());
+        }
 		return object;
 	}
 
@@ -125,7 +127,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	public void generateAssetJsons(AssetJsonGenerator generator) {
 	}
 
-	public String getBuilderTranslationKey() {
+	public String getTranslationKey() {
 		if (translationKey.isEmpty()) {
 			return Util.makeDescriptionId(getTranslationKeyGroup(), id);
 		}
@@ -136,12 +138,12 @@ public abstract class BuilderBase<T> implements Supplier<T> {
         var name = display == null
             ? UtilsJS.convertSnakeCaseToCamelCase(id.getPath())
             : display.getString();
-		event.get(id.getNamespace(), "en_us").add(getBuilderTranslationKey(), name);
+		event.get(id.getNamespace(), "en_us").add(getTranslationKey(), name);
 	}
 
 	@JSInfo("dev only, do not use")
 	public T createTransformedObject() {
-		object = transformObject(createObject());
+		object = transformObject(get());
 		return object;
 	}
 

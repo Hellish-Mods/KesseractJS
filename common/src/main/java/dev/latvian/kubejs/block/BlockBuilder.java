@@ -2,12 +2,11 @@ package dev.latvian.kubejs.block;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.block.custom.BasicBlockJS;
 import dev.latvian.kubejs.block.custom.BasicBlockType;
 import dev.latvian.kubejs.block.custom.BlockType;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
-import dev.latvian.kubejs.core.ItemKJS;
+import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.kubejs.generator.DataJsonGenerator;
 import dev.latvian.kubejs.loot.LootBuilder;
@@ -16,6 +15,7 @@ import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.shedaniel.architectury.registry.BlockProperties;
 import me.shedaniel.architectury.registry.ToolType;
@@ -30,92 +30,63 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * @author LatvianModder
  */
 public class BlockBuilder extends BuilderBase<Block> {
 
-	public transient BlockType type;
-	public transient MaterialJS material;
-	public transient float hardness;
-	public transient float resistance;
-	public transient float lightLevel;
-	public transient ToolType harvestTool;
-	public transient int harvestLevel;
-	public transient boolean opaque;
-	public transient boolean fullBlock;
-	public transient boolean requiresTool;
-	public transient String renderType;
-	public transient Int2IntOpenHashMap color;
+	public transient BlockType type = BasicBlockType.INSTANCE;
+	public transient MaterialJS material = MaterialListJS.INSTANCE.map.get("wood");
+	public transient float hardness = 0.5F;
+	public transient float resistance = -1F;
+	public transient float lightLevel = 0F;
+	public transient ToolType harvestTool = null;
+	public transient int harvestLevel = -1;
+	public transient boolean opaque = true;
+	public transient boolean fullBlock = false;
+	public transient boolean requiresTool = false;
+	public transient String renderType = "solid";
+	public transient Int2IntOpenHashMap color = new Int2IntOpenHashMap();
     public transient BlockTintFunction tint;
-	public transient final JsonObject textures;
-	public transient String model;
+	public transient final JsonObject textures = new JsonObject();
+	public transient String model = "";
 	public transient BlockItemBuilder itemBuilder;
-	public transient List<AABB> customShape;
-	public transient boolean noCollission;
-	public transient boolean notSolid;
-	public transient boolean waterlogged;
+	public transient List<AABB> customShape = new ArrayList<>();
+	public transient boolean noCollission = false;
+	public transient boolean notSolid = false;
+	public transient boolean waterlogged = false;
 	public transient float slipperiness = 0.6F;
 	public transient float speedFactor = 1.0F;
 	public transient float jumpFactor = 1.0F;
-	public Consumer<RandomTickCallbackJS> randomTickCallback;
+	public Consumer<RandomTickCallbackJS> randomTickCallback = null;
 	public Consumer<LootBuilder> lootTable;
-	public JsonObject blockstateJson;
-	public JsonObject modelJson;
-	public transient boolean noValidSpawns;
-	public transient boolean suffocating;
-	public transient boolean viewBlocking;
-	public transient boolean redstoneConductor;
-	public transient boolean transparent;
-	public transient Set<String> defaultTags;
+	public JsonObject blockstateJson = null;
+	public JsonObject modelJson = null;
+	public transient boolean noValidSpawns = false;
+	public transient boolean suffocating = true;
+	public transient boolean viewBlocking = true;
+	public transient boolean redstoneConductor = true;
+	public transient boolean transparent = false;
 
-	public transient Block block;
+    public transient Block block;
 
 	public BlockBuilder(ResourceLocation id) {
 		super(id);
-		type = BasicBlockType.INSTANCE;
-		material = MaterialListJS.INSTANCE.map.get("wood");
-		hardness = 0.5F;
-		resistance = -1F;
-		lightLevel = 0F;
-		harvestTool = null;
-		harvestLevel = -1;
-		opaque = true;
-		fullBlock = false;
-		requiresTool = false;
-		renderType = "solid";
-		color = new Int2IntOpenHashMap();
-		color.defaultReturnValue(0xFFFFFFFF);
-		textures = new JsonObject();
+        color.defaultReturnValue(0xFFFFFFFF);
 		textureAll(id.getNamespace() + ":block/" + id.getPath());
-		model = "";
-		itemBuilder = new BlockItemBuilder(id);
+        itemBuilder = new BlockItemBuilder(id);
 		itemBuilder.blockBuilder = this;
-		customShape = new ArrayList<>();
-		noCollission = false;
-		notSolid = false;
-		waterlogged = false;
-		randomTickCallback = null;
 
-		lootTable = loot -> loot.addPool(pool -> {
+        lootTable = loot -> loot.addPool(pool -> {
 			pool.survivesExplosion();
 			pool.addItem(new ItemStack(block));
 		});
-
-		blockstateJson = null;
-		modelJson = null;
-		noValidSpawns = false;
-		suffocating = true;
-		viewBlocking = true;
-		redstoneConductor = true;
-		transparent = false;
-		defaultTags = new HashSet<>();
-	}
+    }
 
 	@Override
 	public RegistryInfo<Block> getRegistryType() {
@@ -124,16 +95,19 @@ public class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public Block createObject() {
-		return new BasicBlockJS(this);
+		return this.type.createBlock(this);
 	}
+
+    @Override
+    public Block transformObject(Block obj) {
+        ((BlockKJS) obj).setBlockBuilderKJS(this);
+        return obj;
+    }
 
     @Override
     public void createAdditionalObjects() {
         if (this.itemBuilder != null) {
-            KubeJSRegistries.items().register(itemBuilder.id, () -> itemBuilder.createObject());
-            if (itemBuilder.blockItem instanceof ItemKJS kjsItem) {
-                kjsItem.setItemBuilderKJS(itemBuilder);
-            }
+            KubeJSRegistries.items().register(itemBuilder.id, () -> itemBuilder.get());
         }
     }
 
@@ -142,7 +116,12 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return "block";
 	}
 
-	public BlockBuilder type(BlockType t) {
+    @Deprecated
+    public Set<String> getDefaultTags() {
+        return tags.stream().map(ResourceLocation::toString).collect(Collectors.toSet());
+    }
+
+    public BlockBuilder type(BlockType t) {
 		type = t;
 		type.applyDefaults(this);
 		return this;
@@ -392,18 +371,22 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return box(x0, y0, z0, x1, y1, z1, true);
 	}
 
+    public static VoxelShape createShape(List<AABB> boxes) {
+        if (boxes.isEmpty()) {
+            return Shapes.block();
+        }
+
+        var shape = Shapes.create(boxes.get(0));
+
+        for (var i = 1; i < boxes.size(); i++) {
+            shape = Shapes.or(shape, Shapes.create(boxes.get(i)));
+        }
+
+        return shape;
+    }
+
 	public VoxelShape createShape() {
-		if (customShape.isEmpty()) {
-			return Shapes.block();
-		}
-
-		VoxelShape shape = Shapes.create(customShape.get(0));
-
-		for (int i = 1; i < customShape.size(); i++) {
-			shape = Shapes.or(shape, Shapes.create(customShape.get(i)));
-		}
-
-		return shape;
+		return createShape(this.customShape);
 	}
 
 	public BlockBuilder noCollission() {
@@ -477,25 +460,44 @@ public class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public BlockBuilder defaultCutout() {
-		return renderType("cutout").notSolid().noValidSpawns(true).suffocating(false).viewBlocking(false).redstoneConductor(false).transparent(true);
-	}
+        return renderType("cutout").notSolid()
+            .noValidSpawns(true)
+            .suffocating(false)
+            .viewBlocking(false)
+            .redstoneConductor(false)
+            .transparent(true);
+    }
 
 	public BlockBuilder defaultTranslucent() {
 		return defaultCutout().renderType("translucent");
 	}
 
-	public BlockBuilder tag(String tag) {
-		defaultTags.add(tag);
-		return this;
-	}
+    @JSInfo("Tags the block with the given tag.")
+    public BlockBuilder tag(ResourceLocation tag) {
+        super.tag(tag);
+        return this;
+    }
 
-	public BlockBuilder tagBlockAndItem(String tag) {
-		defaultTags.add(tag);
-		itemBuilder.tags.add(ResourceLocation.tryParse(tag));
-		return this;
-	}
+    @JSInfo("Tags the item with the given tag.")
+    public BlockBuilder tagItem(ResourceLocation tag) {
+        itemBuilder.tag(tag);
+        return this;
+    }
 
-	public Block.Properties createProperties() {
+    @JSInfo("Tags both the block and the item with the given tag.")
+    public BlockBuilder tagBlockAndItem(ResourceLocation tag) {
+        tag(tag);
+        tagItem(tag);
+        return this;
+    }
+
+    @Deprecated
+    @HideFromJS
+    public BlockBuilder tagBlockAndItem(String tag) {
+        return tagBlockAndItem(new ResourceLocation(tag));
+    }
+
+    public Block.Properties createProperties() {
 		BlockProperties properties = BlockProperties.of(material.getMinecraftMaterial());
 		properties.sound(material.getSound());
 
