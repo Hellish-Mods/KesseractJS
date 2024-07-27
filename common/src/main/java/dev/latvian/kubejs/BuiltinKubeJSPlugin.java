@@ -141,28 +141,32 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		//block
 		RegistryInfos.BLOCK.addType("basic", BlockBuilder.class, BlockBuilder::new);
 		RegistryInfos.BLOCK.addType("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
-//		RegistryInfo.BLOCK.addType("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
-//		RegistryInfo.BLOCK.addType("stairs", StairBlockBuilder.class, StairBlockBuilder::new);
-//		RegistryInfo.BLOCK.addType("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
-//		RegistryInfo.BLOCK.addType("wall", WallBlockBuilder.class, WallBlockBuilder::new);
-//		RegistryInfo.BLOCK.addType("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
-//		RegistryInfo.BLOCK.addType("pressure_plate", PressurePlateBlockBuilder.class, PressurePlateBlockBuilder::new);
-//		RegistryInfo.BLOCK.addType("button", ButtonBlockBuilder.class, ButtonBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("slab", ShapedBlockBuilderProxy.Slab.class, ShapedBlockBuilderProxy.Slab::new);
+		RegistryInfos.BLOCK.addType("stairs", ShapedBlockBuilderProxy.Stairs.class, ShapedBlockBuilderProxy.Stairs::new);
+		RegistryInfos.BLOCK.addType("fence", ShapedBlockBuilderProxy.Fence.class, ShapedBlockBuilderProxy.Fence::new);
+		RegistryInfos.BLOCK.addType("wall", ShapedBlockBuilderProxy.Wall.class, ShapedBlockBuilderProxy.Wall::new);
+		RegistryInfos.BLOCK.addType("fence_gate", ShapedBlockBuilderProxy.FenceGate.class, ShapedBlockBuilderProxy.FenceGate::new);
+		RegistryInfos.BLOCK.addType("stone_pressure_plate", ShapedBlockBuilderProxy.StoneButton.class, ShapedBlockBuilderProxy.StoneButton::new);
+		RegistryInfos.BLOCK.addType("stone_button", ShapedBlockBuilderProxy.StonePressurePlate.class, ShapedBlockBuilderProxy.StonePressurePlate::new);
+		RegistryInfos.BLOCK.addType("wooden_pressure_plate", ShapedBlockBuilderProxy.WoodenButton.class, ShapedBlockBuilderProxy.WoodenButton::new);
+		RegistryInfos.BLOCK.addType("wooden_button", ShapedBlockBuilderProxy.WoodenPressurePlate.class, ShapedBlockBuilderProxy.WoodenPressurePlate::new);
+//		RegistryInfos.BLOCK.addType("pressure_plate", ShapedBlockBuilderProxy.PressurePlate.class, ShapedBlockBuilderProxy.PressurePlate::new);
+//		RegistryInfos.BLOCK.addType("button", ShapedBlockBuilderProxy.Button.class, ShapedBlockBuilderProxy.Button::new);
 //		RegistryInfo.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
-//		RegistryInfo.BLOCK.addType("crop", CropBlockBuilder.class, CropBlockBuilder::new);
-//		RegistryInfo.BLOCK.addType("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("crop", CropBlockBuilder.class, CropBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
 		//item
 		RegistryInfos.ITEM.addType("basic", ItemBuilder.class, ItemBuilder::new);
-//		RegistryInfo.ITEM.addType("sword", SwordItemBuilder.class, SwordItemBuilder::new);
-//		RegistryInfo.ITEM.addType("pickaxe", PickaxeItemBuilder.class, PickaxeItemBuilder::new);
-//		RegistryInfo.ITEM.addType("axe", AxeItemBuilder.class, AxeItemBuilder::new);
-//		RegistryInfo.ITEM.addType("shovel", ShovelItemBuilder.class, ShovelItemBuilder::new);
-//		RegistryInfo.ITEM.addType("shears", ShearsItemBuilder.class, ShearsItemBuilder::new);
-//		RegistryInfo.ITEM.addType("hoe", HoeItemBuilder.class, HoeItemBuilder::new);
-//		RegistryInfo.ITEM.addType("helmet", ArmorItemBuilder.Helmet.class, ArmorItemBuilder.Helmet::new);
-//		RegistryInfo.ITEM.addType("chestplate", ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
-//		RegistryInfo.ITEM.addType("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
-//		RegistryInfo.ITEM.addType("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
+		RegistryInfos.ITEM.addType("sword", CustomItemBuilderProxy.Sword.class, CustomItemBuilderProxy.Sword::new);
+		RegistryInfos.ITEM.addType("pickaxe", CustomItemBuilderProxy.Pickaxe.class, CustomItemBuilderProxy.Pickaxe::new);
+		RegistryInfos.ITEM.addType("axe", CustomItemBuilderProxy.Axe.class, CustomItemBuilderProxy.Axe::new);
+		RegistryInfos.ITEM.addType("shovel", CustomItemBuilderProxy.Shovel.class, CustomItemBuilderProxy.Shovel::new);
+		RegistryInfos.ITEM.addType("shears", ShearsItemBuilder.class, ShearsItemBuilder::new);
+		RegistryInfos.ITEM.addType("hoe", CustomItemBuilderProxy.Hoe.class, CustomItemBuilderProxy.Hoe::new);
+		RegistryInfos.ITEM.addType("helmet", CustomItemBuilderProxy.Helmet.class, CustomItemBuilderProxy.Helmet::new);
+		RegistryInfos.ITEM.addType("chestplate", CustomItemBuilderProxy.Chestplate.class, CustomItemBuilderProxy.Chestplate::new);
+		RegistryInfos.ITEM.addType("leggings", CustomItemBuilderProxy.Leggings.class, CustomItemBuilderProxy.Leggings::new);
+		RegistryInfos.ITEM.addType("boots", CustomItemBuilderProxy.Boots.class, CustomItemBuilderProxy.Boots::new);
 		RegistryInfos.ITEM.addType("music_disc", RecordItemJS.Builder.class, RecordItemJS.Builder::new);
 		//misc
 		RegistryInfos.FLUID.addType("basic", FluidBuilder.class, FluidBuilder::new);
@@ -276,8 +280,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("console", event.type.console);
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 
-		event.addFunction("onEvent", args -> onEvent(event, args), String.class, IEventHandler.class);
-		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), String.class);
+		event.addFunction("onEvent", args -> onEvent(event, args));
+		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args));
 
 		event.add("JavaMath", Math.class);
 		event.add("ResourceLocation", ResourceLocation.class);
@@ -557,7 +561,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		for (var builder : RegistryInfos.ALL_BUILDERS) {
 			if (builder.overrideLangJson && builder.display != null) {
-				lang.put(builder.translationKey, builder.display.getString());
+				lang.put(builder.getTranslationKey(), builder.display.getString());
 			}
 		}
 	}
