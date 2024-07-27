@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.util;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -8,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSRegistries;
+import dev.latvian.kubejs.bindings.TextWrapper;
 import dev.latvian.kubejs.block.events.BlockModificationEventJS;
 import dev.latvian.kubejs.core.JsonSerializableKJS;
 import dev.latvian.kubejs.entity.EntityJS;
@@ -15,9 +15,6 @@ import dev.latvian.kubejs.item.events.ItemModificationEventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.text.TextString;
-import dev.latvian.kubejs.text.TextTranslate;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
@@ -25,10 +22,7 @@ import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -65,6 +59,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,9 +73,12 @@ public class UtilsJS {
 	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
-	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of"));
+    public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in", "and", "or", "but", "for"));
+    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+    public static final String[] EMPTY_STRING_ARRAY = new String[0];
+    public static final Predicate<Object> ALWAYS_TRUE = o -> true;
 
-	public interface TryIO {
+    public interface TryIO {
 		void run() throws IOException;
 	}
 
@@ -222,52 +220,17 @@ public class UtilsJS {
 	@Nullable
 	public static Object wrap(@Nullable Object o, JSObjectType type) {
 		//Primitives and already normalized objects
-		if (o == null || o instanceof WrappedJS || o instanceof Tag || o instanceof Number || o instanceof Character || o instanceof String || o instanceof Enum || o.getClass().isPrimitive() && !o.getClass().isArray()) {
-			return o;
+        if (o == null || o instanceof WrappedJS || o instanceof Tag || o instanceof Number || o instanceof Character
+            || o instanceof String || o instanceof Enum || o.getClass().isPrimitive() && !o.getClass().isArray()) {
+            return o;
 		} else if (o instanceof CharSequence || o instanceof ResourceLocation) {
 			return o.toString();
-		} else if (o instanceof Wrapper) {
-			return wrap(((Wrapper) o).unwrap(), type);
+		} else if (o instanceof Wrapper w) {
+			return wrap(w.unwrap(), type);
 		}
         // Vanilla text component
         else if (o instanceof Component component) {
-            Text t = new TextString("");
-
-            for (Component c : ImmutableList.<Component>builder()
-                .add(component)
-                .addAll(component.getSiblings())
-                .build()) {
-                Text t1;
-
-                if (c instanceof TranslatableComponent) {
-                    t1 = new TextTranslate(((TranslatableComponent) c).getKey(), ((TranslatableComponent) c).getArgs());
-                } else {
-                    t1 = new TextString(c.getContents());
-                }
-
-                var style = c.getStyle();
-
-                t1.bold(style.isBold())
-                    .italic(style.isItalic())
-                    .underlined(style.isUnderlined())
-                    .strikethrough(style.isStrikethrough())
-                    .obfuscated(style.isObfuscated())
-                    .insertion(style.getInsertion());
-
-                ClickEvent ce = style.getClickEvent();
-                if (ce != null) {
-                    t1.click(ce);
-                }
-
-                HoverEvent he = c.getStyle().getHoverEvent();
-                if (he != null) {
-                    t1.hover(he);
-                }
-
-                t.append(t1);
-            }
-
-            return t;
+            return TextWrapper.fromComponent(component);
         }
 		// Maps
 		else if (o instanceof Map m) {

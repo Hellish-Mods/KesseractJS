@@ -1,18 +1,15 @@
 package dev.latvian.kubejs.item.events;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockBuilder;
-import dev.latvian.kubejs.block.DetectorInstance;
 import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
 import dev.latvian.kubejs.item.BlockItemJS;
-import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.player.InventoryChangedEventJS;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import me.shedaniel.architectury.event.events.InteractionEvent;
 import me.shedaniel.architectury.event.events.PlayerEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,8 +20,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -52,47 +47,12 @@ public class KubeJSItemEventHandler {
 		PlayerEvent.SMELT_ITEM.register(KubeJSItemEventHandler::smelted);
 	}
 
-	@ExpectPlatform
-	private static BucketItem buildBucket(FluidBuilder builder) {
-		throw new AssertionError();
-	}
-
-	private static void registry() {
-		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
-			builder.item = builder.type.createItem(builder);
-
-			if (builder.item instanceof ItemKJS) {
-				((ItemKJS) builder.item).setItemBuilderKJS(builder);
-			}
-
-			KubeJSRegistries.items().register(builder.id, () -> builder.item);
-		}
-
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
-			if (builder.itemBuilder != null) {
-				builder.itemBuilder.blockItem = new BlockItemJS(builder.itemBuilder);
-
-				if (builder.itemBuilder.blockItem instanceof ItemKJS) {
-					((ItemKJS) builder.itemBuilder.blockItem).setItemBuilderKJS(builder.itemBuilder);
-				}
-
-				KubeJSRegistries.items().register(builder.id, () -> builder.itemBuilder.blockItem);
-			}
-		}
-
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
-			builder.bucketItem = buildBucket(builder);
-			KubeJSRegistries.items().register(builder.newID("", "_bucket"), () -> builder.bucketItem);
-		}
-
-		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
-			detector.item = KubeJSRegistries.items().register(KubeJS.id("detector_" + detector.id), () -> new BlockItem(detector.block.get(), new Item.Properties().tab(KubeJS.tab)));
-		}
-
-		if (!CommonProperties.get().serverOnly) {
-			DUMMY_FLUID_ITEM = KubeJSRegistries.items().register(KubeJS.id("dummy_fluid_item"), () -> new Item(new Item.Properties().stacksTo(1).tab(KubeJS.tab)));
-		}
-	}
+    private static void registry() {
+        DUMMY_FLUID_ITEM = KubeJSRegistries.items().register(
+            KubeJS.id("dummy_fluid_item"),
+            () -> new Item(new Item.Properties().stacksTo(1).tab(KubeJS.tab))
+        );
+    }
 
 	private static InteractionResultHolder<ItemStack> rightClick(Player player, InteractionHand hand) {
 		if (!player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new ItemRightClickEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK)) {

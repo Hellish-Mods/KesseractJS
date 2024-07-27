@@ -2,6 +2,7 @@ package dev.latvian.kubejs.registry.types.potion;
 
 import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.BuilderBase;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -21,7 +22,7 @@ public class PotionBuilder extends BuilderBase<Potion> {
 
 	@Override
 	public RegistryInfo<Potion> getRegistryType() {
-		return RegistryInfo.POTION;
+		return RegistryInfos.POTION;
 	}
 
 	@Override

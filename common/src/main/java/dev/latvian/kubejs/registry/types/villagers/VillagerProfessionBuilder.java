@@ -3,6 +3,7 @@ package dev.latvian.kubejs.registry.types.villagers;
 import com.google.common.collect.ImmutableSet;
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -26,7 +27,7 @@ public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 
 	@Override
 	public final RegistryInfo<VillagerProfession> getRegistryType() {
-		return RegistryInfo.VILLAGER_PROFESSION;
+		return RegistryInfos.VILLAGER_PROFESSION;
 	}
 
 	@Override

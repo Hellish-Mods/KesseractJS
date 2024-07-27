@@ -18,6 +18,8 @@ public class CreativeTabRegistryEventJS extends EventJS {
 
     @JSInfo("""
 			register a CreativeModeTab. Its namespace will always be `kubejs`
+			
+			vanilla id is valid, but will be denied here to prevent confusion
 			""")
 	public CreativeModeTab create(String id, Supplier<ItemStackJS> icon) {
         ResourceLocation fullId = null;

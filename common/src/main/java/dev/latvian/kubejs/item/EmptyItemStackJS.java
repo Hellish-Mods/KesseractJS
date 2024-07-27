@@ -26,6 +26,7 @@ import java.util.Set;
  * @see ItemStackJS#EMPTY
  * @author ZZZank
  */
+@Deprecated
 class EmptyItemStackJS extends ItemStackJS {
     static final ItemStackJS INSTANCE = new EmptyItemStackJS();
 

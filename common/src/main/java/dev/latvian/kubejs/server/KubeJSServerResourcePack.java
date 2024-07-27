@@ -2,7 +2,7 @@ package dev.latvian.kubejs.server;
 
 import com.google.gson.JsonElement;
 import dev.latvian.kubejs.generator.DataJsonGenerator;
-import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +20,7 @@ public class KubeJSServerResourcePack extends KubeJSResourcePack {
 		DataJsonGenerator generator = new DataJsonGenerator(map);
 		KubeJSPlugins.forEachPlugin(p -> p.generateDataJsons(generator));
 
-		for (var builder : RegistryInfo.ALL_BUILDERS) {
+		for (var builder : RegistryInfos.ALL_BUILDERS) {
 			builder.generateDataJsons(generator);
 		}
 	}

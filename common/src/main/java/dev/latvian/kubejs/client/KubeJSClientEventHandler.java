@@ -1,14 +1,11 @@
 package dev.latvian.kubejs.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.block.BlockBuilder;
+import dev.latvian.kubejs.client.asset.AtlasSpriteRegistryEventJS;
 import dev.latvian.kubejs.client.painter.Painter;
-import dev.latvian.kubejs.client.painter.screen.ScreenPaintEventJS;
-import dev.latvian.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.kubejs.client.painter.world.WorldPainterObject;
 import dev.latvian.kubejs.core.BucketItemKJS;
@@ -18,7 +15,8 @@ import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.item.events.ItemTooltipEventJS;
 import dev.latvian.kubejs.item.OldItemTooltipEventJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
-import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.BuilderBase;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
@@ -48,6 +46,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -65,6 +65,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
@@ -83,24 +84,37 @@ public class KubeJSClientEventHandler {
 		ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(this::loggedIn);
 		ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(this::loggedOut);
 		ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register(this::respawn);
-		GuiEvent.RENDER_HUD.register(this::inGameScreenDraw);
-		GuiEvent.RENDER_POST.register(this::guiScreenDraw);
+		GuiEvent.RENDER_HUD.register(Painter.INSTANCE::inGameScreenDraw);
+		GuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
 		GuiEvent.INIT_POST.register(this::guiPostInit);
+        TextureStitchEvent.PRE.register(this::preAtlasStitch);
 		TextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
-	private void clientSetup(Minecraft minecraft) {
+    private void preAtlasStitch(TextureAtlas atlas, Consumer<ResourceLocation> consumer) {
+        var stitchEvent = new AtlasSpriteRegistryEventJS(consumer);
+        for (var builder : RegistryInfos.FLUID) {
+            if (builder instanceof FluidBuilder f) {
+                stitchEvent.register(ResourceLocation.tryParse(f.flowingTexture));
+                stitchEvent.register(ResourceLocation.tryParse(f.stillTexture));
+            }
+        }
+        stitchEvent.post(ScriptType.CLIENT, KubeJSEvents.CLIENT_ATLAS_STITCH);
+    }
+
+    private void clientSetup(Minecraft minecraft) {
 		renderLayers();
 		blockColors();
 		itemColors();
 	}
 
 	private void renderLayers() {
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
-			switch (builder.renderType) {
-				case "cutout" -> RenderTypes.register(RenderType.cutout(), builder.block);
-				case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), builder.block);
-				case "translucent" -> RenderTypes.register(RenderType.translucent(), builder.block);
+		for (var builder : RegistryInfos.BLOCK.objects.values()) {
+            var bBuilder = (BlockBuilder) builder;
+			switch (bBuilder.renderType) {
+				case "cutout" -> RenderTypes.register(RenderType.cutout(), bBuilder.block);
+				case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), bBuilder.block);
+				case "translucent" -> RenderTypes.register(RenderType.translucent(), bBuilder.block);
 				//default:
 				//	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
 			}
@@ -197,75 +211,7 @@ public class KubeJSClientEventHandler {
 		new AttachPlayerDataEvent(ClientWorldJS.getInstance().clientPlayerData).invoke();
 	}
 
-	private void inGameScreenDraw(PoseStack matrices, float delta) {
-		Minecraft mc = Minecraft.getInstance();
-
-		if (mc.player == null || mc.options.renderDebug || mc.screen != null) {
-			return;
-		}
-
-		RenderSystem.enableBlend();
-		//RenderSystem.disableLighting();
-
-		ScreenPaintEventJS event = new ScreenPaintEventJS(mc, matrices, delta);
-		Painter.INSTANCE.deltaUnit.set(delta);
-		Painter.INSTANCE.screenWidthUnit.set(event.width);
-		Painter.INSTANCE.screenHeightUnit.set(event.height);
-		Painter.INSTANCE.mouseXUnit.set(event.mouseX);
-		Painter.INSTANCE.mouseYUnit.set(event.mouseY);
-		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
-
-		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
-				object.preDraw(event);
-			}
-		}
-
-		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
-				object.draw(event);
-			}
-		}
-	}
-
-	private void guiScreenDraw(Screen screen, PoseStack matrices, int mouseX, int mouseY, float delta) {
-		Minecraft mc = Minecraft.getInstance();
-
-		if (mc.player == null) {
-			return;
-		}
-
-		RenderSystem.enableBlend();
-		//RenderSystem.disableLighting();
-
-		ScreenPaintEventJS event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
-		event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
-
-		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
-				object.preDraw(event);
-			}
-		}
-
-		for (ScreenPainterObject object : Painter.INSTANCE.getScreenObjects()) {
-			if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
-				object.draw(event);
-			}
-		}
-	}
-
-	private boolean isOver(List<AbstractWidget> list, int x, int y) {
-		for (AbstractWidget w : list) {
-			if (w.visible && x >= w.x && y >= w.y && x < w.x + w.getWidth() && y < w.y + w.getHeight()) //getWidth_CLASH = getHeight
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	private void guiPostInit(Screen screen, List<AbstractWidget> widgets, List<GuiEventListener> children) {
+    private void guiPostInit(Screen screen, List<AbstractWidget> widgets, List<GuiEventListener> children) {
 		if (ClientProperties.get().getDisableRecipeBook() && screen instanceof RecipeUpdateListener) {
 			Iterator<GuiEventListener> iterator = children.iterator();
 			while (iterator.hasNext()) {
@@ -280,36 +226,41 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void itemColors() {
-		RegistryInfo.ITEM.objects
-				.values()
-				.stream()
-				.map(o -> (ItemBuilder) o)
-				.filter(b -> b.tint != null)
-				.forEach(builder -> ColorHandlers.registerItemColors(
-						builder.tint.asItemColor(),
-						Objects.requireNonNull(builder.get(), "Item " + builder.id + " is null!")
-						)
-				);
+        for (BuilderBase<? extends Item> base : RegistryInfos.ITEM.objects.values()) {
+            if (base instanceof ItemBuilder builder && builder.tint != null) {
+                ColorHandlers.registerItemColors(
+                    builder.tint.asItemColor(),
+                    Objects.requireNonNull(builder.get(), "Item " + builder.id + " is null!")
+                );
+            }
+        }
 
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
-			if (builder.itemBuilder != null && !builder.color.isEmpty()) {
-				ColorHandlers.registerItemColors((stack, index) -> builder.color.get(index), Objects.requireNonNull(builder.itemBuilder.blockItem, "Block Item " + builder.id + " is null!"));
-			}
-		}
+        for (BuilderBase<? extends Block> o : RegistryInfos.BLOCK.objects.values()) {
+            if (o instanceof BlockBuilder builder
+                && builder.itemBuilder != null
+                && !builder.color.isEmpty()) {
+                ColorHandlers.registerItemColors(
+                    (stack, index) -> builder.color.get(index),
+                    Objects.requireNonNull(
+                        builder.itemBuilder.blockItem,
+                        "Block Item " + builder.id + " is null!"
+                    )
+                );
+            }
+        }
 
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
-			if (builder.bucketColor != 0xFFFFFFFF) {
-				ColorHandlers.registerItemColors((stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF, Objects.requireNonNull(builder.bucketItem, "Bucket Item " + builder.id + " is null!"));
-			}
-		}
+        for (BuilderBase<? extends Fluid> builderBase : RegistryInfos.FLUID.objects.values()) {
+            if (builderBase instanceof FluidBuilder builder && builder.bucketColor != 0xFFFFFFFF) {
+                ColorHandlers.registerItemColors((stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF, Objects.requireNonNull(builder.bucketItem, "Bucket Item " + builder.id + " is null!"));
+            }
+        }
 	}
 
 	private void blockColors() {
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
-			if (!builder.color.isEmpty()) {
-				ColorHandlers.registerBlockColors((state, world, pos, index) -> builder.color.get(index), builder.block);
-			}
-		}
+        RegistryInfos.BLOCK.objects.values()
+            .stream().map(o -> (BlockBuilder) o)
+            .filter(builder -> !builder.color.isEmpty())
+            .forEach(builder -> ColorHandlers.registerBlockColors((state, world, pos, index) -> builder.color.get(index), builder.block));
 	}
 
 	private void postAtlasStitch(TextureAtlas atlas) {

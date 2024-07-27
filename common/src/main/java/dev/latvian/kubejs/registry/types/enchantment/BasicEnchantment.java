@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.registry.types.enchantment;
 
-import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -69,7 +69,7 @@ public class BasicEnchantment extends Enchantment {
 		if (enchantment == this) {
 			return false;
 		} else if (builder.checkCompatibility != null) {
-			return builder.checkCompatibility.apply(RegistryInfo.ENCHANTMENT.getId(enchantment));
+			return builder.checkCompatibility.apply(RegistryInfos.ENCHANTMENT.getId(enchantment));
 		}
 
 		return true;

@@ -1,36 +1,27 @@
 package dev.latvian.kubejs.block.events;
 
-import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.block.BlockBuilder;
-import dev.latvian.kubejs.block.DetectorInstance;
-import dev.latvian.kubejs.event.StartupEventJS;
+import dev.latvian.kubejs.registry.RegistryEventJS;
+import dev.latvian.kubejs.registry.RegistryInfos;
+import net.minecraft.world.level.block.Block;
 
 import java.util.function.Consumer;
 
 /**
  * @author LatvianModder
  */
-public class BlockRegistryEventJS extends StartupEventJS {
-	@Deprecated
-	public BlockBuilder create(String name) {
-		BlockBuilder builder = new BlockBuilder(name);
-		KubeJSObjects.BLOCKS.put(builder.id, builder);
-		KubeJSObjects.ALL.add(builder);
-		return builder;
-	}
+public class BlockRegistryEventJS extends RegistryEventJS<Block> {
 
-	public void create(String name, Consumer<BlockBuilder> callback) {
-		BlockBuilder builder = new BlockBuilder(name);
+    public BlockRegistryEventJS() {
+        super(RegistryInfos.BLOCK);
+    }
+
+    public void create(String name, Consumer<BlockBuilder> callback) {
+		BlockBuilder builder = (BlockBuilder) create(name);
 		callback.accept(builder);
-		KubeJSObjects.BLOCKS.put(builder.id, builder);
-		KubeJSObjects.ALL.add(builder);
 	}
 
 	public void addDetector(String id) {
-		if (id.isEmpty() || !id.equals(id.toLowerCase()) || id.matches("\\W")) {
-			throw new IllegalArgumentException("Detector ID can only contain a-z _ and 0-9!");
-		}
-
-		KubeJSObjects.DETECTORS.put(id, new DetectorInstance(id));
+        create(id, "detector");
 	}
 }

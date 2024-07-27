@@ -2,6 +2,7 @@ package dev.latvian.kubejs.registry.types;
 
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import net.minecraft.resources.ResourceLocation;
 
 public class CustomStatBuilder extends BuilderBase<ResourceLocation> {
@@ -11,7 +12,7 @@ public class CustomStatBuilder extends BuilderBase<ResourceLocation> {
 
 	@Override
 	public final RegistryInfo<ResourceLocation> getRegistryType() {
-		return RegistryInfo.CUSTOM_STAT;
+		return RegistryInfos.CUSTOM_STAT;
 	}
 
 	@Override

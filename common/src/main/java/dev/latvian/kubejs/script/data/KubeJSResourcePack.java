@@ -4,9 +4,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSPaths;
-import dev.latvian.kubejs.registry.BuilderBase;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.util.UtilsJS;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -128,9 +127,9 @@ public abstract class KubeJSResourcePack implements PackResources {
 			}
 		} else {
 			if (path.equals("loot_tables")) {
-				for (ResourceLocation id : KubeJSObjects.BLOCKS.keySet()) {
-					list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
-				}
+                for (ResourceLocation id : RegistryInfos.BLOCK.objects.keySet()) {
+                    list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
+                }
 			}
 		}
 
@@ -165,7 +164,7 @@ public abstract class KubeJSResourcePack implements PackResources {
 		namespaces.add("kubejs_generated");
 		namespaces.add(KubeJS.MOD_ID);
 
-		for (BuilderBase builder : KubeJSObjects.ALL) {
+		for (var builder : RegistryInfos.ALL_BUILDERS) {
 			namespaces.add(builder.id.getNamespace());
 		}
 

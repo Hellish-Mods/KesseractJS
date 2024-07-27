@@ -4,16 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.bindings.TextWrapper;
-import dev.latvian.kubejs.util.JSObjectType;
-import dev.latvian.kubejs.util.ListJS;
-import dev.latvian.kubejs.util.MapJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
-import net.minecraft.nbt.StringTag;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
@@ -32,122 +28,15 @@ import java.util.Objects;
 public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSerializable, WrappedJS {
     @JSInfo("Returns a Component based on the input")
 	public static Component componentOf(@Nullable Object o) {
-		if (o == null) {
-			return new TextComponent("null");
-		} else if (o instanceof Component) {
-			return (Component) o;
-		} else if (o instanceof CharSequence) {
-			return new TextComponent(o.toString());
-		} else if (o instanceof StringTag) {
-			String s = ((StringTag) o).getAsString();
-
-			if (s.startsWith("{") && s.endsWith("}")) {
-				try {
-					return Component.Serializer.fromJson(s);
-				} catch (Exception ex) {
-					return new TextComponent("Error: " + ex);
-				}
-			} else {
-				return new TextComponent(s);
-			}
-		}
-
-		return of(o).component();
+		return TextWrapper.componentOf(o);
 	}
 
 	public static Text of(@Nullable Object o) {
-		return ofWrapped(UtilsJS.wrap(o, JSObjectType.ANY));
+		return TextWrapper.of(o);
 	}
 
-	private static Text ofWrapped(@Nullable Object o) {
-		if (o == null) {
-			return new TextString("null");
-		} else if (o instanceof CharSequence || o instanceof Number || o instanceof Character) {
-			return new TextString(o.toString());
-		} else if (o instanceof Enum) {
-			return new TextString(((Enum) o).name());
-		} else if (o instanceof Text) {
-			return (Text) o;
-		} else if (o instanceof ListJS) {
-			Text text = new TextString("");
-
-			for (Object e1 : (ListJS) o) {
-				text.append(ofWrapped(e1));
-			}
-
-			return text;
-		} else if (o instanceof MapJS map && (map.containsKey("text") || map.containsKey("translate"))) {
-            Text text;
-
-            if (map.containsKey("text")) {
-                text = new TextString(map.get("text").toString());
-            } else { //map.containsKey("translate")
-                Object[] with;
-
-                if (map.containsKey("with")) {
-                    ListJS a = map.getOrNewList("with");
-                    with = new Object[a.size()];
-                    int i = 0;
-
-                    for (Object e1 : a) {
-                        with[i] = e1;
-
-                        if (with[i] instanceof MapJS || with[i] instanceof ListJS) {
-                            with[i] = ofWrapped(e1);
-                        }
-
-                        i++;
-                    }
-                } else {
-                    with = new Object[0];
-                }
-
-                text = new TextTranslate(map.get("translate").toString(), with);
-            }
-
-            if (map.containsKey("color")) {
-                text.color = ColorWrapper.of(map.get("color")).getRgbKJS();
-            }
-
-            text.bold = (Boolean) map.getOrDefault("bold", null);
-            text.italic = (Boolean) map.getOrDefault("italic", null);
-            text.underlined = (Boolean) map.getOrDefault("underlined", null);
-            text.strikethrough = (Boolean) map.getOrDefault("strikethrough", null);
-            text.obfuscated = (Boolean) map.getOrDefault("obfuscated", null);
-            text.insertion = (String) map.getOrDefault("insertion", null);
-            text.font = map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null;
-            text.click = map.containsKey("click") ? TextWrapper.clickEventOf(map.get("click")) : null;
-            text.hover = map.containsKey("hover") ? HoverEvent.deserialize(UtilsJS.cast(map.get("hover"))) : null;
-
-            text.siblings = null;
-
-            if (map.containsKey("extra")) {
-                for (Object e : map.getOrNewList("extra")) {
-                    text.append(ofWrapped(e));
-                }
-            }
-            return text;
-
-        }
-
-		return new TextString(o.toString());
-	}
-
-	public static Text join(Text separator, Iterable<Text> texts) {
-		Text text = new TextString("");
-		boolean first = true;
-
-		for (Text t : texts) {
-			if (first) {
-				first = false;
-			} else {
-				text.append(separator);
-			}
-
-			text.append(t);
-		}
-
-		return text;
+    public static Text join(Text separator, Iterable<Text> texts) {
+		return TextWrapper.join(separator, texts);
 	}
 
 	public static Text read(FriendlyByteBuf buffer) {
@@ -437,7 +326,16 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return this;
 	}
 
-	public final Text hover(Object o) {
+    /**
+     * only for backward compat
+     */
+    @HideFromJS
+    @Deprecated
+    public final Text click(String s) {
+        return click((Object) s);
+    }
+
+    public final Text hover(@Nullable Object o) {
         hover = TextWrapper.hoverEventOf(o);
         return this;
 	}

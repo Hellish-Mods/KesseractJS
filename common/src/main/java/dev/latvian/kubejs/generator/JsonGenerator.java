@@ -16,7 +16,7 @@ public class JsonGenerator {
 		map = m;
 	}
 
-	public void json(ResourceLocation id, JsonElement json) {
+    public void json(ResourceLocation id, JsonElement json) {
 		map.put(id, json);
 
 		if (console.getDebugEnabled() || console == ConsoleJS.SERVER && ServerSettings.instance.dataPackOutput) {

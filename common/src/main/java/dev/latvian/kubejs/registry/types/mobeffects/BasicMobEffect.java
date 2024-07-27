@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.registry.types.mobeffects;
 
-import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -41,7 +41,7 @@ public class BasicMobEffect extends MobEffect {
 
 	private void applyAttributeModifications() {
 		if (!modified) {
-			modifierMap.forEach((r, m) -> attributeMap.put(RegistryInfo.ATTRIBUTE.getValue(r), m));
+			modifierMap.forEach((r, m) -> attributeMap.put(RegistryInfos.ATTRIBUTE.getValue(r), m));
 			modified = true;
 		}
 	}

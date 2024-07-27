@@ -15,6 +15,7 @@ import dev.latvian.kubejs.item.custom.BasicItemType;
 import dev.latvian.kubejs.item.custom.ItemType;
 import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.BuilderBase;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.registry.types.tab.KjsTabs;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -180,7 +181,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	public final RegistryInfo getRegistryType() {
-		return RegistryInfo.ITEM;
+		return RegistryInfos.ITEM;
 	}
 
 	@Override

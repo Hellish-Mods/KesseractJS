@@ -2,6 +2,7 @@ package dev.latvian.kubejs.registry.types.particle;
 
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +18,7 @@ public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 
 	@Override
 	public final RegistryInfo<ParticleType> getRegistryType() {
-		return RegistryInfo.PARTICLE_TYPE;
+		return RegistryInfos.PARTICLE_TYPE;
 	}
 
 	@Override

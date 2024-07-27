@@ -1,6 +1,9 @@
 package dev.latvian.kubejs.client.painter;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.latvian.kubejs.KubeJSEvents;
+import dev.latvian.kubejs.client.painter.screen.ScreenPaintEventJS;
 import dev.latvian.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.kubejs.client.painter.world.WorldPainterObject;
 import dev.latvian.kubejs.net.PainterUpdatedEventJS;
@@ -9,6 +12,8 @@ import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.MutableUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import dev.latvian.mods.rhino.util.unit.UnitStorage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
@@ -127,4 +132,71 @@ public class Painter {
 			unitStorage.setVariable(key, variable);
 		}
 	}
+
+    public void inGameScreenDraw(PoseStack matrices, float delta) {
+        var mc = Minecraft.getInstance();
+
+        if (mc.player == null || mc.options.renderDebug || mc.screen != null) {
+            return;
+        }
+
+        RenderSystem.enableBlend();
+        RenderSystem.enableDepthTest();
+        //RenderSystem.disableLighting();
+
+        var event = new ScreenPaintEventJS(mc, matrices, delta);
+        deltaUnit.set(delta);
+        screenWidthUnit.set(event.width);
+        screenHeightUnit.set(event.height);
+        //mouse is always at the center of screen when playing
+        mouseXUnit.set(event.width / 2F);
+        mouseYUnit.set(event.height / 2F);
+        event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
+
+        for (var object : getScreenObjects()) {
+            if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
+                object.preDraw(event);
+            }
+        }
+
+        for (var object : getScreenObjects()) {
+            if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
+                object.draw(event);
+            }
+        }
+    }
+
+    public void guiScreenDraw(Screen screen, PoseStack matrices, int mouseX, int mouseY, float delta) {
+        var mc = Minecraft.getInstance();
+
+        if (mc.player == null) {
+            return;
+        }
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        //RenderSystem.disableLighting();
+
+        var event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
+        deltaUnit.set(delta);
+        screenWidthUnit.set(event.width);
+        screenHeightUnit.set(event.height);
+        mouseXUnit.set(mouseX);
+        mouseYUnit.set(mouseY);
+
+//        event.resetShaderColor();
+        event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
+
+        for (var object : getScreenObjects()) {
+            if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
+                object.preDraw(event);
+            }
+        }
+
+        for (var object : getScreenObjects()) {
+            if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
+                object.draw(event);
+            }
+        }
+    }
 }

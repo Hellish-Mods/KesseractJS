@@ -9,6 +9,7 @@
     "BlockStateBaseMixin",
     "BucketItemMixin",
     "ConstantIntValueMixin",
+    "CreativeModeTabMixin",
     "EntityMixin",
     "EntityTargetMixin",
     "FireworkRocketEntityMixin",

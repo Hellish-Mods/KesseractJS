@@ -19,10 +19,19 @@ import java.util.List;
  */
 @Mixin(Item.class)
 public abstract class ItemClientMixin {
-	@Inject(method = "appendHoverText", at = @At("RETURN"))
-	private void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn, CallbackInfo ci) {
-		if (this instanceof ItemKJS && ((ItemKJS) this).getItemBuilderKJS() != null && !((ItemKJS) this).getItemBuilderKJS().tooltip.isEmpty()) {
-			tooltip.addAll(((ItemKJS) this).getItemBuilderKJS().tooltip);
-		}
-	}
+    @Inject(method = "appendHoverText", at = @At("RETURN"))
+    private void appendHoverText(
+        ItemStack stack,
+        @Nullable Level worldIn,
+        List<Component> tooltip,
+        TooltipFlag flagIn,
+        CallbackInfo ci
+    ) {
+        if (this instanceof ItemKJS kjsThis
+            && kjsThis.getItemBuilderKJS() != null
+            && !kjsThis.getItemBuilderKJS().tooltip.isEmpty()
+        ) {
+            tooltip.addAll(kjsThis.getItemBuilderKJS().tooltip);
+        }
+    }
 }

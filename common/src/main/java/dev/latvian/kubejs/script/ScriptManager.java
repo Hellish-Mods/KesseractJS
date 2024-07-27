@@ -121,8 +121,6 @@ public class ScriptManager {
 
         //type wrapper / binding
         TypeWrappers typeWrappers = context.getTypeWrappers();
-//        typeWrappers.removeAll();
-        RegistryTypeWrapperFactory.register(typeWrappers);
         var bindingEvent = new BindingsEvent(this, context, topScope);
         BindingsEvent.EVENT.invoker().accept(bindingEvent);
 
@@ -163,6 +161,7 @@ public class ScriptManager {
 		}
 
 		type.console.info("Loaded " + loaded + "/" + total + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
+        Context.exit();
 
 		events.postToHandlers(KubeJSEvents.LOADED, events.handlers(KubeJSEvents.LOADED), new StartupEventJS());
 

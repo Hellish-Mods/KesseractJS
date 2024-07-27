@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.registry;
 
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.client.LangEventJS;
+import dev.latvian.kubejs.client.asset.LangEventJS;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.kubejs.generator.DataJsonGenerator;
 import dev.latvian.kubejs.util.ConsoleJS;
@@ -32,11 +32,6 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		overrideLangJson = false;
 		dummyBuilder = false;
 		tags = new HashSet<>();
-	}
-
-	public BuilderBase(String s) {
-		this(UtilsJS.getMCID(KubeJS.appendModId(s)));
-//		displayName = Arrays.stream(id.getPath().split("_")).map(UtilsJS::toTitleCase).collect(Collectors.joining(" "));
 	}
 
 	public abstract RegistryInfo getRegistryType();
@@ -138,9 +133,9 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	public void generateLang(LangEventJS event) {
-		var name = display == null
-				? UtilsJS.convertSnakeCaseToCamelCase(id.getPath())
-				: display.getString();
+        var name = display == null
+            ? UtilsJS.convertSnakeCaseToCamelCase(id.getPath())
+            : display.getString();
 		event.get(id.getNamespace(), "en_us").add(getBuilderTranslationKey(), name);
 	}
 

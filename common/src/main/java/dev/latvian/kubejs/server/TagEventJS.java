@@ -3,13 +3,14 @@ package dev.latvian.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.kubejs.KubeJSObjects;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.core.TagBuilderKJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemBuilder;
+import dev.latvian.kubejs.registry.BuilderBase;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
@@ -17,6 +18,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SetTag;
 import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
@@ -77,10 +79,10 @@ public class TagEventJS<T> extends EventJS {
 		private final List<Tag.BuilderEntry> proxyList;
 		private List<Predicate<String>> priorityList;
 
-		private TagWrapper(TagEventJS<T> e, ResourceLocation i, SetTag.Builder t) {
-			event = e;
-			id = i;
-			builder = t;
+		private TagWrapper(TagEventJS<T> event, ResourceLocation id, SetTag.Builder tagBuilder) {
+			this.event = event;
+			this.id = id;
+			builder = tagBuilder;
 			proxyList = ((TagBuilderKJS) builder).getProxyListKJS();
 			priorityList = null;
 		}
@@ -326,20 +328,12 @@ public class TagEventJS<T> extends EventJS {
 		globalPriorityList = null;
 		actualRegistry = null;
 
-		switch (type) {
-			case "items":
-				actualRegistry = UtilsJS.cast(KubeJSRegistries.items());
-				break;
-			case "blocks":
-				actualRegistry = UtilsJS.cast(KubeJSRegistries.blocks());
-				break;
-			case "fluids":
-				actualRegistry = UtilsJS.cast(KubeJSRegistries.fluids());
-				break;
-			case "entity_types":
-				actualRegistry = UtilsJS.cast(KubeJSRegistries.entityTypes());
-				break;
-		}
+        switch (type) {
+            case "items" -> actualRegistry = UtilsJS.cast(KubeJSRegistries.items());
+            case "blocks" -> actualRegistry = UtilsJS.cast(KubeJSRegistries.blocks());
+            case "fluids" -> actualRegistry = UtilsJS.cast(KubeJSRegistries.fluids());
+            case "entity_types" -> actualRegistry = UtilsJS.cast(KubeJSRegistries.entityTypes());
+        }
 	}
 
 	public String getType() {
@@ -373,32 +367,35 @@ public class TagEventJS<T> extends EventJS {
 
 		tags = new HashMap<>();
 
-		for (Map.Entry<ResourceLocation, SetTag.Builder> entry : map.entrySet()) {
+		for (var entry : map.entrySet()) {
 			TagWrapper<T> w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
 			ConsoleJS.SERVER.debug(type + "/#" + entry.getKey() + "; " + w.proxyList.size());
 		}
 
 		if (type.equals("items")) {
-			for (ItemBuilder item : KubeJSObjects.ITEMS.values()) {
-				for (ResourceLocation s : item.tags) {
-					add(s, item.id);
-				}
-
-				for (BlockBuilder block : KubeJSObjects.BLOCKS.values()) {
-					if (block.itemBuilder != null) {
-						for (ResourceLocation s : block.itemBuilder.tags) {
-							add(s, block.itemBuilder.id);
-						}
-					}
-				}
-			}
+            for (var builderBase : RegistryInfos.ITEM.objects.values()) {
+                if (builderBase instanceof ItemBuilder builder) {
+                    for (ResourceLocation s : builder.tags) {
+                        add(s, builder.id);
+                    }
+                }
+            }
+            for (BuilderBase<? extends Block> builderBase : RegistryInfos.BLOCK.objects.values()) {
+                if (builderBase instanceof BlockBuilder builder && builder.itemBuilder != null) {
+                    for (var s : builder.itemBuilder.tags) {
+                        add(s, builder.itemBuilder.id);
+                    }
+                }
+            }
 		} else if (type.equals("blocks")) {
-			for (BlockBuilder block : KubeJSObjects.BLOCKS.values()) {
-				for (String s : block.defaultTags) {
-					add(new ResourceLocation(s), block.id);
-				}
-			}
+            for (BuilderBase<? extends Block> builderBase : RegistryInfos.BLOCK.objects.values()) {
+                if (builderBase instanceof BlockBuilder builder) {
+                    for (String s : builder.defaultTags) {
+                        add(new ResourceLocation(s), builder.id);
+                    }
+                }
+            }
 		}
 
 		ConsoleJS.SERVER.setLineNumber(true);

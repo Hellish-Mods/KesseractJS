@@ -32,6 +32,8 @@ public class KubeJSEvents {
     public static final String CLIENT_PAINT_WORLD = "client.paint_world";
     public static final String CLIENT_PAINTER_UPDATED = "client.painter_updated";
     public static final String CLIENT_LANG = "client.lang";
+    public static final String CLIENT_ATLAS_STITCH = "client.atlas_stitch";
+    public static final String CLIENT_GENERATE_ASSET = "client.generate_asset";
     //server
     public static final String SERVER_LOAD = "server.load";
     public static final String SERVER_UNLOAD = "server.unload";

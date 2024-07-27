@@ -201,24 +201,22 @@ public class ConsoleJS {
 		if (calendar.get(Calendar.HOUR_OF_DAY) < 10) {
 			sb.append('0');
 		}
-
 		sb.append(calendar.get(Calendar.HOUR_OF_DAY));
 		sb.append(':');
 
 		if (calendar.get(Calendar.MINUTE) < 10) {
 			sb.append('0');
 		}
-
 		sb.append(calendar.get(Calendar.MINUTE));
 		sb.append(':');
 
 		if (calendar.get(Calendar.SECOND) < 10) {
 			sb.append('0');
 		}
-
 		sb.append(calendar.get(Calendar.SECOND));
 		sb.append(']');
 		sb.append(' ');
+
 		sb.append('[');
 		sb.append(type);
 		sb.append(']');

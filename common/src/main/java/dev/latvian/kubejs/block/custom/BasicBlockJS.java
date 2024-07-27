@@ -49,7 +49,7 @@ public class BasicBlockJS extends Block {
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		if (BlockBuilder.current.waterlogged) {
+        if (properties.waterlogged) {
 			builder.add(BlockStateProperties.WATERLOGGED);
 		}
 	}

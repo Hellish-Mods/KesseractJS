@@ -4,8 +4,10 @@ import com.google.gson.JsonElement;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPaths;
+import dev.latvian.kubejs.client.asset.GenerateClientAssetsEventJS;
+import dev.latvian.kubejs.client.asset.LangEventJS;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.util.KubeJSPlugins;
@@ -49,22 +51,20 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
 		AssetJsonGenerator generator = new AssetJsonGenerator(map);
 		KubeJSPlugins.forEachPlugin(p -> p.generateAssetJsons(generator));
 
-		for (var builder : RegistryInfo.ALL_BUILDERS) {
-			builder.generateAssetJsons(generator);
-		}
-
 		generateLang(generator);
 	}
 
 	private void generateLang(AssetJsonGenerator generator) {
 		var langEvent = new LangEventJS();
 
-		for (var builder : RegistryInfo.ALL_BUILDERS) {
+		for (var builder : RegistryInfos.ALL_BUILDERS) {
 			builder.generateLang(langEvent);
 		}
 
 		Map<String, String> langMap = new HashMap<>();
 		KubeJSPlugins.forEachPlugin(p -> p.generateLang(langMap));
+
+        new GenerateClientAssetsEventJS(generator).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_GENERATE_ASSET);
 
 		//read lang json and add into lang event
 		try (var in = Files.list(KubeJSPaths.ASSETS)) {
@@ -94,7 +94,7 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
 
 		//using a special namespace to keep backward equivalence
 		langEvent.get("kubejs_generated", "en_us").addAll(langMap);
-		langEvent.post(ScriptType.CLIENT, KubeJSEvents.CLIENT_LANG);
+        langEvent.post(ScriptType.CLIENT, KubeJSEvents.CLIENT_LANG);
 
 		for (var lang2entries : langEvent.namespace2lang2entries.values()) {
 			for (var entries : lang2entries.values()) {

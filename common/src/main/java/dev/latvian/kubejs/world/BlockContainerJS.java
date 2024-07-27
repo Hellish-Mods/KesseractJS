@@ -45,9 +45,8 @@ import java.util.Optional;
  * @author LatvianModder
  */
 public class BlockContainerJS implements SpecialEquality {
-	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
-	public final Level minecraftLevel;
+    public final Level minecraftLevel;
 	private final BlockPos pos;
 
 	private BlockState cachedState;

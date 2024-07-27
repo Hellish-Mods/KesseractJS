@@ -7,13 +7,19 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.text.TextKeybind;
 import dev.latvian.kubejs.text.TextString;
 import dev.latvian.kubejs.text.TextTranslate;
+import dev.latvian.kubejs.util.JSObjectType;
+import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -22,13 +28,39 @@ import java.util.Objects;
  */
 public class TextWrapper {
 	public static Text of(Object object) {
-		return Text.of(object);
+        return ofWrapped(UtilsJS.wrap(object, JSObjectType.ANY));
 	}
 
     @JSInfo("Joins all components in the list with the separator")
 	public static Text join(Text separator, Iterable<Text> texts) {
-		return Text.join(separator, texts);
+        Text text = new TextString("");
+        boolean first = true;
+
+        for (Text t : texts) {
+            if (first) {
+                first = false;
+            } else {
+                text.append(separator);
+            }
+
+            text.append(t);
+        }
+
+        return text;
 	}
+
+    @JSInfo("Returns a Component based on the input")
+    public static Component componentOf(@Nullable Object o) {
+        if (o == null) {
+            return new TextComponent("null");
+        } else if (o instanceof Component) {
+            return (Component) o;
+        } else if (o instanceof CharSequence || o instanceof Number || o instanceof Character) {
+            return new TextComponent(o.toString());
+        }
+
+        return of(o).component();
+    }
 
     @JSInfo("Checks if the passed in component, and all its children are empty")
     public static boolean isEmpty(Component component) {
@@ -36,7 +68,7 @@ public class TextWrapper {
     }
 
     @JSInfo("get a new, empty text")
-    public static Text empty() {
+    public static TextString empty() {
         return new TextString("");
     }
 
@@ -50,7 +82,7 @@ public class TextWrapper {
 
     @JSInfo("Returns a translatable text of the input key")
 	public static Text translate(String key) {
-		return new TextTranslate(key, new Object[0]);
+		return new TextTranslate(key, UtilsJS.EMPTY_OBJECT_ARRAY);
 	}
 
     @JSInfo("Returns a translatable text of the input key, with args of the key")
@@ -63,14 +95,39 @@ public class TextWrapper {
 		return new TextKeybind(keybind);
 	}
 
-    @JSInfo("Returns a score component of the input objective, for the provided selector")
-    public static ScoreComponent score(String selector, String objective) {
-        return new ScoreComponent(selector, objective);
-    }
+//    @JSInfo("Returns a score component of the input objective, for the provided selector")
+//    public static ScoreComponent score(String selector, String objective) {
+//        return new ScoreComponent(selector, objective);
+//    }
 
-    @JSInfo("Returns a component displaying all entities matching the input selector")
-    public static SelectorComponent selector(String selector) {
-        return new SelectorComponent(selector);
+//    @JSInfo("Returns a component displaying all entities matching the input selector")
+//    public static SelectorComponent selector(String selector) {
+//        return new SelectorComponent(selector);
+//    }
+
+    public static Text fromComponent(Component c) {
+        if (c == null) {
+            return new TextString("null");
+        }
+        var t = c instanceof TranslatableComponent transl
+            ? new TextTranslate(transl.getKey(), transl.getArgs())
+            : new TextString(c.getContents());
+
+        var style = c.getStyle();
+        t.bold(style.isBold())
+            .italic(style.isItalic())
+            .underlined(style.isUnderlined())
+            .strikethrough(style.isStrikethrough())
+            .obfuscated(style.isObfuscated())
+            .insertion(style.getInsertion())
+            .click(style.getClickEvent())
+            .hover(style.getHoverEvent());
+
+        for (var sibling : c.getSiblings()) {
+            t.append(fromComponent(sibling));
+        }
+
+        return t;
     }
 
     public static Text black(Object text) {
@@ -141,8 +198,7 @@ public class TextWrapper {
     public static HoverEvent hoverEventOf(Object o) {
         if (o == null) {
             return null;
-        }
-        if (o instanceof HoverEvent hoverEvent) {
+        } else if (o instanceof HoverEvent hoverEvent) {
             return hoverEvent;
         }
         //vanilla json / kjs map
@@ -165,12 +221,10 @@ public class TextWrapper {
             );
         }
         //fallback to text
-        else {
-            return new HoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
-                of(o).component()
-            );
-        }
+        return new HoverEvent(
+            HoverEvent.Action.SHOW_TEXT,
+            of(o).component()
+        );
     }
 
     @JSInfo("""
@@ -181,7 +235,7 @@ public class TextWrapper {
         } else if (o instanceof ClickEvent ce) {
             return ce;
         }
-
+        //json
         var json = MapJS.json(o);
         if (json != null) {
             var action = GsonHelper.getAsString(json, "action");
@@ -191,11 +245,9 @@ public class TextWrapper {
                 value
             );
         }
-
+        //string
         var s = o.toString();
-
         var split = s.split(":", 2);
-
         return switch (split[0]) {
             case "command" -> new ClickEvent(ClickEvent.Action.RUN_COMMAND, split[1]);
             case "suggest_command" -> new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, split[1]);
@@ -209,6 +261,81 @@ public class TextWrapper {
                 yield new ClickEvent(ClickEvent.Action.OPEN_URL, s);
             }
         };
+    }
+
+    private static Text ofWrapped(@Nullable Object o) {
+        if (o == null) {
+            return new TextString("null");
+        } else if (o instanceof CharSequence || o instanceof Number || o instanceof Character) {
+            return new TextString(o.toString());
+        } else if (o instanceof Enum e) {
+            return new TextString(e.name());
+        } else if (o instanceof Text) {
+            return (Text) o;
+        } else if (o instanceof ListJS l) {
+            Text text = new TextString("");
+
+            for (Object e1 : l) {
+                text.append(ofWrapped(e1));
+            }
+
+            return text;
+        } else if (o instanceof MapJS map && (map.containsKey("text") || map.containsKey("translate"))) {
+            Text text;
+
+            if (map.containsKey("text")) {
+                text = new TextString(map.get("text").toString());
+            } else { //map.containsKey("translate")
+                Object[] with = UtilsJS.EMPTY_OBJECT_ARRAY;
+
+                if (map.containsKey("with")) {
+                    ListJS a = map.getOrNewList("with");
+                    with = new Object[a.size()];
+                    for (int i = 0, size = a.size(); i < size; i++) {
+                        var elem = a.get(i);
+                        with[i] = elem instanceof MapJS || elem instanceof ListJS
+                            ? ofWrapped(elem)
+                            : elem;
+                    }
+                }
+
+                text = new TextTranslate(map.get("translate").toString(), with);
+            }
+
+            if (map.containsKey("color")) {
+                text.color(ColorWrapper.of(map.get("color")));
+            }
+
+            text.bold((Boolean) map.getOrDefault("bold", null))
+                .italic((Boolean) map.getOrDefault("italic", null))
+                .underlined((Boolean) map.getOrDefault("underlined", null))
+                .strikethrough((Boolean) map.getOrDefault("strikethrough", null))
+                .obfuscated((Boolean) map.getOrDefault("obfuscated", null))
+                .insertion((String) map.getOrDefault("insertion", null))
+                .font(map.get("font").toString())
+                .click(map.get("click"))
+                .hover(map.get("hover"));
+
+            if (map.containsKey("extra")) {
+                for (Object e : map.getOrNewList("extra")) {
+                    text.append(ofWrapped(e));
+                }
+            }
+            return text;
+        } else if (o instanceof StringTag sTag) {
+            String s = sTag.getAsString();
+
+            if (!s.startsWith("{") || !s.endsWith("}")) {
+                return new TextString(s);
+            }
+            try {
+                return fromComponent(Component.Serializer.fromJson(s));
+            } catch (Exception ex) {
+                return new TextString("Error: " + ex);
+            }
+        }
+
+        return new TextString(o.toString());
     }
 
 //    @JSInfo("Returns a component displaying all entities matching the input selector, with a custom separator")

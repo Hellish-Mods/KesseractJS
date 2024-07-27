@@ -2,6 +2,7 @@ package dev.latvian.kubejs.registry.types.enchantment;
 
 import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.BuilderBase;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2BooleanFunction;
 import net.minecraft.resources.ResourceLocation;
@@ -70,7 +71,7 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 
 	@Override
 	public final RegistryInfo<Enchantment> getRegistryType() {
-		return RegistryInfo.ENCHANTMENT;
+		return RegistryInfos.ENCHANTMENT;
 	}
 
 	@Override

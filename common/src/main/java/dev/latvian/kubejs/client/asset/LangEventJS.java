@@ -1,11 +1,8 @@
-package dev.latvian.kubejs.client;
+package dev.latvian.kubejs.client.asset;
 
-import com.github.bsideup.jabel.Desugar;
-import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
-import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -21,64 +18,22 @@ public class LangEventJS extends EventJS {
 	 */
 	public static final Pattern PATTERN = Pattern.compile("[a-z_]+");
 
-	@Desugar
-	public record LangEntries(String namespace, String lang, Map<String,String> entries) {
-		public LangEntries(String namespace, String lang) {
-			this(namespace, lang, new HashMap<>());
-		}
-
-		public void add(String key, String text) {
-			ensureValid(key, text);
-			entries.put(key, text);
-		}
-
-		public void addAll(Map<String, String> map) {
-			for (var entry : map.entrySet()) {
-				add(entry.getKey(), entry.getValue());
-			}
-		}
-
-		public void addIfAbsent(String key, String text) {
-			ensureValid(key, text);
-			entries.putIfAbsent(key, text);
-		}
-
-		public JsonObject asJson() {
-			JsonObject obj = new JsonObject();
-			for (var entry : entries.entrySet()) {
-				obj.addProperty(entry.getKey(), entry.getValue());
-			}
-			return obj;
-		}
-
-		@JSInfo("`{namespace}:lang/{lang}`")
-		public ResourceLocation path() {
-			return new ResourceLocation(namespace, "lang/" + lang);
-		}
-
-		static void ensureValid(String key, String text) {
-			if (key == null || text == null || key.trim().isEmpty()) {
-				throw new IllegalArgumentException("Invalid key or value: [" + key + ", " + text + "]");
-			}
-		}
-	}
-
-	public final Map<String, Map<String, LangEntries>> namespace2lang2entries;
+    public final Map<String, Map<String, LangEntry>> namespace2lang2entries;
 
 	public LangEventJS() {
 		namespace2lang2entries = new HashMap<>();
 	}
 
-	public LangEntries get(String namespace, String lang) {
+	public LangEntry get(String namespace, String lang) {
 		if (namespace == null || lang == null || namespace.isEmpty() || lang.isEmpty() || !PATTERN.matcher(lang).matches()) {
 			throw new IllegalArgumentException("Invalid namespace or lang: [" + namespace + ", " + lang + "]");
 		}
 		return namespace2lang2entries
-				.computeIfAbsent(namespace, k -> new HashMap<>())
-				.computeIfAbsent(lang, k -> new LangEntries(namespace, lang));
+            .computeIfAbsent(namespace, k -> new HashMap<>())
+            .computeIfAbsent(lang, k -> new LangEntry(namespace, lang));
 	}
 
-	public LangEntries get(String lang) {
+	public LangEntry get(String lang) {
 		return get(KubeJS.MOD_ID, lang);
 	}
 

@@ -8,7 +8,10 @@ import net.minecraft.sounds.SoundEvent;
  * @author LatvianModder
  */
 public class KubeJSOtherEventHandler {
-	public static void init() {
-		new SoundRegistryEventJS(id -> KubeJSRegistries.soundEvents().register(id, () -> new SoundEvent(id))).post(ScriptType.STARTUP, KubeJSEvents.SOUND_REGISTRY);
-	}
+    public static void init() {
+        new SoundRegistryEventJS(
+            id -> KubeJSRegistries.soundEvents().register(id, () -> new SoundEvent(id))
+        )
+            .post(ScriptType.STARTUP, KubeJSEvents.SOUND_REGISTRY);
+    }
 }

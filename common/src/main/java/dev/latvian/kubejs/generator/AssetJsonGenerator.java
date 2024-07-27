@@ -11,9 +11,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class AssetJsonGenerator extends JsonGenerator {
-	public AssetJsonGenerator(Map<ResourceLocation, JsonElement> m) {
+
+    public AssetJsonGenerator(Map<ResourceLocation, JsonElement> m) {
 		super(ConsoleJS.CLIENT, m);
-	}
+    }
 
 	public void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
 		VariantBlockStateGenerator gen = new VariantBlockStateGenerator();

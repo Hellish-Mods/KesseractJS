@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
@@ -22,7 +23,7 @@ public class KubeJSPlugins {
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
 
     public static List<KubeJSPlugin> all() {
-        return LIST;
+        return Collections.unmodifiableList(LIST);
     }
 
 	public static void load(String id, Path path) throws Exception {

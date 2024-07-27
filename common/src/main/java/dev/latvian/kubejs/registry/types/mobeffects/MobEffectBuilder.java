@@ -2,6 +2,7 @@ package dev.latvian.kubejs.registry.types.mobeffects;
 
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -35,7 +36,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 
 	@Override
 	public final RegistryInfo<MobEffect> getRegistryType() {
-		return RegistryInfo.MOB_EFFECT;
+		return RegistryInfos.MOB_EFFECT;
 	}
 
 	public MobEffectBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {

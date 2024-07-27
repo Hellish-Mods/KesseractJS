@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
@@ -23,8 +24,8 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 
 	public static List<RegistryTypeWrapperFactory<?>> getAll() {
         if (all == null) {
-            all = new ArrayList<>(RegistryInfo.MAP.size());
-            for (RegistryInfo info : RegistryInfo.MAP.values()) {
+            all = new ArrayList<>(RegistryInfos.MAP.size());
+            for (RegistryInfo info : RegistryInfos.MAP.values()) {
                 if (info.autoWrap) {
                     all.add(new RegistryTypeWrapperFactory<>(
                         info.objectBaseClass,

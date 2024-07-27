@@ -17,21 +17,12 @@ import dev.latvian.kubejs.bindings.ScriptEventsWrapper;
 import dev.latvian.kubejs.bindings.TextWrapper;
 import dev.latvian.kubejs.bindings.UtilsWrapper;
 import dev.latvian.kubejs.block.*;
-import dev.latvian.kubejs.block.events.BlockRegistryEventJS;
-import dev.latvian.kubejs.block.custom.BasicBlockType;
-import dev.latvian.kubejs.block.custom.BlockType;
-import dev.latvian.kubejs.block.custom.BlockTypes;
-import dev.latvian.kubejs.block.custom.ShapedBlockType;
+import dev.latvian.kubejs.block.custom.*;
 import dev.latvian.kubejs.client.painter.Painter;
-import dev.latvian.kubejs.client.painter.screen.AtlasTextureObject;
-import dev.latvian.kubejs.client.painter.screen.GradientObject;
-import dev.latvian.kubejs.client.painter.screen.RectangleObject;
-import dev.latvian.kubejs.client.painter.screen.ScreenGroup;
-import dev.latvian.kubejs.client.painter.screen.TextObject;
+import dev.latvian.kubejs.client.painter.screen.*;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.event.IEventHandler;
 import dev.latvian.kubejs.fluid.FluidBuilder;
-import dev.latvian.kubejs.fluid.FluidRegistryEventJS;
 import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.fluid.FluidWrapper;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
@@ -39,16 +30,9 @@ import dev.latvian.kubejs.generator.DataJsonGenerator;
 import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ItemTintFunction;
-import dev.latvian.kubejs.item.custom.ArmorItemType;
-import dev.latvian.kubejs.item.custom.BasicItemType;
-import dev.latvian.kubejs.item.custom.ItemArmorTierEventJS;
-import dev.latvian.kubejs.item.custom.ItemToolTierEventJS;
-import dev.latvian.kubejs.item.custom.ItemType;
-import dev.latvian.kubejs.item.custom.ItemTypes;
-import dev.latvian.kubejs.item.custom.ToolItemType;
+import dev.latvian.kubejs.item.custom.*;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.item.ingredient.IngredientStackJS;
-import dev.latvian.kubejs.loot.LootBuilder;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.kubejs.recipe.ingredientaction.IngredientActionFilter;
@@ -65,8 +49,8 @@ import dev.latvian.kubejs.recipe.mod.IDSqueezerRecipeJS;
 import dev.latvian.kubejs.recipe.mod.MATagRecipeJS;
 import dev.latvian.kubejs.recipe.mod.ShapedArtisanRecipeJS;
 import dev.latvian.kubejs.recipe.mod.ShapelessArtisanRecipeJS;
-import dev.latvian.kubejs.registry.RegistryInfo;
-import dev.latvian.kubejs.registry.builder.SoundEventBuilder;
+import dev.latvian.kubejs.registry.RegistryInfos;
+import dev.latvian.kubejs.registry.types.SoundEventBuilder;
 import dev.latvian.kubejs.registry.types.CustomStatBuilder;
 import dev.latvian.kubejs.registry.types.enchantment.EnchantmentBuilder;
 import dev.latvian.kubejs.registry.types.mobeffects.BasicMobEffect;
@@ -77,10 +61,10 @@ import dev.latvian.kubejs.registry.types.villagers.VillagerProfessionBuilder;
 import dev.latvian.kubejs.registry.types.villagers.VillagerTypeBuilder;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.PlatformWrapper;
+import dev.latvian.kubejs.script.RegistryTypeWrapperFactory;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerSettings;
 import dev.latvian.kubejs.text.Text;
-import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.util.*;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.mod.util.NBTWrapper;
@@ -153,10 +137,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		ItemTypes.register(ArmorItemType.BOOTS);
 
 		//sound
-		RegistryInfo.SOUND_EVENT.addType("basic", SoundEventBuilder.class, SoundEventBuilder::new);
+		RegistryInfos.SOUND_EVENT.addType("basic", SoundEventBuilder.class, SoundEventBuilder::new);
 		//block
-//		RegistryInfo.BLOCK.addType("basic", BasicBlockJS.Builder.class, BasicBlockJS.Builder::new);
-//		RegistryInfo.BLOCK.addType("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
+		RegistryInfos.BLOCK.addType("basic", BlockBuilder.class, BlockBuilder::new);
+		RegistryInfos.BLOCK.addType("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
 //		RegistryInfo.BLOCK.addType("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
 //		RegistryInfo.BLOCK.addType("stairs", StairBlockBuilder.class, StairBlockBuilder::new);
 //		RegistryInfo.BLOCK.addType("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
@@ -168,7 +152,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 //		RegistryInfo.BLOCK.addType("crop", CropBlockBuilder.class, CropBlockBuilder::new);
 //		RegistryInfo.BLOCK.addType("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
 		//item
-		RegistryInfo.ITEM.addType("basic", ItemBuilder.class, ItemBuilder::new);
+		RegistryInfos.ITEM.addType("basic", ItemBuilder.class, ItemBuilder::new);
 //		RegistryInfo.ITEM.addType("sword", SwordItemBuilder.class, SwordItemBuilder::new);
 //		RegistryInfo.ITEM.addType("pickaxe", PickaxeItemBuilder.class, PickaxeItemBuilder::new);
 //		RegistryInfo.ITEM.addType("axe", AxeItemBuilder.class, AxeItemBuilder::new);
@@ -179,17 +163,17 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 //		RegistryInfo.ITEM.addType("chestplate", ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
 //		RegistryInfo.ITEM.addType("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
 //		RegistryInfo.ITEM.addType("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
-//		RegistryInfo.ITEM.addType("music_disc", RecordItemJS.Builder.class, RecordItemJS.Builder::new);
+		RegistryInfos.ITEM.addType("music_disc", RecordItemJS.Builder.class, RecordItemJS.Builder::new);
 		//misc
-//		RegistryInfo.FLUID.addType("basic", FluidBuilder.class, FluidBuilder::new);
-		RegistryInfo.ENCHANTMENT.addType("basic", EnchantmentBuilder.class, EnchantmentBuilder::new);
-		RegistryInfo.MOB_EFFECT.addType("basic", BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
-		RegistryInfo.POTION.addType("basic", PotionBuilder.class, PotionBuilder::new);
-		RegistryInfo.PARTICLE_TYPE.addType("basic", ParticleTypeBuilder.class, ParticleTypeBuilder::new);
-		RegistryInfo.CUSTOM_STAT.addType("basic", CustomStatBuilder.class, CustomStatBuilder::new);
-		RegistryInfo.POINT_OF_INTEREST_TYPE.addType("basic", PoiTypeBuilder.class, PoiTypeBuilder::new);
-		RegistryInfo.VILLAGER_TYPE.addType("basic", VillagerTypeBuilder.class, VillagerTypeBuilder::new);
-		RegistryInfo.VILLAGER_PROFESSION.addType("basic", VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
+		RegistryInfos.FLUID.addType("basic", FluidBuilder.class, FluidBuilder::new);
+		RegistryInfos.ENCHANTMENT.addType("basic", EnchantmentBuilder.class, EnchantmentBuilder::new);
+		RegistryInfos.MOB_EFFECT.addType("basic", BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
+		RegistryInfos.POTION.addType("basic", PotionBuilder.class, PotionBuilder::new);
+		RegistryInfos.PARTICLE_TYPE.addType("basic", ParticleTypeBuilder.class, ParticleTypeBuilder::new);
+		RegistryInfos.CUSTOM_STAT.addType("basic", CustomStatBuilder.class, CustomStatBuilder::new);
+		RegistryInfos.POINT_OF_INTEREST_TYPE.addType("basic", PoiTypeBuilder.class, PoiTypeBuilder::new);
+		RegistryInfos.VILLAGER_TYPE.addType("basic", VillagerTypeBuilder.class, VillagerTypeBuilder::new);
+		RegistryInfos.VILLAGER_PROFESSION.addType("basic", VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
 		//TODO: ENTITY_TYPE
 		//TODO: BLOCK_ENTITY_TYPE
 	}
@@ -199,12 +183,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		new ItemToolTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
 		new ItemArmorTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
 
-		for (var registryInfo : RegistryInfo.WITH_TYPE.values()) {
+		for (var registryInfo : RegistryInfos.WITH_TYPE.values()) {
 			registryInfo.fireRegistryEvent();
 		}
-		new BlockRegistryEventJS().post(KubeJSEvents.BLOCK_REGISTRY);
+//		new BlockRegistryEventJS().post(KubeJSEvents.BLOCK_REGISTRY);
 //		new ItemRegistryEventJS().post(KubeJSEvents.ITEM_REGISTRY);
-		new FluidRegistryEventJS().post(KubeJSEvents.FLUID_REGISTRY);
+//		new FluidRegistryEventJS().post(KubeJSEvents.FLUID_REGISTRY);
 	}
 
 	@Override
@@ -215,6 +199,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		Painter.INSTANCE.registerObject("text", TextObject::new);
 		Painter.INSTANCE.registerObject("atlas_texture", AtlasTextureObject::new);
 		Painter.INSTANCE.registerObject("gradient", GradientObject::new);
+        Painter.INSTANCE.registerObject("item", ItemObject::new);
 	}
 
 	@Override
@@ -465,6 +450,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
         typeWrappers.register(BlockTintFunction.class, BlockTintFunction::of);
         typeWrappers.register(ItemTintFunction.class, ItemTintFunction::of);
 
+        //registry
+        RegistryTypeWrapperFactory.register(typeWrappers);
+
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}
 
@@ -551,59 +539,15 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void generateDataJsons(DataJsonGenerator generator) {
-		for (BuilderBase<?> builder : RegistryInfo.ALL_BUILDERS) {
+		for (var builder : RegistryInfos.ALL_BUILDERS) {
 			builder.generateDataJsons(generator);
-		}
-
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
-			if (builder.lootTable != null) {
-				LootBuilder lootBuilder = new LootBuilder(null);
-				lootBuilder.type = "minecraft:block";
-				builder.lootTable.accept(lootBuilder);
-				generator.json(builder.newID("loot_tables/blocks/", ""), lootBuilder.toJson());
-			}
-
-			builder.type.generateData(builder, generator);
-		}
-
-		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
-			builder.type.generateData(builder, generator);
 		}
 	}
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
-		for (BuilderBase<?> builder : RegistryInfo.ALL_BUILDERS) {
+		for (var builder : RegistryInfos.ALL_BUILDERS) {
 			builder.generateAssetJsons(generator);
-		}
-
-		for (DetectorInstance detector : KubeJSObjects.DETECTORS.values()) {
-			generator.blockState(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), bs -> {
-				bs.variant("powered=false", "kubejs:block/detector");
-				bs.variant("powered=true", "kubejs:block/detector_on");
-			});
-
-			generator.itemModel(new ResourceLocation(KubeJS.MOD_ID, "detector_" + detector.id), m -> {
-				m.parent(KubeJS.MOD_ID + ":block/detector");
-			});
-		}
-
-		for (BlockBuilder builder : KubeJSObjects.BLOCKS.values()) {
-			builder.type.generateAssets(builder, generator);
-		}
-
-
-		for (ItemBuilder builder : KubeJSObjects.ITEMS.values()) {
-			builder.type.generateAssets(builder, generator);
-		}
-
-		for (FluidBuilder builder : KubeJSObjects.FLUIDS.values()) {
-			generator.json(builder.newID("blockstates/", ""), builder.getBlockstateJson());
-			generator.json(builder.newID("models/block/", ""), builder.getBlockModelJson());
-
-			JsonObject bucketModel = new JsonObject();
-			bucketModel.addProperty("parent", "kubejs:item/generated_bucket");
-			generator.json(builder.newID("models/item/", "_bucket"), bucketModel);
 		}
 	}
 
@@ -611,17 +555,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public void generateLang(Map<String, String> lang) {
 		lang.put("itemGroup.kubejs.kubejs", "KubeJS");
 
-		for (var builder : KubeJSObjects.ALL) {
-			if (builder.overrideLangJson && builder.display != null) {
-				lang.put(builder.translationKey, builder.display.getString());
-			}
-		}
-
-		for (var detector : KubeJSObjects.DETECTORS.values()) {
-			lang.put("block.kubejs.detector_" + detector.id, "KubeJS Detector [" + detector.id + "]");
-		}
-
-		for (var builder : KubeJSObjects.FLUIDS.values()) {
+		for (var builder : RegistryInfos.ALL_BUILDERS) {
 			if (builder.overrideLangJson && builder.display != null) {
 				lang.put(builder.translationKey, builder.display.getString());
 			}

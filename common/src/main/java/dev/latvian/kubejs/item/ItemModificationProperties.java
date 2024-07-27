@@ -51,14 +51,13 @@ public class ItemModificationProperties {
 	}
 
 	public void setTier(Consumer<ModifiedToolTier> c) {
-		if (item instanceof TieredItemKJS) {
-			ModifiedToolTier t = new ModifiedToolTier(((TieredItemKJS) item).getTierKJS());
-			c.accept(t);
-			((TieredItemKJS) item).setTierKJS(t);
-		} else {
-			throw new IllegalArgumentException("Item is not a tool/tiered item!");
-		}
-	}
+        if (!(item instanceof TieredItemKJS kjsTieredItem)) {
+            throw new IllegalArgumentException("Item is not a tool/tiered item!");
+        }
+        ModifiedToolTier t = new ModifiedToolTier(kjsTieredItem.getTierKJS());
+        c.accept(t);
+        kjsTieredItem.setTierKJS(t);
+    }
 
 	public void setFoodProperties(Consumer<FoodBuilder> consumer) {
 		Item originalItem = (Item) item;
