@@ -62,7 +62,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public transient final List<Component> tooltip;
-	public transient ItemType type;
+	public transient ItemType type = BasicItemType.INSTANCE;
 	public transient int maxStackSize;
 	public transient int maxDamage;
 	public transient int burnTime;
@@ -112,10 +112,6 @@ public class ItemBuilder extends BuilderBase<Item> {
 	public transient ArmorMaterial armorTier;
 
 	public JsonObject modelJson;
-
-	public ItemBuilder(String i) {
-		this(UtilsJS.getMCID(KubeJS.appendModId(i)));
-	}
 
 	public ItemBuilder(ResourceLocation i) {
 		super(i);
@@ -183,9 +179,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	public Item createObject() {
-		object = new BasicItemJS(this);
-		item = object;
-		return object;
+		return type.createItem(this);
 	}
 
 	@Override
