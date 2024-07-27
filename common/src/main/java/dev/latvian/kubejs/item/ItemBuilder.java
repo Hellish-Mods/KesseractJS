@@ -9,10 +9,7 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.bindings.RarityWrapper;
 import dev.latvian.kubejs.core.ItemKJS;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.kubejs.item.custom.ArmorItemType;
-import dev.latvian.kubejs.item.custom.BasicItemJS;
-import dev.latvian.kubejs.item.custom.BasicItemType;
-import dev.latvian.kubejs.item.custom.ItemType;
+import dev.latvian.kubejs.item.custom.*;
 import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfos;
@@ -180,7 +177,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Override
-	public final RegistryInfo getRegistryType() {
+	public final RegistryInfo<Item> getRegistryType() {
 		return RegistryInfos.ITEM;
 	}
 

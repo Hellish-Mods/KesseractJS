@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
-public interface ItemKJS {
+public interface ItemKJS extends KjsSelf<Item> {
 	@Nullable
 	ItemBuilder getItemBuilderKJS();
 

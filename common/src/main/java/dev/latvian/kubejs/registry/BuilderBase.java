@@ -33,7 +33,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		tags = new HashSet<>();
 	}
 
-	public abstract RegistryInfo getRegistryType();
+	public abstract RegistryInfo<T> getRegistryType();
 
 	public abstract T createObject();
 

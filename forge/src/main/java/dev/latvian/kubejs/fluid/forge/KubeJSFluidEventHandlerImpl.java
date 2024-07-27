@@ -2,6 +2,7 @@ package dev.latvian.kubejs.fluid.forge;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
+import dev.latvian.kubejs.fluid.KubeJSFluidEventHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
@@ -15,7 +16,7 @@ import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import org.jetbrains.annotations.Nullable;
 
-public class KubeJSFluidEventHandlerImpl {
+public class KubeJSFluidEventHandlerImpl extends KubeJSFluidEventHandler {
 	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder) {
 		if (source) {
 			return new ForgeFlowingFluid.Source(createProperties(builder));
@@ -28,23 +29,27 @@ public class KubeJSFluidEventHandlerImpl {
 		if (fluidBuilder.extraPlatformInfo != null) {
 			return (ForgeFlowingFluid.Properties) fluidBuilder.extraPlatformInfo;
 		}
-		FluidAttributes.Builder builder = FluidAttributes.builder(
-				new ResourceLocation(fluidBuilder.stillTexture),
-				new ResourceLocation(fluidBuilder.flowingTexture))
-				.translationKey("fluid." + fluidBuilder.id.getNamespace() + "." + fluidBuilder.id.getPath())
-				.color(fluidBuilder.color)
-				.rarity(fluidBuilder.rarity.rarity)
-				.density(fluidBuilder.density)
-				.viscosity(fluidBuilder.viscosity)
-				.luminosity(fluidBuilder.luminosity)
-				.temperature(fluidBuilder.temperature);
+        FluidAttributes.Builder builder = FluidAttributes.builder(
+                new ResourceLocation(fluidBuilder.stillTexture),
+                new ResourceLocation(fluidBuilder.flowingTexture)
+            )
+            .translationKey(fluidBuilder.getTranslationKey())
+            .color(fluidBuilder.color)
+            .rarity(fluidBuilder.rarity.rarity)
+            .density(fluidBuilder.density)
+            .viscosity(fluidBuilder.viscosity)
+            .luminosity(fluidBuilder.luminosity)
+            .temperature(fluidBuilder.temperature);
 
-		if (fluidBuilder.isGaseous) {
+        if (fluidBuilder.isGaseous) {
 			builder.gaseous();
 		}
 
-		ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid.Properties(() -> fluidBuilder.stillFluid, () -> fluidBuilder.flowingFluid, builder).bucket(() -> fluidBuilder.bucketItem).block(() -> fluidBuilder.block);
-		fluidBuilder.extraPlatformInfo = properties;
+        ForgeFlowingFluid.Properties properties = new ForgeFlowingFluid
+            .Properties(() -> fluidBuilder.stillFluid, () -> fluidBuilder.flowingFluid, builder)
+            .bucket(() -> fluidBuilder.bucketItem)
+            .block(() -> fluidBuilder.block);
+        fluidBuilder.extraPlatformInfo = properties;
 		return properties;
 	}
 

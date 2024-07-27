@@ -391,8 +391,8 @@ public class TagEventJS<T> extends EventJS {
 		} else if (type.equals("blocks")) {
             for (BuilderBase<? extends Block> builderBase : RegistryInfos.BLOCK.objects.values()) {
                 if (builderBase instanceof BlockBuilder builder) {
-                    for (String s : builder.defaultTags) {
-                        add(new ResourceLocation(s), builder.id);
+                    for (var s : builder.tags) {
+                        add(s, builder.id);
                     }
                 }
             }
