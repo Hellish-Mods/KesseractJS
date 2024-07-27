@@ -280,8 +280,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("console", event.type.console);
 		event.add("events", new ScriptEventsWrapper(event.type.manager.get().events));
 
-		event.addFunction("onEvent", args -> onEvent(event, args));
-		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args));
+		event.addFunction("onEvent", args -> onEvent(event, args), String.class, IEventHandler.class);
+		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), String.class);
 
 		event.add("JavaMath", Math.class);
 		event.add("ResourceLocation", ResourceLocation.class);

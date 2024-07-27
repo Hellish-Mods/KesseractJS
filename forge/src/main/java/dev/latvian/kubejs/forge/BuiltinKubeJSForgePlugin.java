@@ -28,8 +28,13 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		super.addBindings(event);
 
 		if (event.type == ScriptType.STARTUP) {
-            event.addFunction("onForgeEvent", PlatformEventHandlerImpl::onEvent);
-		}
+            event.addFunction(
+                "onForgeEvent",
+                PlatformEventHandlerImpl::onEvent,
+                null,
+                KubeJSForgeEventHandlerWrapper.class
+            );
+        }
 
 		event.add("BiomeDictionary", BiomeDictionaryWrapper.class);
 	}
