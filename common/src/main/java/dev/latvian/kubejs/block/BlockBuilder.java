@@ -371,18 +371,22 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return box(x0, y0, z0, x1, y1, z1, true);
 	}
 
+    public static VoxelShape createShape(List<AABB> boxes) {
+        if (boxes.isEmpty()) {
+            return Shapes.block();
+        }
+
+        var shape = Shapes.create(boxes.get(0));
+
+        for (var i = 1; i < boxes.size(); i++) {
+            shape = Shapes.or(shape, Shapes.create(boxes.get(i)));
+        }
+
+        return shape;
+    }
+
 	public VoxelShape createShape() {
-		if (customShape.isEmpty()) {
-			return Shapes.block();
-		}
-
-		VoxelShape shape = Shapes.create(customShape.get(0));
-
-		for (int i = 1; i < customShape.size(); i++) {
-			shape = Shapes.or(shape, Shapes.create(customShape.get(i)));
-		}
-
-		return shape;
+		return createShape(this.customShape);
 	}
 
 	public BlockBuilder noCollission() {
