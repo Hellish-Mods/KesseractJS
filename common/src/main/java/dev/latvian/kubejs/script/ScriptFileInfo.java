@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -29,8 +30,11 @@ public class ScriptFileInfo {
 	public ScriptFileInfo(ScriptPackInfo p, String f) {
 		pack = p;
 		file = f;
-		id = new ResourceLocation(pack.namespace, FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase());
-		location = UtilsJS.getID(pack.namespace + ":" + pack.pathStart + file);
+        id = new ResourceLocation(
+            pack.namespace,
+            FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase(Locale.ROOT)
+        );
+        location = UtilsJS.getID(pack.namespace + ":" + pack.pathStart + file);
 		properties = new HashMap<>();
 		priority = 0;
 		ignored = false;
