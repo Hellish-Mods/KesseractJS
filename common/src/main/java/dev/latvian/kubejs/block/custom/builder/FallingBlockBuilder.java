@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.block.custom;
+package dev.latvian.kubejs.block.custom.builder;
 
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.mods.rhino.mod.util.color.Color;

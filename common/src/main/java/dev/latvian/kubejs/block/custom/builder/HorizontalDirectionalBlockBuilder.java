@@ -1,6 +1,7 @@
-package dev.latvian.kubejs.block.custom;
+package dev.latvian.kubejs.block.custom.builder;
 
 import dev.latvian.kubejs.block.BlockBuilder;
+import dev.latvian.kubejs.block.custom.BasicBlockJS;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;

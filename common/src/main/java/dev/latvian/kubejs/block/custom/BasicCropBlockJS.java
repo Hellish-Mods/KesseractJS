@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.block.custom;
 
 import dev.latvian.kubejs.block.RandomTickCallbackJS;
+import dev.latvian.kubejs.block.custom.builder.CropBlockBuilder;
 import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import net.minecraft.core.BlockPos;

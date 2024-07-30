@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.block.custom;
+package dev.latvian.kubejs.block.custom.builder;
 
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
@@ -6,6 +6,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.block.RandomTickCallbackJS;
+import dev.latvian.kubejs.block.custom.BasicCropBlockJS;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.kubejs.item.ItemStackJS;
@@ -65,7 +66,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	}
 
 	public transient int age;
-	protected transient List<VoxelShape> shapeByAge;
+	public transient List<VoxelShape> shapeByAge;
 	public transient boolean dropSeed;
 	public transient ToDoubleFunction<RandomTickCallbackJS> growSpeedCallback;
 	public transient ToIntFunction<RandomTickCallbackJS> fertilizerCallback;
