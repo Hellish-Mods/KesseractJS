@@ -2,7 +2,7 @@ package dev.latvian.kubejs.block;
 
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSRegistries;
-import dev.latvian.kubejs.block.custom.BasicBlockType;
+import dev.latvian.kubejs.block.custom.BasicBlockJS;
 import dev.latvian.kubejs.block.custom.BlockType;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 public class BlockBuilder extends BuilderBase<Block> {
 
-	public transient BlockType type = BasicBlockType.INSTANCE;
+	public transient BlockType type = null;
 	public transient MaterialJS material = MaterialListJS.INSTANCE.map.get("wood");
 	public transient float hardness = 0.5F;
 	public transient float resistance = -1F;
@@ -95,6 +95,9 @@ public class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public Block createObject() {
+        if (type == null) {
+            return new BasicBlockJS(this);
+        }
 		return this.type.createBlock(this);
 	}
 
@@ -203,6 +206,10 @@ public class BlockBuilder extends BuilderBase<Block> {
 
     @Override
     public void generateAssetJsons(AssetJsonGenerator generator) {
+        if (type != null) {
+            type.generateAssets(this, generator);
+            return;
+        }
         if (blockstateJson != null) {
             generator.json(newID("blockstates/", ""), blockstateJson);
         } else {
@@ -235,6 +242,10 @@ public class BlockBuilder extends BuilderBase<Block> {
     }
 
     protected void generateBlockModelJsons(AssetJsonGenerator generator) {
+        if (type != null) {
+            type.generateBlockModels(this).forEach(generator::json);
+            return;
+        }
         generator.blockModel(id, mg -> {
             var particle = textures.get("particle").getAsString();
 
