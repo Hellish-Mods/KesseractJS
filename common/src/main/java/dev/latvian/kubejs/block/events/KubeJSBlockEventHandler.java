@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,13 +31,28 @@ public class KubeJSBlockEventHandler {
 		InteractionEvent.LEFT_CLICK_BLOCK.register(KubeJSBlockEventHandler::leftClick);
 		BlockEvent.BREAK.register(KubeJSBlockEventHandler::blockBreak);
 		BlockEvent.PLACE.register(KubeJSBlockEventHandler::blockPlace);
+        BlockEvent.FALLING_LAND.register(KubeJSBlockEventHandler::blockLanding);
 	}
+
+    private static void blockLanding(
+        Level level,
+        BlockPos pos,
+        BlockState fallState,
+        BlockState landOn,
+        FallingBlockEntity entity
+    ) {
+        new BlockLandingEventJS(level, pos, fallState, landOn, entity).post(KubeJSEvents.BLOCK_LANDING);
+    }
 
     private static void registry() {
 	}
 
 	private static InteractionResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		if (player != null && player.level != null && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new BlockRightClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_RIGHT_CLICK)) {
+		if (player != null
+            && player.level != null
+            && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem())
+            && new BlockRightClickEventJS(player, hand, pos, direction).post(KubeJSEvents.BLOCK_RIGHT_CLICK)
+        ) {
 			return InteractionResult.FAIL;
 		}
 
