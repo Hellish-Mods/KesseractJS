@@ -152,7 +152,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryInfos.BLOCK.addType("wooden_button", ShapedBlockBuilderProxy.WoodenPressurePlate.class, ShapedBlockBuilderProxy.WoodenPressurePlate::new);
 //		RegistryInfos.BLOCK.addType("pressure_plate", ShapedBlockBuilderProxy.PressurePlate.class, ShapedBlockBuilderProxy.PressurePlate::new);
 //		RegistryInfos.BLOCK.addType("button", ShapedBlockBuilderProxy.Button.class, ShapedBlockBuilderProxy.Button::new);
-//		RegistryInfo.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
 		RegistryInfos.BLOCK.addType("crop", CropBlockBuilder.class, CropBlockBuilder::new);
 		RegistryInfos.BLOCK.addType("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
 		//item
