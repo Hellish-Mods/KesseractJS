@@ -478,6 +478,11 @@ public class BlockBuilder extends BuilderBase<Block> {
         return this;
     }
 
+    @JSInfo("same as `tag()`")
+    public BlockBuilder tagBlock(ResourceLocation tag) {
+        return tag(tag);
+    }
+
     @JSInfo("Tags the item with the given tag.")
     public BlockBuilder tagItem(ResourceLocation tag) {
         itemBuilder.tag(tag);
@@ -489,6 +494,11 @@ public class BlockBuilder extends BuilderBase<Block> {
         tag(tag);
         tagItem(tag);
         return this;
+    }
+
+    @JSInfo("same as `tagBlockAndItem()`")
+    public BlockBuilder tagBoth(ResourceLocation tag) {
+        return tagBlockAndItem(tag);
     }
 
     @Deprecated
