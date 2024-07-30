@@ -21,6 +21,9 @@ subprojects {
         //https://central.sonatype.com/artifact/com.pkware.jabel/jabel-javac-plugin
 		annotationProcessor 'com.pkware.jabel:jabel-javac-plugin:1.0.1-1'
 		compileOnly 'com.pkware.jabel:jabel-javac-plugin:1.0.1-1'
+        //lambok: https://projectlombok.org/setup/gradle
+        compileOnly 'org.projectlombok:lombok:1.18.34'
+        annotationProcessor 'org.projectlombok:lombok:1.18.34'
 	}
 }
 

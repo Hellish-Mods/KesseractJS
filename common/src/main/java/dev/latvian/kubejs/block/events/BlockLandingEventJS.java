@@ -6,6 +6,8 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.ClientWorldJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -16,26 +18,16 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * @author ZZZank
  */
+@AllArgsConstructor
 public class BlockLandingEventJS extends EntityEventJS {
     private final Level level;
+    @Getter
     private final BlockPos pos;
+    @Getter
     private final BlockState fallState;
+    @Getter
     private final BlockState landOn;
     private final FallingBlockEntity entity;
-
-    public BlockLandingEventJS(
-        Level level,
-        BlockPos pos,
-        BlockState fallState,
-        BlockState landOn,
-        FallingBlockEntity entity
-    ) {
-        this.level = level;
-        this.pos = pos;
-        this.fallState = fallState;
-        this.landOn = landOn;
-        this.entity = entity;
-    }
 
     public boolean isServerSide() {
         return level instanceof ServerLevel;
@@ -55,19 +47,11 @@ public class BlockLandingEventJS extends EntityEventJS {
         return null;
     }
 
-    public BlockPos getPos() {
-        return this.pos;
-    }
-
-    public BlockState getFallState() {
-        return this.fallState;
-    }
-
-    public BlockState getLandOn() {
-        return this.landOn;
+    public FallingBlockEntity getEntityRaw() {
+        return entity;
     }
 
     public EntityJS getEntity() {
-        return new EntityJS(getLevel(), entity);
+        return entityOf(entity);
     }
 }

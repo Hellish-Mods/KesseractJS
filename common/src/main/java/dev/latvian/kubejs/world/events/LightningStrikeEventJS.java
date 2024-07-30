@@ -23,9 +23,4 @@ public class LightningStrikeEventJS extends ServerEventJS {
         this.pos = pos;
         this.toStrike = toStrike;
     }
-
-    @Override
-    public boolean canCancel() {
-        return false;
-    }
 }

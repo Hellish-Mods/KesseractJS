@@ -4,6 +4,7 @@ import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import lombok.AllArgsConstructor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -13,18 +14,12 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author LatvianModder
  */
+@AllArgsConstructor
 public class BlockLeftClickEventJS extends PlayerEventJS {
 	private final Player player;
 	private final InteractionHand hand;
 	private final BlockPos pos;
 	private final Direction direction;
-
-	public BlockLeftClickEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		this.player = player;
-		this.hand = hand;
-		this.pos = pos;
-		this.direction = direction;
-	}
 
 	@Override
 	public boolean canCancel() {

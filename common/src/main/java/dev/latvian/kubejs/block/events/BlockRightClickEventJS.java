@@ -4,6 +4,8 @@ import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.player.PlayerEventJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -12,20 +14,15 @@ import net.minecraft.world.entity.player.Player;
 /**
  * @author LatvianModder
  */
+@RequiredArgsConstructor
 public class BlockRightClickEventJS extends PlayerEventJS {
 	private final Player player;
-	private final InteractionHand hand;
+	@Getter
+    private final InteractionHand hand;
 	private final BlockPos pos;
 	private final Direction direction;
 	private BlockContainerJS block;
 	private ItemStackJS item;
-
-	public BlockRightClickEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		this.player = player;
-		this.hand = hand;
-		this.pos = pos;
-		this.direction = direction;
-	}
 
 	@Override
 	public boolean canCancel() {
@@ -45,11 +42,7 @@ public class BlockRightClickEventJS extends PlayerEventJS {
 		return block;
 	}
 
-	public InteractionHand getHand() {
-		return hand;
-	}
-
-	public ItemStackJS getItem() {
+    public ItemStackJS getItem() {
 		if (item == null) {
 			item = ItemStackJS.of(player.getItemInHand(hand));
 		}

@@ -3,6 +3,7 @@ package dev.latvian.kubejs.world;
 import dev.latvian.kubejs.player.ClientPlayerDataJS;
 import dev.latvian.kubejs.player.EntityArrayList;
 import dev.latvian.kubejs.script.ScriptType;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -14,7 +15,8 @@ import net.minecraft.world.entity.player.Player;
 public class ClientWorldJS extends WorldJS {
 	private static ClientWorldJS instance;
 
-	private final Minecraft minecraft;
+	@Getter
+    private final Minecraft minecraft;
 	public final ClientPlayerDataJS clientPlayerData;
 
 	public ClientWorldJS(Minecraft mc, LocalPlayer e) {
@@ -23,11 +25,7 @@ public class ClientWorldJS extends WorldJS {
 		clientPlayerData = new ClientPlayerDataJS(this, e, true);
 	}
 
-	public Minecraft getMinecraft() {
-		return minecraft;
-	}
-
-	@Override
+    @Override
 	public ScriptType getSide() {
 		return ScriptType.CLIENT;
 	}
