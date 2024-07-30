@@ -141,11 +141,11 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		//block
 		RegistryInfos.BLOCK.addType("basic", BlockBuilder.class, BlockBuilder::new);
 		RegistryInfos.BLOCK.addType("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
-		RegistryInfos.BLOCK.addType("slab", ShapedBlockBuilderProxy.Slab.class, ShapedBlockBuilderProxy.Slab::new);
-		RegistryInfos.BLOCK.addType("stairs", ShapedBlockBuilderProxy.Stairs.class, ShapedBlockBuilderProxy.Stairs::new);
-		RegistryInfos.BLOCK.addType("fence", ShapedBlockBuilderProxy.Fence.class, ShapedBlockBuilderProxy.Fence::new);
-		RegistryInfos.BLOCK.addType("wall", ShapedBlockBuilderProxy.Wall.class, ShapedBlockBuilderProxy.Wall::new);
-		RegistryInfos.BLOCK.addType("fence_gate", ShapedBlockBuilderProxy.FenceGate.class, ShapedBlockBuilderProxy.FenceGate::new);
+		RegistryInfos.BLOCK.addType("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("stairs", StairBlockBuilder.class, StairBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("wall", WallBlockBuilder.class, WallBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
 		RegistryInfos.BLOCK.addType("stone_pressure_plate", ShapedBlockBuilderProxy.StoneButton.class, ShapedBlockBuilderProxy.StoneButton::new);
 		RegistryInfos.BLOCK.addType("stone_button", ShapedBlockBuilderProxy.StonePressurePlate.class, ShapedBlockBuilderProxy.StonePressurePlate::new);
 		RegistryInfos.BLOCK.addType("wooden_pressure_plate", ShapedBlockBuilderProxy.WoodenButton.class, ShapedBlockBuilderProxy.WoodenButton::new);
