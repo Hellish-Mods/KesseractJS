@@ -14,6 +14,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
@@ -343,8 +344,13 @@ public class TextWrapper {
 //        return new SelectorComponent(selector, Optional.of(separator));
 //    }
 
-//    @JSInfo("Returns a colorful representation of the input nbt. Useful for displaying NBT to the player")
-//    public static Component prettyPrintNbt(Tag tag) {
-//        return NbtUtils.toPrettyComponent(tag);
-//    }
+    @JSInfo("Returns a colorful representation of the input nbt. Useful for displaying NBT to the player")
+    public static Component prettyPrintNbt(Tag nbt) {
+        return nbt.getPrettyDisplay();
+    }
+
+    @JSInfo("Returns a colorful representation of the input nbt. Useful for displaying NBT to the player")
+    public static Component prettyPrintNbt(Tag nbt, int indent) {
+        return nbt.getPrettyDisplay(" ", indent);
+    }
 }
