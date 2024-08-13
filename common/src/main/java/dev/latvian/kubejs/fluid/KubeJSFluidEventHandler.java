@@ -1,37 +1,34 @@
 package dev.latvian.kubejs.fluid;
 
-import dev.latvian.kubejs.util.Lazy;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.FlowingFluid;
+import org.jetbrains.annotations.Contract;
 
 /**
  * @author LatvianModder
  */
-public abstract class KubeJSFluidEventHandler {
-
-    private static KubeJSFluidEventHandler impl;
-
-    public static void init() {
-        impl = Lazy.serviceLoader(KubeJSFluidEventHandler.class).get();
+public class KubeJSFluidEventHandler {
+	public static void init() {
 	}
 
-    protected abstract FlowingFluid buildFluid0(boolean source, FluidBuilder builder);
-
-    protected abstract BucketItem buildBucket0(FluidBuilder builder);
-
-    protected abstract LiquidBlock buildFluidBlock0(FluidBuilder builder, BlockBehaviour.Properties properties);
-
+	@ExpectPlatform
+    @Contract("_,_ -> _")
 	static FlowingFluid buildFluid(boolean source, FluidBuilder builder) {
-		return impl.buildFluid0(source, builder);
+		throw new AssertionError();
 	}
 
+    @ExpectPlatform
+    @Contract("_ -> _")
     static BucketItem buildBucket(FluidBuilder builder) {
-        return impl.buildBucket0(builder);
+        throw new AssertionError();
     }
 
+    @ExpectPlatform
+    @Contract("_,_ -> _")
     static LiquidBlock buildFluidBlock(FluidBuilder builder, BlockBehaviour.Properties properties) {
-        return impl.buildFluidBlock0(builder, properties);
+        throw new AssertionError();
     }
 }

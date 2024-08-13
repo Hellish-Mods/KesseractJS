@@ -17,19 +17,13 @@ import net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper;
 import org.jetbrains.annotations.Nullable;
 
 public class KubeJSFluidEventHandlerImpl extends KubeJSFluidEventHandler {
-	public FlowingFluid buildFluid0(boolean source, FluidBuilder builder) {
-        return source
-            ? new ForgeFlowingFluid.Source(createProperties(builder))
-            : new ForgeFlowingFluid.Flowing(createProperties(builder));
+	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder) {
+		if (source) {
+			return new ForgeFlowingFluid.Source(createProperties(builder));
+		} else {
+			return new ForgeFlowingFluid.Flowing(createProperties(builder));
+		}
 	}
-
-    public LiquidBlock buildFluidBlock0(FluidBuilder builder, BlockBehaviour.Properties properties) {
-        return new LiquidBlock(() -> builder.stillFluid, properties);
-    }
-
-    public BucketItem buildBucket0(FluidBuilder builder) {
-        return new BucketItemJS(builder);
-    }
 
 	public static ForgeFlowingFluid.Properties createProperties(FluidBuilder fluidBuilder) {
 		if (fluidBuilder.extraPlatformInfo != null) {
@@ -58,6 +52,14 @@ public class KubeJSFluidEventHandlerImpl extends KubeJSFluidEventHandler {
         fluidBuilder.extraPlatformInfo = properties;
 		return properties;
 	}
+
+    public static LiquidBlock buildFluidBlock(FluidBuilder builder, BlockBehaviour.Properties properties) {
+        return new LiquidBlock(() -> builder.stillFluid, properties);
+    }
+
+    public static BucketItem buildBucket(FluidBuilder builder) {
+        return new BucketItemJS(builder);
+    }
 
     public static class BucketItemJS extends BucketItem {
         public final FluidBuilder properties;
