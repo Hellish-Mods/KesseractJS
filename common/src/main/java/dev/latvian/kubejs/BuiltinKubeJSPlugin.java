@@ -7,15 +7,7 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
-import dev.latvian.kubejs.bindings.BlockWrapper;
-import dev.latvian.kubejs.bindings.IngredientWrapper;
-import dev.latvian.kubejs.bindings.ItemWrapper;
-import dev.latvian.kubejs.bindings.JsonWrapper;
-import dev.latvian.kubejs.bindings.NBTIOWrapper;
-import dev.latvian.kubejs.bindings.RarityWrapper;
-import dev.latvian.kubejs.bindings.ScriptEventsWrapper;
-import dev.latvian.kubejs.bindings.TextWrapper;
-import dev.latvian.kubejs.bindings.UtilsWrapper;
+import dev.latvian.kubejs.bindings.*;
 import dev.latvian.kubejs.block.*;
 import dev.latvian.kubejs.block.custom.*;
 import dev.latvian.kubejs.block.custom.builder.*;
@@ -285,6 +277,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), String.class);
 
 		event.add("JavaMath", Math.class);
+        event.add("KMath", KMath.class);
 		event.add("ResourceLocation", ResourceLocation.class);
 
 		event.add("Utils", UtilsWrapper.class);
