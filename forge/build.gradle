@@ -18,6 +18,7 @@ loom {
 		extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
 
 		mixinConfig "kubejs-common.mixins.json"
+		mixinConfig "kubejs.mixins.json"
 		//mixinConfig "kessjs.mixins.json"
 	}
 }
@@ -29,15 +30,6 @@ configurations {
 	runtimeClasspath.extendsFrom common
 	developmentForge.extendsFrom common
 	dev
-}
-
-loom {
-	forge {
-		mixinConfigs = [
-				"kubejs.mixins.json",
-				"kubejs-common.mixins.json"
-		]
-	}
 }
 
 artifacts {
