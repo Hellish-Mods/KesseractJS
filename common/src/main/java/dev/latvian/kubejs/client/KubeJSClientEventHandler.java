@@ -119,6 +119,14 @@ public class KubeJSClientEventHandler {
 				//	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
 			}
 		}
+        for (var base : RegistryInfos.FLUID.objects.values()) {
+            var builder = (FluidBuilder) base;
+            switch (builder.renderType) {
+                case "cutout" -> RenderTypes.register(RenderType.cutout(), builder.stillFluid);
+                case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), builder.stillFluid);
+                case "translucent" -> RenderTypes.register(RenderType.translucent(), builder.stillFluid);
+            }
+        }
 	}
 
 	private void debugInfoLeft(List<String> lines) {
@@ -249,9 +257,12 @@ public class KubeJSClientEventHandler {
             }
         }
 
-        for (BuilderBase<? extends Fluid> builderBase : RegistryInfos.FLUID.objects.values()) {
-            if (builderBase instanceof FluidBuilder builder && builder.bucketColor != 0xFFFFFFFF) {
-                ColorHandlers.registerItemColors((stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF, Objects.requireNonNull(builder.bucketItem, "Bucket Item " + builder.id + " is null!"));
+        for (var base : RegistryInfos.FLUID.objects.values()) {
+            if (base instanceof FluidBuilder builder && builder.bucketColor != 0xFFFFFFFF) {
+                ColorHandlers.registerItemColors(
+                    (stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF,
+                    Objects.requireNonNull(builder.bucketItem, "Bucket Item " + builder.id + " is null!")
+                );
             }
         }
 	}

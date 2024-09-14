@@ -11,6 +11,7 @@ import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.kubejs.world.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
+import lombok.Getter;
 import me.shedaniel.architectury.hooks.EntityHooks;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.Util;
@@ -44,7 +45,8 @@ import java.util.UUID;
 public class EntityJS implements MessageSender, WrappedJS {
 	private static Map<String, DamageSource> damageSourceMap;
 
-	private final WorldJS level;
+	@Getter
+    private final WorldJS level;
 
 	public final Entity minecraftEntity;
 	public final CompoundTag persistentData;
@@ -55,11 +57,7 @@ public class EntityJS implements MessageSender, WrappedJS {
 		persistentData = ((EntityKJS) e).getPersistentDataKJS();
 	}
 
-	public WorldJS getLevel() {
-		return level;
-	}
-
-	public WorldJS getWorld() {
+    public WorldJS getWorld() {
 		return level;
 	}
 

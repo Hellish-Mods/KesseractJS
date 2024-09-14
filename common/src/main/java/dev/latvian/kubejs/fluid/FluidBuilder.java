@@ -30,6 +30,7 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 	public int viscosity = 1000;
 	public boolean isGaseous;
 	public RarityWrapper rarity = RarityWrapper.COMMON;
+    public transient String renderType = "solid";
 	public Object extraPlatformInfo;
 
 	public FlowingFluid stillFluid;
@@ -53,15 +54,14 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 
 	@Override
 	public Fluid createObject() {
-//        KubeJSRegistries.fluids().register(id, () -> stillFluid = KubeJSFluidEventHandler.buildFluid(true, this));
-        //dont register at this time
         stillFluid = KubeJSFluidEventHandler.buildFluid(true, this);
         return stillFluid;
 	}
 
     @Override
     public void createAdditionalObjects() {
-        block = KubeJSFluidEventHandler.buildFluidBlock(this,
+        block = KubeJSFluidEventHandler.buildFluidBlock(
+            this,
             Block.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops()
         );
         flowingFluid = KubeJSFluidEventHandler.buildFluid(false, this);
@@ -155,6 +155,15 @@ public class FluidBuilder extends BuilderBase<Fluid> {
 		return this;
 	}
 
+    public FluidBuilder renderType(String l) {
+        renderType = l;
+        return this;
+    }
+
+    public FluidBuilder translucent() {
+        return renderType("translucent");
+    }
+
 	public void setBlockstateJson(JsonObject o) {
 		blockstateJson = o;
 	}
@@ -196,5 +205,15 @@ public class FluidBuilder extends BuilderBase<Fluid> {
         JsonObject bucketModel = new JsonObject();
         bucketModel.addProperty("parent", "kubejs:item/generated_bucket");
         generator.json(this.newID("models/item/", "_bucket"), bucketModel);
+    }
+
+    public FluidBuilder noBucket() {
+        bucketItem = null;
+        return this;
+    }
+
+    public FluidBuilder noBlock() {
+        block = null;
+        return this;
     }
 }

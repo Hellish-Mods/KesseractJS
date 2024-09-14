@@ -19,6 +19,7 @@ import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import lombok.val;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.Tag;
@@ -71,7 +72,7 @@ import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
 public class UtilsJS {
 	public static final Random RANDOM = new Random();
 	public static final Pattern REGEX_PATTERN = Pattern.compile("\\/(.*)\\/([a-z]*)");
-	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
+	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft", "air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[_/]");
     public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in", "and", "or", "but", "for"));
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -361,17 +362,17 @@ public class UtilsJS {
 	public static ResourceLocation getMCID(@Nullable Object o) {
 		if (o == null) {
 			return AIR_LOCATION;
-		} else if (o instanceof ResourceLocation) {
-			return (ResourceLocation) o;
+		} else if (o instanceof ResourceLocation rl) {
+			return rl;
 		}
 
-		String s = o.toString();
+        String s = o.toString();
 
 		if (s == null || s.isEmpty()) {
 			return AIR_LOCATION;
 		}
 
-		return new ResourceLocation(s);
+		return ResourceLocation.tryParse(s);
 	}
 
 	public static String getNamespace(@Nullable String s) {

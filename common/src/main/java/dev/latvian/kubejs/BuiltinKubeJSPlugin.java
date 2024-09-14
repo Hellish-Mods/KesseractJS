@@ -7,17 +7,10 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
-import dev.latvian.kubejs.bindings.BlockWrapper;
-import dev.latvian.kubejs.bindings.IngredientWrapper;
-import dev.latvian.kubejs.bindings.ItemWrapper;
-import dev.latvian.kubejs.bindings.JsonWrapper;
-import dev.latvian.kubejs.bindings.NBTIOWrapper;
-import dev.latvian.kubejs.bindings.RarityWrapper;
-import dev.latvian.kubejs.bindings.ScriptEventsWrapper;
-import dev.latvian.kubejs.bindings.TextWrapper;
-import dev.latvian.kubejs.bindings.UtilsWrapper;
+import dev.latvian.kubejs.bindings.*;
 import dev.latvian.kubejs.block.*;
 import dev.latvian.kubejs.block.custom.*;
+import dev.latvian.kubejs.block.custom.builder.*;
 import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.client.painter.screen.*;
 import dev.latvian.kubejs.entity.EntityJS;
@@ -141,18 +134,18 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		//block
 		RegistryInfos.BLOCK.addType("basic", BlockBuilder.class, BlockBuilder::new);
 		RegistryInfos.BLOCK.addType("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
-		RegistryInfos.BLOCK.addType("slab", ShapedBlockBuilderProxy.Slab.class, ShapedBlockBuilderProxy.Slab::new);
-		RegistryInfos.BLOCK.addType("stairs", ShapedBlockBuilderProxy.Stairs.class, ShapedBlockBuilderProxy.Stairs::new);
-		RegistryInfos.BLOCK.addType("fence", ShapedBlockBuilderProxy.Fence.class, ShapedBlockBuilderProxy.Fence::new);
-		RegistryInfos.BLOCK.addType("wall", ShapedBlockBuilderProxy.Wall.class, ShapedBlockBuilderProxy.Wall::new);
-		RegistryInfos.BLOCK.addType("fence_gate", ShapedBlockBuilderProxy.FenceGate.class, ShapedBlockBuilderProxy.FenceGate::new);
-		RegistryInfos.BLOCK.addType("stone_pressure_plate", ShapedBlockBuilderProxy.StoneButton.class, ShapedBlockBuilderProxy.StoneButton::new);
-		RegistryInfos.BLOCK.addType("stone_button", ShapedBlockBuilderProxy.StonePressurePlate.class, ShapedBlockBuilderProxy.StonePressurePlate::new);
-		RegistryInfos.BLOCK.addType("wooden_pressure_plate", ShapedBlockBuilderProxy.WoodenButton.class, ShapedBlockBuilderProxy.WoodenButton::new);
-		RegistryInfos.BLOCK.addType("wooden_button", ShapedBlockBuilderProxy.WoodenPressurePlate.class, ShapedBlockBuilderProxy.WoodenPressurePlate::new);
-//		RegistryInfos.BLOCK.addType("pressure_plate", ShapedBlockBuilderProxy.PressurePlate.class, ShapedBlockBuilderProxy.PressurePlate::new);
-//		RegistryInfos.BLOCK.addType("button", ShapedBlockBuilderProxy.Button.class, ShapedBlockBuilderProxy.Button::new);
-//		RegistryInfo.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("stairs", StairBlockBuilder.class, StairBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("wall", WallBlockBuilder.class, WallBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
+        RegistryInfos.BLOCK.addType("stone_pressure_plate", PressurePlateBlockBuilder.Stone.class, PressurePlateBlockBuilder.Stone::new);
+        RegistryInfos.BLOCK.addType("stone_button", ButtonBlockBuilder.Stone.class, ButtonBlockBuilder.Stone::new);
+        RegistryInfos.BLOCK.addType("wooden_pressure_plate", PressurePlateBlockBuilder.Wooden.class, PressurePlateBlockBuilder.Wooden::new);
+        RegistryInfos.BLOCK.addType("wooden_button", ButtonBlockBuilder.Wooden.class, ButtonBlockBuilder.Wooden::new);
+        RegistryInfos.BLOCK.addType("pressure_plate", PressurePlateBlockBuilder.class, PressurePlateBlockBuilder::new);
+        RegistryInfos.BLOCK.addType("button", ButtonBlockBuilder.class, ButtonBlockBuilder::new);
+		RegistryInfos.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
 		RegistryInfos.BLOCK.addType("crop", CropBlockBuilder.class, CropBlockBuilder::new);
 		RegistryInfos.BLOCK.addType("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
 		//item
@@ -284,6 +277,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.addFunction("java", args -> event.manager.loadJavaClass(event.scope, args), String.class);
 
 		event.add("JavaMath", Math.class);
+        event.add("KMath", KMath.class);
 		event.add("ResourceLocation", ResourceLocation.class);
 
 		event.add("Utils", UtilsWrapper.class);
@@ -404,11 +398,15 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			} else if (o instanceof EntityJS ent) {
 				return ent.minecraftEntity.position();
 			} else if (o instanceof List l && l.size() >= 3) {
-				return new Vec3(((Number) l.get(0)).doubleValue(), ((Number) l.get(1)).doubleValue(), ((Number) l.get(2)).doubleValue());
-			} else if (o instanceof BlockPos bp) {
-				return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
-			} else if (o instanceof BlockContainerJS) {
-				BlockPos bp = ((BlockContainerJS) o).getPos();
+                return new Vec3(
+                    ((Number) l.get(0)).doubleValue(),
+                    ((Number) l.get(1)).doubleValue(),
+                    ((Number) l.get(2)).doubleValue()
+                );
+            } else if (o instanceof BlockPos bp) {
+                return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
+            } else if (o instanceof BlockContainerJS container) {
+				BlockPos bp = container.getPos();
 				return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
 			}
 
@@ -419,10 +417,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(GenerationStep.Decoration.class, o -> o == null || o.toString().isEmpty() ? null : GenerationStep.Decoration.valueOf(o.toString().toUpperCase()));
 		typeWrappers.register(MobCategory.class, o -> o == null ? null : MobCategory.byName(o.toString()));
 		typeWrappers.register(net.minecraft.network.chat.TextColor.class, o -> {
-			if (o instanceof Number) {
-				return net.minecraft.network.chat.TextColor.fromRgb(((Number) o).intValue() & 0xFFFFFF);
-			} else if (o instanceof ChatFormatting) {
-				return net.minecraft.network.chat.TextColor.fromLegacyFormat((ChatFormatting) o);
+			if (o instanceof Number n) {
+				return net.minecraft.network.chat.TextColor.fromRgb(n.intValue() & 0xFFFFFF);
+			} else if (o instanceof ChatFormatting chatFormatting) {
+				return net.minecraft.network.chat.TextColor.fromLegacyFormat(chatFormatting);
 			}
 
 			return net.minecraft.network.chat.TextColor.parseColor(o.toString());

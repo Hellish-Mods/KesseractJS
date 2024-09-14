@@ -110,9 +110,11 @@ public abstract class RecipeJS {
 		return merge(data);
 	}
 
-	public RecipeJS id(ResourceLocation _id) {
-		id = _id;
-		save();
+	public RecipeJS id(ResourceLocation id) {
+        if (id != null) {
+            this.id = id;
+            save();
+        }
 		return this;
 	}
 

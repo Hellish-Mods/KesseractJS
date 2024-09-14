@@ -2,12 +2,13 @@ package dev.latvian.kubejs.fluid.fabric;
 
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.fluid.FluidBuilder;
+import dev.latvian.kubejs.fluid.KubeJSFluidEventHandler;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.FlowingFluid;
 
-public class KubeJSFluidEventHandlerImpl {
+public class KubeJSFluidEventHandlerImpl extends KubeJSFluidEventHandler {
 	public static FlowingFluid buildFluid(boolean source, FluidBuilder builder) {
 		return null;
 	}
