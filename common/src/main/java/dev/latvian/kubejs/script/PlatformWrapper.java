@@ -3,6 +3,7 @@ package dev.latvian.kubejs.script;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.injectables.targets.ArchitecturyTarget;
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.registry.types.FakeModBuilder;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
@@ -102,6 +103,13 @@ public class PlatformWrapper {
 
 	public static Map<String, ModInfo> getMods() {
 		return MOD_MAP;
+	}
+
+	public static FakeModBuilder registerFakeMod(String modId) {
+		return new FakeModBuilder(modId);
+	}
+	public static FakeModBuilder createFakeMod(String modId) {
+		return registerFakeMod(modId);
 	}
 
 	public static boolean isDevelopmentEnvironment() {

@@ -22,4 +22,5 @@ logs
 eclipse
 run
 run_server
+/log
 .vscode

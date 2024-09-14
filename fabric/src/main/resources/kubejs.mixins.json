@@ -5,7 +5,8 @@
 	"mixins": [
 	],
 	"client": [
-		"ClientRecipeBookMixin"
+		"ClientRecipeBookMixin",
+		"FabricLoaderImplMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
