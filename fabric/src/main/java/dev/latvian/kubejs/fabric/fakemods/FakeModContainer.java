@@ -37,22 +37,27 @@ public class FakeModContainer implements ModContainer {
     public List<Path> getRootPaths() {
         return Collections.singletonList(KUBEJS_ROOT_PATH.get());
     }
+
     @Override
     public ModOrigin getOrigin() {
         return new ModOriginImpl();
     }
+
     @Override
     public Optional<ModContainer> getContainingMod() {
         return Optional.of(KUBEJS_MOD.get());
     }
+
     @Override
     public Collection<ModContainer> getContainedMods() {
-        return Lists.newArrayList();
+        return Collections.emptyList();
     }
+
     @Override
     public Path getRootPath() {
         return KUBEJS_ROOT_PATH.get();
     }
+
     @Override
     public Path getPath(String file) {
         return null;
