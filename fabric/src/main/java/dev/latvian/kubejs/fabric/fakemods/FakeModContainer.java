@@ -16,6 +16,7 @@ import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.metadata.ModOriginImpl;
 
 public class FakeModContainer implements ModContainer {
+    public static final Lazy<ModContainer> KUBEJS_MOD = Lazy.of(FabricLoaderImpl.INSTANCE.getModContainer(KubeJS.MOD_ID)::get);
     public static final Lazy<Path> KUBEJS_ROOT_PATH = Lazy.of(() -> FabricLoaderImpl.INSTANCE
         .getModContainer(KubeJS.MOD_ID)
         .get()
@@ -42,7 +43,7 @@ public class FakeModContainer implements ModContainer {
     }
     @Override
     public Optional<ModContainer> getContainingMod() {
-        return Optional.empty();
+        return Optional.of(KUBEJS_MOD.get());
     }
     @Override
     public Collection<ModContainer> getContainedMods() {
