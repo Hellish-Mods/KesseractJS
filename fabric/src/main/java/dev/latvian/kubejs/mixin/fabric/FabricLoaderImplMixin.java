@@ -17,15 +17,19 @@ import dev.latvian.kubejs.registry.types.fabric.FakeModBuilderImpl;
 
 @Mixin(FabricLoaderImpl.class)
 public class FabricLoaderImplMixin {
-    @Shadow(remap = false) protected List<ModContainerImpl> mods;
+    @Shadow(remap = false)
+    protected List<ModContainerImpl> mods;
 
-	@Inject(method = "getAllMods", at = @At(value = "HEAD"), remap = false)
-	private void getCategory(CallbackInfoReturnable<Collection<ModContainer>> cir) {
-		ArrayList<ModContainer> modsWithFake = new ArrayList<>();
+    @Inject(method = "getAllMods", at = @At(value = "HEAD"), remap = false, cancellable = true)
+    private void getCategory(CallbackInfoReturnable<Collection<ModContainer>> cir) {
+        if (FakeModBuilderImpl.fakeMods.isEmpty()) {
+            return;
+        }
+        ArrayList<ModContainer> modsWithFake = new ArrayList<>(mods.size() + FakeModBuilderImpl.fakeMods.size());
 
         modsWithFake.addAll(mods);
         modsWithFake.addAll(FakeModBuilderImpl.fakeMods);
 
         cir.setReturnValue(modsWithFake);
-	}
+    }
 }

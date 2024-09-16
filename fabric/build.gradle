@@ -32,7 +32,6 @@ dependencies {
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
 
 	modApi("me.shedaniel:architectury-fabric:${rootProject.architectury_version}")
-
 	modApi("curse.maven:rhizo-1003287:${rootProject.rhizo_version_fabric}")
 
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${rootProject.fabric_rei_version}") {
