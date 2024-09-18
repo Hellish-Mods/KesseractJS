@@ -1,11 +1,13 @@
 package dev.latvian.kubejs.text;
 
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import net.minecraft.network.chat.KeybindComponent;
 
 /**
  * @author LatvianModder
  */
+@Getter
 public class TextKeybind extends Text {
 	private final String keybind;
 
@@ -13,11 +15,7 @@ public class TextKeybind extends Text {
 		keybind = k;
 	}
 
-	public String getKeybind() {
-		return keybind;
-	}
-
-	@Override
+    @Override
 	public KeybindComponent rawComponent() {
 		return new KeybindComponent(keybind);
 	}
