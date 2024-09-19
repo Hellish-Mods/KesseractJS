@@ -131,6 +131,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		//sound
 		RegistryInfos.SOUND_EVENT.addType("basic", SoundEventBuilder.class, SoundEventBuilder::new);
+        //sound: backward compat
+        RegistryInfos.SOUND_EVENT.eventIds.add(KubeJSEvents.SOUND_REGISTRY);
 		//block
 		RegistryInfos.BLOCK.addType("basic", BlockBuilder.class, BlockBuilder::new);
 		RegistryInfos.BLOCK.addType("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);

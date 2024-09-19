@@ -15,10 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -59,6 +56,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public String languageKeyPrefix;
 	//used for backward compatibility
 	public Supplier<RegistryEventJS<T>> customRegEvent;
+    public final List<String> eventIds;
 
 	private RegistryInfo(ResourceKey<? extends Registry<T>> key, Class<T> objectBaseClass) {
 		this.key = key;
@@ -69,7 +67,8 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		this.autoWrap = objectBaseClass != Codec.class && objectBaseClass != ResourceLocation.class && objectBaseClass != String.class;
 		this.languageKeyPrefix = key.location().getPath().replace('/', '.');
 		this.customRegEvent = null;
-	}
+        eventIds = new ArrayList<>(Collections.singletonList(key.location().getPath() + KubeJSEvents.REGISTRY_SUFFIX));
+    }
 
 	public RegistryInfo<T> bypassServerOnly() {
 		this.bypassServerOnly = true;
@@ -125,7 +124,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	@Nullable
-	public BuilderType getDefaultType() {
+	public BuilderType<T> getDefaultType() {
 		if (types.isEmpty()) {
 			return null;
 		} else if (defaultType == null) {
@@ -247,7 +246,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		var event = customRegEvent == null
 				? new RegistryEventJS<>(this)
 				: customRegEvent.get();
-		event.post(ScriptType.STARTUP, key.location().getPath() + KubeJSEvents.REGISTRY_SUFFIX);
+		event.post(ScriptType.STARTUP, eventIds);
 		event.created.forEach(BuilderBase::createAdditionalObjects);
 	}
 }

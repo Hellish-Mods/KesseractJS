@@ -1,21 +1,20 @@
 package dev.latvian.kubejs.client;
 
-import dev.latvian.kubejs.event.StartupEventJS;
+import dev.latvian.kubejs.registry.RegistryEventJS;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.function.Consumer;
+import net.minecraft.sounds.SoundEvent;
 
 /**
  * @author LatvianModder
  */
-public class SoundRegistryEventJS extends StartupEventJS {
-	private final Consumer<ResourceLocation> registry;
+public class SoundRegistryEventJS extends RegistryEventJS<SoundEvent> {
 
-	public SoundRegistryEventJS(Consumer<ResourceLocation> registry) {
-		this.registry = registry;
-	}
+    public SoundRegistryEventJS() {
+        super(RegistryInfos.SOUND_EVENT);
+    }
 
 	public void register(ResourceLocation r) {
-		registry.accept(r);
+		create(r.toString());
 	}
 }
