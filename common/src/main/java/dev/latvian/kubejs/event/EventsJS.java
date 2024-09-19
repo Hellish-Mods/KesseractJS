@@ -4,6 +4,8 @@ import dev.latvian.kubejs.script.ScriptManager;
 import dev.latvian.mods.rhino.RhinoException;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,26 +36,25 @@ public class EventsJS {
 		list.add(handler);
 	}
 
+    @NotNull
 	public List<IEventHandler> handlers(String id) {
-		List<IEventHandler> list = map.get(id);
-		return list == null ? Collections.emptyList() : list;
+        return map.getOrDefault(id, Collections.emptyList());
 	}
 
 	/**
 	 * @return true if there's one handler tried to cancel the event, and the event is cancellable
 	 */
-	public boolean postToHandlers(String id, List<IEventHandler> list, EventJS event) {
-		if (list.isEmpty()) {
+	public boolean postToHandlers(String id, List<IEventHandler> handlers, EventJS event) {
+		if (handlers.isEmpty()) {
 			return false;
 		}
 
-		boolean c = event.canCancel();
-
-		for (var handler : list) {
+        val canCancel = event.canCancel();
+		for (val handler : handlers) {
 			try {
 				handler.onEvent(event);
 
-				if (c && event.isCancelled()) {
+				if (canCancel && event.isCancelled()) {
 					return true;
 				}
 			} catch (RhinoException ex) {
