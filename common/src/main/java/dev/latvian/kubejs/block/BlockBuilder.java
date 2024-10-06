@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
  */
 public class BlockBuilder extends BuilderBase<Block> {
 
+    @Deprecated
 	public transient BlockType type = null;
 	public transient MaterialJS material = MaterialListJS.INSTANCE.map.get("wood");
 	public transient float hardness = 0.5F;
@@ -95,11 +96,10 @@ public class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public Block createObject() {
-        if (type == null) {
-            return new BasicBlockJS(this);
-        }
-		return this.type.createBlock(this);
-	}
+        return type == null
+            ? new BasicBlockJS(this)
+            : this.type.createBlock(this);
+    }
 
     @Override
     public Block transformObject(Block obj) {
