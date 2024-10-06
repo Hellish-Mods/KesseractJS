@@ -6,8 +6,19 @@ license = "GNU LGPLv3"
 [[mods]]
 modId = "kubejs"
 version = "${version}"
+displayName = "KubeJS (KesseractJS)"
+authors = "LatvianModder"
+description = '''
+Dummy mod for keeping KubeJS compatibility, see 'KesseractJS'
+'''
+logoFile = "pack.png"
+license = "GNU LGPLv3"
+
+[[mods]]
+modId = "kesseractjs"
+version = "${version}"
 displayName = "KesseractJS"
-authors = "LatvianModder, ZZZank, Hellish Mods (G_cat), MundM2007"
+authors = "ZZZank, Hellish Mods (G_cat), MundM2007"
 description = '''
 A maintained fork of the 1.16.5 version of KubeJS
 '''

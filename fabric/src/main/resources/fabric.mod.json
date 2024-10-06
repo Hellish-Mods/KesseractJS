@@ -42,5 +42,8 @@
 		"minecraft": "~1.16.5",
 		"rhizo": ">=3.0",
 		"architectury": ">=${architectury_version}"
-	}
+	},
+  "provides": [
+    "kesseractjs"
+  ]
 }
