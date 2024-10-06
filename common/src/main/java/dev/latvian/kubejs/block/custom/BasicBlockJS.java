@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block.custom;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
+import lombok.val;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
@@ -20,21 +21,25 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Random;
 
 /**
  * @author LatvianModder
  */
 public class BasicBlockJS extends Block {
+    private static BlockBuilder builderRef;
+
 	public final BlockBuilder properties;
 	public final VoxelShape shape;
 
-	public BasicBlockJS(BlockBuilder p) {
-		super(p.createProperties());
-		properties = p;
-		shape = p.createShape();
+	public BasicBlockJS(@NotNull BlockBuilder builder) {
+		super(createPropAndCacheBuilderReferenceBecauseBlockConstructorUsedBlockBuilderEvenBeforeItsInitializedAllBecauseItsPoorlyDesigned(builder));
+		properties = builder;
+		shape = builder.createShape();
 
 		if (properties.waterlogged) {
 			registerDefaultState(stateDefinition.any().setValue(BlockStateProperties.WATERLOGGED, false));
@@ -49,7 +54,7 @@ public class BasicBlockJS extends Block {
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        if (properties.waterlogged) {
+        if (builderOrFallback().waterlogged) {
 			builder.add(BlockStateProperties.WATERLOGGED);
 		}
 	}
@@ -89,7 +94,7 @@ public class BasicBlockJS extends Block {
 	@Deprecated
 	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
 		if (properties.randomTickCallback != null) {
-			BlockContainerJS containerJS = new BlockContainerJS(level, pos);
+			val containerJS = new BlockContainerJS(level, pos);
 			try {
 				properties.randomTickCallback.accept(new RandomTickCallbackJS(containerJS, random));
 			} catch (Exception e) {
@@ -122,4 +127,24 @@ public class BasicBlockJS extends Block {
 	public boolean skipRendering(BlockState state, BlockState state2, Direction direction) {
 		return properties.transparent ? (state2.is(this) || super.skipRendering(state, state2, direction)) : super.skipRendering(state, state2, direction);
 	}
+
+    /**
+     * @see BasicBlockJS#builderOrFallback()
+     */
+    private static Properties createPropAndCacheBuilderReferenceBecauseBlockConstructorUsedBlockBuilderEvenBeforeItsInitializedAllBecauseItsPoorlyDesigned(@NotNull BlockBuilder builder) {
+        return (builderRef = Objects.requireNonNull(builder)).createProperties();
+    }
+
+    /**
+     * dirty hack to make sure there's a valid {@link BlockBuilder} for
+     * {@link Block#createBlockStateDefinition(StateDefinition.Builder)} when {@link Block} is on initialization
+     */
+    private BlockBuilder builderOrFallback() {
+        if (properties != null) {
+            return properties;
+        }
+        val tmp = builderRef;
+        builderRef = null;
+        return tmp;
+    }
 }
