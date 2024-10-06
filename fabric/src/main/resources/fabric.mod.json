@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "kubejs",
+	"id": "kesseractjs",
 	"version": "${version}",
 	"name": "KesseractJS",
 	"description": "A maintained fork of the 1.16.5 version of KubeJS",
@@ -44,6 +44,6 @@
 		"architectury": ">=${architectury_version}"
 	},
   "provides": [
-    "kesseractjs"
+    "kubejs"
   ]
 }
