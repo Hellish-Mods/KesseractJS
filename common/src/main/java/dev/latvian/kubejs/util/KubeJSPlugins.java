@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
@@ -21,6 +22,7 @@ import java.util.zip.ZipFile;
 public class KubeJSPlugins {
 	private static final List<KubeJSPlugin> LIST = new ArrayList<>();
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
+	private static final HashSet<String> LOADED_CLASS_NAMES = new HashSet<>();
 
     public static List<KubeJSPlugin> all() {
         return Collections.unmodifiableList(LIST);
@@ -76,7 +78,7 @@ public class KubeJSPlugins {
 		KubeJS.LOGGER.info("Found " + id + " plugin");
 
 		for (String s : list) {
-			if (s.trim().isEmpty()) {
+			if (s.trim().isEmpty() || LOADED_CLASS_NAMES.contains(s)) {
 				continue;
 			}
 
@@ -86,6 +88,8 @@ public class KubeJSPlugins {
 				if (KubeJSPlugin.class.isAssignableFrom(c)) {
 					LIST.add((KubeJSPlugin) c.getDeclaredConstructor().newInstance());
 				}
+
+				LOADED_CLASS_NAMES.add(s);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
