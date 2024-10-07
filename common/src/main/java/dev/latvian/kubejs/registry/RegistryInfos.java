@@ -2,6 +2,7 @@ package dev.latvian.kubejs.registry;
 
 import com.mojang.serialization.Codec;
 import dev.latvian.kubejs.block.events.BlockRegistryEventJS;
+import dev.latvian.kubejs.client.SoundRegistryEventJS;
 import dev.latvian.kubejs.item.events.ItemRegistryEventJS;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
@@ -71,7 +72,8 @@ public interface RegistryInfos {
     Map<ResourceKey<? extends Registry<?>>, RegistryInfo<?>> WITH_TYPE = Collections.synchronizedMap(new LinkedHashMap<>());
     List<BuilderBase<?>> ALL_BUILDERS = new ArrayList<>();
 
-    RegistryInfo<SoundEvent> SOUND_EVENT = RegistryInfo.of(Registry.SOUND_EVENT, SoundEvent.class);
+    RegistryInfo<SoundEvent> SOUND_EVENT = RegistryInfo.of(Registry.SOUND_EVENT, SoundEvent.class)
+        .customRegistryEvent(SoundRegistryEventJS::new);
     RegistryInfo<Fluid> FLUID = RegistryInfo.of(Registry.FLUID, Fluid.class);
     RegistryInfo<MobEffect> MOB_EFFECT = RegistryInfo.of(Registry.MOB_EFFECT, MobEffect.class).languageKeyPrefix("effect");
     RegistryInfo<Block> BLOCK = RegistryInfo.of(Registry.BLOCK, Block.class).customRegistryEvent(BlockRegistryEventJS::new);
