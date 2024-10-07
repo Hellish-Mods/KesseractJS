@@ -8,6 +8,6 @@ import net.minecraft.world.item.BlockItem;
  */
 public class BlockItemJS extends BlockItem {
 	public BlockItemJS(BlockItemBuilder p) {
-		super(p.blockBuilder.block, p.createItemProperties());
+		super(p.blockBuilder.get(), p.createItemProperties());
 	}
 }

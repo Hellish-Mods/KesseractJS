@@ -47,7 +47,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -112,9 +111,9 @@ public class KubeJSClientEventHandler {
 		for (var builder : RegistryInfos.BLOCK.objects.values()) {
             var bBuilder = (BlockBuilder) builder;
 			switch (bBuilder.renderType) {
-				case "cutout" -> RenderTypes.register(RenderType.cutout(), bBuilder.block);
-				case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), bBuilder.block);
-				case "translucent" -> RenderTypes.register(RenderType.translucent(), bBuilder.block);
+				case "cutout" -> RenderTypes.register(RenderType.cutout(), bBuilder.get());
+				case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), bBuilder.get());
+				case "translucent" -> RenderTypes.register(RenderType.translucent(), bBuilder.get());
 				//default:
 				//	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
 			}
@@ -271,7 +270,9 @@ public class KubeJSClientEventHandler {
         RegistryInfos.BLOCK.objects.values()
             .stream().map(o -> (BlockBuilder) o)
             .filter(builder -> !builder.color.isEmpty())
-            .forEach(builder -> ColorHandlers.registerBlockColors((state, world, pos, index) -> builder.color.get(index), builder.block));
+            .forEach(builder -> ColorHandlers.registerBlockColors((state, world, pos, index) -> builder.color.get(index),
+                builder.getBlock()
+            ));
 	}
 
 	private void postAtlasStitch(TextureAtlas atlas) {
