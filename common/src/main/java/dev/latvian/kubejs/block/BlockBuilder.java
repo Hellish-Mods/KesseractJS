@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
  */
 public class BlockBuilder extends BuilderBase<Block> {
 
+    @Deprecated
 	public transient BlockType type = null;
 	public transient MaterialJS material = MaterialListJS.INSTANCE.map.get("wood");
 	public transient float hardness = 0.5F;
@@ -73,9 +74,7 @@ public class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean redstoneConductor = true;
 	public transient boolean transparent = false;
 
-    public transient Block block;
-
-	public BlockBuilder(ResourceLocation id) {
+    public BlockBuilder(ResourceLocation id) {
 		super(id);
         color.defaultReturnValue(0xFFFFFFFF);
 		textureAll(id.getNamespace() + ":block/" + id.getPath());
@@ -84,7 +83,7 @@ public class BlockBuilder extends BuilderBase<Block> {
 
         lootTable = loot -> loot.addPool(pool -> {
 			pool.survivesExplosion();
-			pool.addItem(new ItemStack(block));
+			pool.addItem(new ItemStack(get()));
 		});
     }
 
@@ -95,11 +94,10 @@ public class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public Block createObject() {
-        if (type == null) {
-            return new BasicBlockJS(this);
-        }
-		return this.type.createBlock(this);
-	}
+        return type == null
+            ? new BasicBlockJS(this)
+            : this.type.createBlock(this);
+    }
 
     @Override
     public Block transformObject(Block obj) {
@@ -576,4 +574,18 @@ public class BlockBuilder extends BuilderBase<Block> {
 
 		return properties;
 	}
+
+    /**
+     * same as {@link BlockBuilder#get()}
+     */
+    public Block getBlock() {
+        return get();
+    }
+
+    @JSInfo("""
+        I'm curious now, why call this method?""")
+    @Deprecated
+    public void setBlock(Block block) {
+        this.object = block;
+    }
 }

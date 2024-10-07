@@ -35,11 +35,7 @@ public class BlockRightClickEventJS extends PlayerEventJS {
 	}
 
 	public BlockContainerJS getBlock() {
-		if (block == null) {
-			block = new BlockContainerJS(player.level, pos);
-		}
-
-		return block;
+        return block == null ? (block = new BlockContainerJS(player.level, pos)) : block;
 	}
 
     public ItemStackJS getItem() {
