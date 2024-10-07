@@ -581,4 +581,11 @@ public class BlockBuilder extends BuilderBase<Block> {
     public Block getBlock() {
         return get();
     }
+
+    @JSInfo("""
+        I'm curious now, why call this method?""")
+    @Deprecated
+    public void setBlock(Block block) {
+        this.object = block;
+    }
 }
