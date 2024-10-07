@@ -5,6 +5,7 @@ import dev.architectury.injectables.targets.ArchitecturyTarget;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.registry.types.FakeModBuilder;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import lombok.Getter;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.utils.Env;
@@ -20,7 +21,8 @@ import java.util.Set;
  * @author LatvianModder
  */
 public class PlatformWrapper {
-	public static class ModInfo {
+	@Getter
+    public static class ModInfo {
 		private final String id;
 		private String name;
 		private String version;
@@ -31,23 +33,11 @@ public class PlatformWrapper {
 			version = "unknown";
 		}
 
-		public String getId() {
-			return id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
+        public void setName(String name) {
 			setModName(this, name);
 			this.name = name;
 		}
-
-		public String getVersion() {
-			return version;
-		}
-	}
+    }
 
 	@ExpectPlatform
 	@HideFromJS

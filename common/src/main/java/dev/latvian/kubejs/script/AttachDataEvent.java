@@ -1,11 +1,13 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.kubejs.util.WithAttachedData;
+import lombok.Getter;
 import me.shedaniel.architectury.ForgeEvent;
 
 /**
  * @author LatvianModder
  */
+@Getter
 @ForgeEvent
 public class AttachDataEvent<T extends WithAttachedData> {
 	private final DataType<T> type;
@@ -16,15 +18,7 @@ public class AttachDataEvent<T extends WithAttachedData> {
 		parent = p;
 	}
 
-	public DataType<T> getType() {
-		return type;
-	}
-
-	public T getParent() {
-		return parent;
-	}
-
-	public void add(String id, Object object) {
+    public void add(String id, Object object) {
 		parent.getData().put(id, object);
 	}
 }

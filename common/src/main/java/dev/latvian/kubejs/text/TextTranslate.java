@@ -3,6 +3,7 @@ package dev.latvian.kubejs.text;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.kubejs.util.JsonUtilsJS;
+import lombok.Getter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
@@ -11,6 +12,7 @@ import java.util.Objects;
 /**
  * @author LatvianModder
  */
+@Getter
 public class TextTranslate extends Text {
 	private static final Object[] NO_OBJECTS = {};
 
@@ -33,15 +35,7 @@ public class TextTranslate extends Text {
 		objects = NO_OBJECTS;
 	}
 
-	public String getKey() {
-		return key;
-	}
-
-	public Object[] getObjects() {
-		return objects;
-	}
-
-	@Override
+    @Override
 	public TranslatableComponent rawComponent() {
 		Object[] o = new Object[objects.length];
 
