@@ -50,7 +50,7 @@ public class KubeJSItemEventHandler {
     private static void registry() {
         DUMMY_FLUID_ITEM = KubeJSRegistries.items().register(
             KubeJS.id("dummy_fluid_item"),
-            () -> new Item(new Item.Properties().stacksTo(1).tab(KubeJS.tab))
+            () -> new Item(new Item.Properties().stacksTo(1))
         );
     }
 
