@@ -135,10 +135,8 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	public void generateLang(LangEventJS event) {
-        var name = display == null
-            ? UtilsJS.convertSnakeCaseToCamelCase(id.getPath())
-            : display.getString();
-		event.get(id.getNamespace(), "en_us").add(getTranslationKey(), name);
+		if (display==null) return;
+		event.get(id.getNamespace(), "en_us").add(getTranslationKey(), display.getString());
 	}
 
 	@JSInfo("dev only, do not use")
