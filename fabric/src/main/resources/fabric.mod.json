@@ -2,6 +2,7 @@
 	"schemaVersion": 1,
 	"id": "kubejs",
 	"version": "${version}",
+	"provides": ["kesseractjs"],
 	"name": "KesseractJS",
 	"description": "A maintained fork of the 1.16.5 version of KubeJS",
 	"authors": [
