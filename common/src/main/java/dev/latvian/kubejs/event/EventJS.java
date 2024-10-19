@@ -31,7 +31,7 @@ public class EventJS {
 
     /**
      * @param ids event ids to be used for posting events to handlers, they will be used in input order
-     * @return whether there's handlers called `event.cancel()` and this event itself can be cancelled
+     * @return true if the event itself can be cancelled and there's any handler that called `event.cancel()`, otherwise false
      */
     public final boolean post(@NotNull ScriptType type, @NotNull List<String> ids) {
         if (type != ScriptType.STARTUP && post(ScriptType.STARTUP, ids) && canCancel()) {
