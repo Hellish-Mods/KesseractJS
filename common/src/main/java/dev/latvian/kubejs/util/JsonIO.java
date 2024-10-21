@@ -1,19 +1,14 @@
 package dev.latvian.kubejs.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonWriter;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
-import dev.latvian.mods.rhino.util.HideFromJS;
 import lombok.val;
-import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
@@ -22,81 +17,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Map;
 
 public class JsonIO {
-	@HideFromJS
-	public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
 
-	public static JsonElement copy(@Nullable JsonElement element) {
-		return JsonUtils.copy(element);
-	}
-
-	@Nullable
-	public static JsonElement of(@Nullable Object o) {
-		if (o instanceof JsonElement) {
-			return (JsonElement) o;
-		} else if (o instanceof Map || o instanceof CompoundTag) {
-			return MapJS.json(o);
-		} else if (o instanceof Collection) {
-			return ListJS.json(o);
-		}
-
-		val e = JsonUtils.of(o);
-		return e == JsonNull.INSTANCE ? null : e;
-	}
-
-	public static JsonPrimitive primitiveOf(@Nullable Object o) {
-		return of(o) instanceof JsonPrimitive p ? p : null;
-	}
-
-	@Nullable
-	public static Object toObject(@Nullable JsonElement json) {
-		return JsonUtils.toObject(json);
-	}
-
-	public static String toString(JsonElement json) {
-		return JsonUtils.toString(json);
-	}
-
-	public static String toPrettyString(JsonElement json) {
-		return JsonUtils.toPrettyString(json);
-	}
-
-	public static JsonElement parseRaw(@Nullable String string) {
-		return JsonUtils.fromString(string);
-	}
-
-	public static Object parse(String string) {
-		return UtilsJS.wrap(parseRaw(string), JSObjectType.ANY);
-	}
-
-	@Nullable
-	public static Object toPrimitive(@Nullable JsonElement element) {
-		if (element == null || element.isJsonNull()) {
-			return null;
-		} else if (element.isJsonPrimitive()) {
-			val p = element.getAsJsonPrimitive();
-
-			if (p.isBoolean()) {
-				return p.getAsBoolean();
-			} else if (p.isNumber()) {
-				return p.getAsNumber();
-			}
-
-			try {
-				Double.parseDouble(p.getAsString());
-				return p.getAsNumber();
-			} catch (Exception ex) {
-				return p.getAsString();
-			}
-		}
-
-		return null;
-	}
-
-	public static JsonElement readJson(Path path) throws IOException {
+    public static JsonElement readJson(Path path) throws IOException {
 		if (!Files.isRegularFile(path)) {
 			return null;
 		}
@@ -107,7 +32,7 @@ public class JsonIO {
 	}
 
 	public static String readString(Path path) throws IOException {
-		return toString(readJson(path));
+		return JsonUtils.toString(readJson(path));
 	}
 
 	@Nullable

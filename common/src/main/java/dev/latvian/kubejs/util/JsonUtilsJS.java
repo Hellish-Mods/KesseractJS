@@ -1,20 +1,15 @@
 package dev.latvian.kubejs.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import dev.latvian.kubejs.KubeJS;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import lombok.val;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
@@ -22,10 +17,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -34,149 +27,58 @@ public class JsonUtilsJS {
 	public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
 
 	public static JsonElement copy(@Nullable JsonElement element) {
-		if (element == null || element.isJsonNull()) {
-			return JsonNull.INSTANCE;
-		} else if (element instanceof JsonArray) {
-			val a = new JsonArray();
-			for (val e : (JsonArray) element) {
-				a.add(copy(e));
-			}
-			return a;
-		} else if (element instanceof JsonObject) {
-			val o = new JsonObject();
-			for (val entry : ((JsonObject) element).entrySet()) {
-				o.add(entry.getKey(), copy(entry.getValue()));
-			}
-			return o;
-		}
-
-		return element;
+		return JsonUtils.copy(element);
 	}
 
 	public static JsonElement of(@Nullable Object o) {
-		if (o == null) {
-			return JsonNull.INSTANCE;
-		} else if (o instanceof JsonSerializable) {
-			return ((JsonSerializable) o).toJson();
-		} else if (o instanceof JsonElement) {
-			return (JsonElement) o;
-		} else if (o instanceof CharSequence) {
-			return new JsonPrimitive(o.toString());
-		} else if (o instanceof Boolean) {
-			return new JsonPrimitive((Boolean) o);
-		} else if (o instanceof Number) {
-			return new JsonPrimitive((Number) o);
-		} else if (o instanceof Character) {
-			return new JsonPrimitive((Character) o);
-		}
+        if (o instanceof JsonElement element) {
+            return element;
+        } else if (o instanceof Map || o instanceof CompoundTag) {
+            return MapJS.json(o);
+        } else if (o instanceof Collection) {
+            return ListJS.json(o);
+        }
 
-		return JsonNull.INSTANCE;
+        val e = JsonUtils.of(o);
+        return e == JsonNull.INSTANCE ? null : e;
 	}
+
+    @Nullable
+    public static JsonPrimitive primitiveOf(@Nullable Object o) {
+        return JsonUtils.of(o) instanceof JsonPrimitive p ? p : null;
+    }
 
 	@Nullable
 	public static Object toObject(@Nullable JsonElement json) {
-		if (json == null || json.isJsonNull()) {
-			return null;
-		} else if (json.isJsonObject()) {
-			val map = new LinkedHashMap<String, Object>();
-			val o = json.getAsJsonObject();
-			for (val entry : o.entrySet()) {
-				map.put(entry.getKey(), toObject(entry.getValue()));
-			}
-			return map;
-		} else if (json.isJsonArray()) {
-			val a = json.getAsJsonArray();
-			val objects = new ArrayList<>(a.size());
-
-			for (val e : a) {
-				objects.add(toObject(e));
-			}
-
-			return objects;
-		}
-
-		return toPrimitive(json);
+		return JsonUtils.toObject(json);
 	}
 
 	public static String toString(JsonElement json) {
-		val writer = new StringWriter();
-
-		try {
-			val jsonWriter = new JsonWriter(writer);
-			jsonWriter.setSerializeNulls(true);
-			jsonWriter.setLenient(true);
-			jsonWriter.setHtmlSafe(false);
-			Streams.write(json, jsonWriter);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		return writer.toString();
+		return JsonUtils.toString(json);
 	}
 
 	public static String toPrettyString(JsonElement json) {
-		val writer = new StringWriter();
-
-		try {
-			val jsonWriter = new JsonWriter(writer);
-			jsonWriter.setIndent("\t");
-			jsonWriter.setSerializeNulls(true);
-			jsonWriter.setLenient(true);
-			jsonWriter.setHtmlSafe(false);
-			Streams.write(json, jsonWriter);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		return writer.toString();
-	}
-
-	public static JsonElement fromString(@Nullable String string) {
-		if (string == null || string.isEmpty() || string.equals("null")) {
-			return JsonNull.INSTANCE;
-		}
-
-		try {
-			val jsonReader = new JsonReader(new StringReader(string));
-			jsonReader.setLenient(true);
-//			boolean lenient = jsonReader.isLenient();
-			val element = Streams.parse(jsonReader);
-
-			if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
-				throw new JsonSyntaxException("Did not consume the entire document.");
-			}
-
-			return element;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		return JsonNull.INSTANCE;
+		return JsonUtils.toPrettyString(json);
 	}
 
 	@Nullable
 	public static Object toPrimitive(@Nullable JsonElement element) {
-		if (element == null || element.isJsonNull()) {
-			return null;
-		} else if (element.isJsonPrimitive()) {
-			val p = element.getAsJsonPrimitive();
-
-			if (p.isBoolean()) {
-				return p.getAsBoolean();
-			} else if (p.isNumber()) {
-				return p.getAsNumber();
-			}
-
-			try {
-				Double.parseDouble(p.getAsString());
-				return p.getAsNumber();
-			} catch (Exception ex) {
-				return p.getAsString();
-			}
-		}
-
-		return null;
+		return JsonUtils.toPrimitive(element);
 	}
+
+    @JSInfo("""
+        parse json
+        
+        @return parsed Json element, or `null` if string is not valid Json string""")
+    public static JsonElement fromString(@Nullable String string) {
+        return JsonUtils.fromString(string);
+    }
+
+    @JSInfo("""
+        parse json and try to unwrap it into Java object""")
+    public static Object fromStringUnwrapped(@Nullable String string) {
+        return UtilsJS.wrap(fromString(string), JSObjectType.ANY);
+    }
 
 	@Nullable
 	public static MapJS read(File file) throws IOException {
