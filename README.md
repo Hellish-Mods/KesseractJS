@@ -22,7 +22,7 @@ onEvent('item.registry', event => {
 })
 ```
 
-![screenshot](assets/fakemod.png)
+![screenshot](https://raw.githubusercontent.com/Hellish-Mods/KesseractJS/refs/heads/main/assets/fakemod.png)
 
 * Backports
 
@@ -52,9 +52,10 @@ JsonIO.write('kubejs/data.json', {recursion: data})
 
 * Fixes. Lot of 'em.
 
-![screenshot](assets/jjjank.png)
+![screenshot](https://raw.githubusercontent.com/Hellish-Mods/KesseractJS/refs/heads/main/assets/jjjank.png)
 
 * Full drag-and-drop compatability with old Kube scripts
+* Continuous updates. More in the future!
 
 ---
 
