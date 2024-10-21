@@ -140,10 +140,11 @@ if (ENV.CURSEFORGE_KEY) {
 			addGameVersion "1.16.5"
 			mainArtifact(remapJar.archivePath)
 			relations {
-				requiredDependency 'rhino'
+				requiredDependency 'rhizo'
 				requiredDependency 'architectury-forge'
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'
+				optionalDependency 'probejs-legacy'
 			}
 			changelog = getGitChangelog
 			changelogType = 'markdown'
