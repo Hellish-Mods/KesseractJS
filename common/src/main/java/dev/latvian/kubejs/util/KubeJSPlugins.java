@@ -4,6 +4,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSPlugin;
 import dev.latvian.kubejs.script.ScriptType;
 import lombok.val;
+import me.shedaniel.architectury.platform.Platform;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -121,5 +122,22 @@ public class KubeJSPlugins {
 
     private static BufferedReader bufferedReaderFromStream(InputStream in) {
         return new BufferedReader(new InputStreamReader(new BufferedInputStream(in), StandardCharsets.UTF_8));
+    }
+
+    public static void initFromMods() {
+        val now = System.currentTimeMillis();
+        KubeJS.LOGGER.info("Looking for KubeJS plugins...");
+
+        for (val mod : Platform.getMods()) {
+            try {
+                for (val path : mod.getFilePaths()) {
+                    load(mod.getModId(), path);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        KubeJS.LOGGER.info("Done in {} s", (System.currentTimeMillis() - now) / 1000L);
     }
 }

@@ -96,20 +96,7 @@ public class KubeJS {
 
 		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
-		val now = System.currentTimeMillis();
-		LOGGER.info("Looking for KubeJS plugins...");
-
-		for (val mod : Platform.getMods()) {
-			try {
-				for (val path : mod.getFilePaths()) {
-					KubeJSPlugins.load(mod.getModId(), path);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
-        LOGGER.info("Done in {} s", (System.currentTimeMillis() - now) / 1000L);
+        KubeJSPlugins.initFromMods();
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
