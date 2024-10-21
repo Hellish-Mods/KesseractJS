@@ -289,7 +289,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("UUID", UUIDWrapper.class);
 		event.add("uuid", UUIDWrapper.class);
 		event.add("JsonUtils", JsonUtilsJS.class);
-		event.add("JsonIO", JsonIO.class);
+		event.add("JsonIO", JsonIOWrapper.class);
 		event.add("Block", BlockWrapper.class);
 		event.add("block", BlockWrapper.class);
 		event.add("Item", ItemWrapper.class);

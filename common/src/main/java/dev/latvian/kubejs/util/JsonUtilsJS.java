@@ -13,11 +13,7 @@ import lombok.val;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collection;
 import java.util.Map;
 
@@ -150,4 +146,60 @@ public class JsonUtilsJS {
 		a.add(element);
 		return a;
 	}
+
+    public static void writeJsonHash(DataOutputStream stream, @Nullable JsonElement element) throws IOException {
+        if (element == null || element.isJsonNull()) {
+            stream.writeByte('-');
+        } else if (element instanceof JsonArray arr) {
+            stream.writeByte('[');
+            for (val e : arr) {
+                writeJsonHash(stream, e);
+            }
+        } else if (element instanceof JsonObject obj) {
+            stream.writeByte('{');
+            for (val e : obj.entrySet()) {
+                stream.writeBytes(e.getKey());
+                writeJsonHash(stream, e.getValue());
+            }
+        } else if (element instanceof JsonPrimitive primitive) {
+            stream.writeByte('=');
+            if (primitive.isBoolean()) {
+                stream.writeBoolean(element.getAsBoolean());
+            } else if (primitive.isNumber()) {
+                stream.writeDouble(element.getAsDouble());
+            } else {
+                stream.writeBytes(element.getAsString());
+            }
+        } else {
+            stream.writeByte('?');
+            stream.writeInt(element.hashCode());
+        }
+    }
+
+    public static byte[] getJsonHashBytes(JsonElement json) {
+        val stream = new ByteArrayOutputStream();
+        try {
+            writeJsonHash(new DataOutputStream(stream), json);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            val hash = json.hashCode();
+            return new byte[]{(byte) (hash >> 24), (byte) (hash >> 16), (byte) (hash >> 8), (byte) hash};
+        }
+
+        return stream.toByteArray();
+    }
+
+//	public static String getJsonHashString(JsonElement json) {
+//		try {
+//			val messageDigest = Objects.requireNonNull(MessageDigest.getInstance("MD5"));
+//			return new BigInteger(
+//                HexFormat.of()
+//                    .formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))),
+//                16
+//            )
+//                .toString(36);
+//		} catch (Exception ex) {
+//			return String.format("%08x", json.hashCode());
+//		}
+//	}
 }
