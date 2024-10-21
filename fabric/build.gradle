@@ -98,8 +98,8 @@ if (ENV.CURSEFORGE_KEY) {
 				requiredDependency 'fabric-api'
 				optionalDependency 'probejs-legacy'
 			}
-			changelog = getGitChangelog
-			changelogType = 'markdown'
+			// changelog = getGitChangelog
+			// changelogType = 'markdown'
 		}
 	}
 }
