@@ -24,7 +24,7 @@ import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import dev.latvian.kubejs.world.gen.FlatChunkGeneratorKJS;
-import me.shedaniel.architectury.platform.Mod;
+import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.utils.EnvExecutor;
 import net.minecraft.core.Registry;
@@ -96,25 +96,12 @@ public class KubeJS {
 
 		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
-		long now = System.currentTimeMillis();
-		LOGGER.info("Looking for KubeJS plugins...");
-
-		for (Mod mod : Platform.getMods()) {
-			try {
-				for (Path path : mod.getFilePaths()) {
-					KubeJSPlugins.load(mod.getModId(), path);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		LOGGER.info("Done in {} s", (System.currentTimeMillis() - now) / 1000L);
+        KubeJSPlugins.initFromMods();
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
 
-		Path oldStartupFolder = KubeJSPaths.DIRECTORY.resolve("startup");
+		val oldStartupFolder = KubeJSPaths.DIRECTORY.resolve("startup");
 		if (Files.exists(oldStartupFolder)) {
 			UtilsJS.tryIO(() -> Files.move(oldStartupFolder, KubeJSPaths.STARTUP_SCRIPTS));
 		}
@@ -153,7 +140,7 @@ public class KubeJS {
 			path += "/";
 		}
 
-		final String pathPrefix = path;
+		val pathPrefix = path;
 
 		UtilsJS.tryIO(() -> Files
 				.walk(dir, 10)

@@ -4,10 +4,10 @@ issueTrackerURL = "https://github.com/Hellish-Mods/KesseractJS/issues"
 license = "GNU LGPLv3"
 
 [[mods]]
-modId = "kubejs"
+modId = "kesseractjs"
 version = "${version}"
 displayName = "KesseractJS"
-authors = "LatvianModder, ZZZank, Hellish Mods (G_cat), MundM2007"
+authors = "ZZZank, Hellish Mods (G_cat), MundM2007"
 description = '''
 A maintained fork of the 1.16.5 version of KubeJS
 '''
@@ -15,12 +15,15 @@ logoFile = "pack.png"
 license = "GNU LGPLv3"
 
 [[mods]]
-modId = "kesseractjs"
+modId = "kubejs"
 version = "${version}"
-displayName = "KesseractJS (Dummy)"
+displayName = "KubeJS (KesseractJS)"
+authors = "LatvianModder, ZZZank, Hellish Mods (G_cat), MundM2007"
 description = '''
-A dummy mod allowing addons to see that kessjs is installed instead of kubejs
+Dummy mod for KubeJS addons compat
 '''
+logoFile = "pack.png"
+license = "GNU LGPLv3"
 
 [[dependencies.kubejs]]
 modId = "forge"
