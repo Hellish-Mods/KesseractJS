@@ -70,6 +70,8 @@ public class KubeJSPlugins {
 
 	private static void loadPlugin(String id, Stream<String> lines) {
         KubeJS.LOGGER.info("Found {} plugin", id);
+
+        val loadedNames = new HashSet<String>();
         lines
             .map(String::trim)
             /**
@@ -78,17 +80,19 @@ public class KubeJSPlugins {
              * empty string will also be filtered out by {@link WALKED_CLASS_NAMES}, see static initialization
              */
             .filter(WALKED_CLASS_NAMES::add)
-            .forEach(line -> {
+            .forEach(className -> {
                 try {
-                    val c = Class.forName(line);
+                    val c = Class.forName(className);
 
                     if (KubeJSPlugin.class.isAssignableFrom(c)) {
                         PLUGINS.add((KubeJSPlugin) c.getDeclaredConstructor().newInstance());
+                        loadedNames.add(className);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             });
+        KubeJS.LOGGER.info("Loaded {} plugins from {}: ", loadedNames.size(), String.join(", ", loadedNames));
 	}
 
 	public static ClassFilter createClassFilter(ScriptType type) {
