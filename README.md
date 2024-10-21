@@ -8,6 +8,8 @@
 
 **KesseractJS** is a fork of [KubeJS](https://kubejs.com/), continuing its development for 1.16.5. It backport a lot of different features from the newer versions, and even adds some that are not present at all in the original mod. The latter one is documented [on a dedicated wiki](https://wiki.modernmodpacks.site/wiki/hellish-mods/kesseractjs), and support for those are offered on [our discord server](https://discord.modernmodpacks.site), so don't be afraid to ask there.
 
+This mod depends on a modified fork of the Rhino JS parser called [Rhizo](https://curseforge.com/minecraft/mc-mods/rhizo), please install it before use. We also highly recommend you use [ProbeJS Legacy](https://curseforge.com/minecraft/mc-mods/probejs-legacy) during script development for better IDE support.
+
 This project was made as a collaboration between [Hellish Mods](https://github.com/Hellish-Mods), [ZZZank](https://github.com/zzzank), and [MundM2007](https://github.com/mundm2007), with the occasional help from [Team Potato](https://github.com/MCTeamPotato). Thank you guys <3
 
 ## Feature showcase
