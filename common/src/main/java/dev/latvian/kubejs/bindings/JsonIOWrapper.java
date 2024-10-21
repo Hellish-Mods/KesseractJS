@@ -9,6 +9,7 @@ import java.io.IOException;
 
 /**
  * @see dev.latvian.kubejs.util.JsonIO
+ * @see JsonUtilsJS
  * @author LatvianModder
  */
 @Deprecated

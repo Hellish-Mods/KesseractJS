@@ -14,6 +14,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import lombok.val;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
@@ -23,11 +24,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author LatvianModder
@@ -39,20 +37,16 @@ public class JsonUtilsJS {
 		if (element == null || element.isJsonNull()) {
 			return JsonNull.INSTANCE;
 		} else if (element instanceof JsonArray) {
-			JsonArray a = new JsonArray();
-
-			for (JsonElement e : (JsonArray) element) {
+			val a = new JsonArray();
+			for (val e : (JsonArray) element) {
 				a.add(copy(e));
 			}
-
 			return a;
 		} else if (element instanceof JsonObject) {
-			JsonObject o = new JsonObject();
-
-			for (Map.Entry<String, JsonElement> entry : ((JsonObject) element).entrySet()) {
+			val o = new JsonObject();
+			for (val entry : ((JsonObject) element).entrySet()) {
 				o.add(entry.getKey(), copy(entry.getValue()));
 			}
-
 			return o;
 		}
 
@@ -84,19 +78,17 @@ public class JsonUtilsJS {
 		if (json == null || json.isJsonNull()) {
 			return null;
 		} else if (json.isJsonObject()) {
-			LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-			JsonObject o = json.getAsJsonObject();
-
-			for (Map.Entry<String, JsonElement> entry : o.entrySet()) {
+			val map = new LinkedHashMap<String, Object>();
+			val o = json.getAsJsonObject();
+			for (val entry : o.entrySet()) {
 				map.put(entry.getKey(), toObject(entry.getValue()));
 			}
-
 			return map;
 		} else if (json.isJsonArray()) {
-			JsonArray a = json.getAsJsonArray();
-			List<Object> objects = new ArrayList<>(a.size());
+			val a = json.getAsJsonArray();
+			val objects = new ArrayList<>(a.size());
 
-			for (JsonElement e : a) {
+			for (val e : a) {
 				objects.add(toObject(e));
 			}
 
@@ -107,10 +99,10 @@ public class JsonUtilsJS {
 	}
 
 	public static String toString(JsonElement json) {
-		StringWriter writer = new StringWriter();
+		val writer = new StringWriter();
 
 		try {
-			JsonWriter jsonWriter = new JsonWriter(writer);
+			val jsonWriter = new JsonWriter(writer);
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
 			jsonWriter.setHtmlSafe(false);
@@ -123,10 +115,10 @@ public class JsonUtilsJS {
 	}
 
 	public static String toPrettyString(JsonElement json) {
-		StringWriter writer = new StringWriter();
+		val writer = new StringWriter();
 
 		try {
-			JsonWriter jsonWriter = new JsonWriter(writer);
+			val jsonWriter = new JsonWriter(writer);
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
@@ -145,11 +137,10 @@ public class JsonUtilsJS {
 		}
 
 		try {
-			JsonReader jsonReader = new JsonReader(new StringReader(string));
-			JsonElement element;
-			boolean lenient = jsonReader.isLenient();
+			val jsonReader = new JsonReader(new StringReader(string));
 			jsonReader.setLenient(true);
-			element = Streams.parse(jsonReader);
+//			boolean lenient = jsonReader.isLenient();
+			val element = Streams.parse(jsonReader);
 
 			if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
 				throw new JsonSyntaxException("Did not consume the entire document.");
@@ -168,7 +159,7 @@ public class JsonUtilsJS {
 		if (element == null || element.isJsonNull()) {
 			return null;
 		} else if (element.isJsonPrimitive()) {
-			JsonPrimitive p = element.getAsJsonPrimitive();
+			val p = element.getAsJsonPrimitive();
 
 			if (p.isBoolean()) {
 				return p.getAsBoolean();
@@ -195,17 +186,15 @@ public class JsonUtilsJS {
 			return null;
 		}
 
-		try (FileReader fileReader = new FileReader(file);
-			 JsonReader jsonReader = new JsonReader(fileReader)) {
-			JsonElement element;
-			boolean lenient = jsonReader.isLenient();
+		try (val fileReader = new FileReader(file);
+			 val jsonReader = new JsonReader(fileReader)) {
 			jsonReader.setLenient(true);
-			element = Streams.parse(jsonReader);
+//			boolean lenient = jsonReader.isLenient();
+			val element = Streams.parse(jsonReader);
 
 			if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
 				throw new JsonSyntaxException("Did not consume the entire document.");
 			}
-
 			return MapJS.of(element);
 		}
 	}
@@ -218,10 +207,10 @@ public class JsonUtilsJS {
 			return;
 		}
 
-		JsonObject json = o.toJson();
+		val json = o.toJson();
 
-		try (Writer fileWriter = new FileWriter(file);
-			 JsonWriter jsonWriter = new JsonWriter(new BufferedWriter(fileWriter))) {
+		try (val fileWriter = new FileWriter(file);
+			 val jsonWriter = new JsonWriter(new BufferedWriter(fileWriter))) {
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
@@ -242,8 +231,7 @@ public class JsonUtilsJS {
 		if (element.isJsonArray()) {
 			return element.getAsJsonArray();
 		}
-
-		JsonArray a = new JsonArray();
+		val a = new JsonArray();
 		a.add(element);
 		return a;
 	}

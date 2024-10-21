@@ -12,6 +12,7 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonWriter;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import lombok.val;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +43,7 @@ public class JsonIO {
 			return ListJS.json(o);
 		}
 
-		JsonElement e = JsonUtils.of(o);
+		val e = JsonUtils.of(o);
 		return e == JsonNull.INSTANCE ? null : e;
 	}
 
@@ -76,7 +77,7 @@ public class JsonIO {
 		if (element == null || element.isJsonNull()) {
 			return null;
 		} else if (element.isJsonPrimitive()) {
-			var p = element.getAsJsonPrimitive();
+			val p = element.getAsJsonPrimitive();
 
 			if (p.isBoolean()) {
 				return p.getAsBoolean();
@@ -100,7 +101,7 @@ public class JsonIO {
 			return null;
 		}
 
-		try (var fileReader = Files.newBufferedReader(path)) {
+		try (val fileReader = Files.newBufferedReader(path)) {
 			return new JsonParser().parse(fileReader);
 		}
 	}
@@ -121,7 +122,7 @@ public class JsonIO {
 		}
 
 		try (Writer fileWriter = Files.newBufferedWriter(path)) {
-			var jsonWriter = new JsonWriter(fileWriter);
+			val jsonWriter = new JsonWriter(fileWriter);
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
@@ -134,7 +135,7 @@ public class JsonIO {
 			return element.getAsJsonArray();
 		}
 
-		var a = new JsonArray();
+		val a = new JsonArray();
 		a.add(element);
 		return a;
 	}
@@ -144,12 +145,12 @@ public class JsonIO {
 			stream.writeByte('-');
 		} else if (element instanceof JsonArray arr) {
 			stream.writeByte('[');
-			for (var e : arr) {
+			for (val e : arr) {
 				writeJsonHash(stream, e);
 			}
 		} else if (element instanceof JsonObject obj) {
 			stream.writeByte('{');
-			for (var e : obj.entrySet()) {
+			for (val e : obj.entrySet()) {
 				stream.writeBytes(e.getKey());
 				writeJsonHash(stream, e.getValue());
 			}
@@ -169,12 +170,12 @@ public class JsonIO {
 	}
 
 	public static byte[] getJsonHashBytes(JsonElement json) {
-		var baos = new ByteArrayOutputStream();
+		val baos = new ByteArrayOutputStream();
 		try {
 			writeJsonHash(new DataOutputStream(baos), json);
 		} catch (IOException ex) {
 			ex.printStackTrace();
-			var h = json.hashCode();
+			val h = json.hashCode();
 			return new byte[]{(byte) (h >> 24), (byte) (h >> 16), (byte) (h >> 8), (byte) h};
 		}
 
@@ -183,10 +184,10 @@ public class JsonIO {
 
 //	public static String getJsonHashString(JsonElement json) {
 //		try {
-//			var messageDigest = Objects.requireNonNull(MessageDigest.getInstance("MD5"));
+//			val messageDigest = Objects.requireNonNull(MessageDigest.getInstance("MD5"));
 //			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
 //		} catch (Exception ex) {
-//			return "%08x".formatted(json.hashCode());
+//			return String.format("%08x", json.hashCode());
 //		}
 //	}
 }
