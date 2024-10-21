@@ -93,7 +93,7 @@ public class KubeJSPlugins {
                     ex.printStackTrace();
                 }
             });
-        KubeJS.LOGGER.info("Loaded {} plugins from {}: ", loadedNames.size(), String.join(", ", loadedNames));
+        KubeJS.LOGGER.info("Loaded {} plugins from '{}': {}", loadedNames.size(), id, String.join(", ", loadedNames));
 	}
 
 	public static ClassFilter createClassFilter(ScriptType type) {
