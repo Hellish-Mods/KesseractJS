@@ -141,7 +141,7 @@ if (ENV.CURSEFORGE_KEY) {
 			mainArtifact(remapJar.archivePath)
 			relations {
 				requiredDependency 'rhizo'
-				requiredDependency 'architectury-forge'
+				requiredDependency 'architectury-api'
 				optionalDependency 'jei'
 				optionalDependency 'game-stages'
 				optionalDependency 'probejs-legacy'
