@@ -8,6 +8,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 /**
  * @author LatvianModder
  */
+@Deprecated
 public class JsonWrapper {
 	public static JsonElement copy(JsonElement json) {
 		return JsonUtilsJS.copy(json);
@@ -22,6 +23,6 @@ public class JsonWrapper {
 	}
 
 	public static Object parse(String string) {
-		return UtilsJS.wrap(JsonUtilsJS.fromString(string), JSObjectType.ANY);
+		return UtilsJS.wrap(JsonUtilsJS.parseRaw(string), JSObjectType.ANY);
 	}
 }
