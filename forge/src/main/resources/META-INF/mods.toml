@@ -25,6 +25,16 @@ Dummy mod for KubeJS addons compat
 logoFile = "pack.png"
 license = "GNU LGPLv3"
 
+[[mods]]
+modId = "eventjs"
+version = "0.0.0"
+displayName = "EventJS (Dummy)"
+authors = "ZZZank"
+description = '''
+Dummy EventJS mod for telling modloader that we don't need another EventJS
+'''
+license = "GPLv3"
+
 [[dependencies.kubejs]]
 modId = "forge"
 mandatory = true
