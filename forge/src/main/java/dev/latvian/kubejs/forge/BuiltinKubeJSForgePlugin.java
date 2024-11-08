@@ -1,12 +1,15 @@
 package dev.latvian.kubejs.forge;
 
 import dev.latvian.kubejs.BuiltinKubeJSPlugin;
-import dev.latvian.kubejs.event.forge.PlatformEventHandlerImpl;
+import dev.latvian.kubejs.event.forge.ClassConvertible;
+import dev.latvian.kubejs.event.forge.SidedNativeEvents;
+import dev.latvian.kubejs.event.forge.WrappedEventHandler;
 import dev.latvian.kubejs.script.BindingsEvent;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ClassFilter;
 import dev.latvian.kubejs.world.gen.forge.BiomeDictionaryWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import lombok.val;
 import net.minecraftforge.common.BiomeDictionary;
 
 public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
@@ -30,13 +33,14 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		if (event.type == ScriptType.STARTUP) {
             event.addFunction(
                 "onForgeEvent",
-                PlatformEventHandlerImpl::onEvent,
+                BuiltinKubeJSForgePlugin::onPlatformEvent,
                 null,
-                KubeJSForgeEventHandlerWrapper.class
+                WrappedEventHandler.class
             );
         }
 
 		event.add("BiomeDictionary", BiomeDictionaryWrapper.class);
+        event.add("NativeEvents", SidedNativeEvents.byType(event.type));
 	}
 
 	@Override
@@ -45,11 +49,18 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		typeWrappers.register(BiomeDictionary.Type.class, BiomeDictionaryWrapper::getBiomeType);
 	}
 
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	public static Object onPlatformEvent(BindingsEvent event, Object[] args) {
-        return PlatformEventHandlerImpl.onEvent(args);
-	}
+	public static Object onPlatformEvent(Object[] args) {
+        if (args.length < 2) {
+            throw new RuntimeException("Invalid syntax! onPlatformEvent(string, function) required event class and handler");
+        }
+
+        try {
+            val type = ClassConvertible.of(args[0]);
+            val handler = (WrappedEventHandler) args[1];
+            SidedNativeEvents.STARTUP.onEvent(type, handler);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return null;
+    }
 }
