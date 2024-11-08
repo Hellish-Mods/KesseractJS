@@ -4,15 +4,14 @@ import dev.latvian.kubejs.forge.mods.DummyEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import lombok.val;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.GenericEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author ZZZank
@@ -28,7 +27,7 @@ public final class SidedNativeEvents {
         return BY_TYPE.get(type);
     }
 
-    private final List<Object> handlers = new ArrayList<>();
+    private final List<PackedHandler<?>> packedHandlers = new ArrayList<>();
     public final ScriptType type;
 
     private SidedNativeEvents(ScriptType type) {
@@ -38,10 +37,10 @@ public final class SidedNativeEvents {
 
     @HideFromJS
     public void unload() {
-        for (val handler : handlers) {
-            MinecraftForge.EVENT_BUS.unregister(handler);
+        for (val packed : packedHandlers) {
+            packed.bus.unregister(packed.handler);
         }
-        handlers.clear();
+        packedHandlers.clear();
     }
 
     public void onEvent(final ClassConvertible type, final WrappedEventHandler handler) {
@@ -54,24 +53,30 @@ public final class SidedNativeEvents {
         final ClassConvertible type,
         final WrappedEventHandler handler
     ) {
-        final WrappedEventHandler safed = event -> {
-            try {
-                handler.accept(event);
-            } catch (Exception e) {
-                this.type.console.error("Error when handling native event", e);
-            }
-        };
         val eventType = (Class<Event>) type.get();
         if (!Event.class.isAssignableFrom(eventType)) {
             throw new IllegalArgumentException(String.format("Event class must be a subclass of '%s'", Event.class));
         }
-        handlers.add(safed);
-        DummyEventJS.selectBus(eventType).addListener(
-            priority,
-            receiveCancelled,
-            eventType,
-            safed
-        );
+        onEventTyped(priority, receiveCancelled, eventType, handler);
+    }
+
+    <T extends Event> void onEventTyped(
+        EventPriority priority,
+        boolean receiveCancelled,
+        Class<T> eventType,
+        Consumer<T> handler
+    ) {
+        val packed = new PackedHandler<>(DummyEventJS.selectBus(eventType), handler);
+        packedHandlers.add(packed);
+        packed.bus.addListener(priority, receiveCancelled, eventType, packed.handler);
+    }
+
+    public void onGenericEvent(
+        final ClassConvertible genericClassFilter,
+        final ClassConvertible type,
+        final WrappedGenericEventHandler handler
+    ) {
+        onGenericEvent(genericClassFilter, EventPriority.NORMAL, false, type, handler);
     }
 
     public void onGenericEvent(
@@ -81,32 +86,38 @@ public final class SidedNativeEvents {
         final ClassConvertible type,
         final WrappedGenericEventHandler handler
     ) {
-        final WrappedGenericEventHandler safed = event -> {
-            try {
-                handler.accept(event);
-            } catch (Exception e) {
-                this.type.console.error("Error when handling native generic event", e);
-            }
-        };
         val eventType = (Class<GenericEvent>) type.get();
         if (!GenericEvent.class.isAssignableFrom(eventType)) {
             throw new IllegalArgumentException(String.format("Event class must be a subclass of '%s'", GenericEvent.class));
         }
-        handlers.add(safed);
-        DummyEventJS.selectBus(eventType).addGenericListener(
-            genericClassFilter.get(),
-            priority,
-            receiveCancelled,
-            eventType,
-            safed
-        );
+        onGenericEventTyped(genericClassFilter.get(), priority, receiveCancelled, eventType, handler);
     }
 
-    public void onGenericEvent(
-        final ClassConvertible genericClassFilter,
-        final ClassConvertible type,
-        final WrappedGenericEventHandler handler
+    <T extends GenericEvent<? extends F>, F> void onGenericEventTyped(
+        Class<F> genericClassFilter,
+        EventPriority priority,
+        boolean receiveCancelled,
+        Class<T> eventType,
+        Consumer<T> handler
     ) {
-        onGenericEvent(genericClassFilter, EventPriority.NORMAL, false, type, handler);
+        val packed = new PackedHandler<>(DummyEventJS.selectBus(eventType), handler);
+        packedHandlers.add(packed);
+        packed.bus.addGenericListener(genericClassFilter, priority, receiveCancelled, eventType, packed.handler);
+    }
+
+    class PackedHandler<T> {
+        public final IEventBus bus;
+        public final Consumer<T> handler;
+
+        public PackedHandler(IEventBus bus, Consumer<T> handler) {
+            this.bus = bus;
+            this.handler = event -> {
+                try {
+                    handler.accept(event);
+                } catch (Exception e) {
+                    SidedNativeEvents.this.type.console.error("Error when handling native event", e);
+                }
+            };
+        }
     }
 }
