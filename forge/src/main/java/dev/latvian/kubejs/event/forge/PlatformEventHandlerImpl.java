@@ -19,25 +19,6 @@ public class PlatformEventHandlerImpl extends PlatformEventHandler {
 	private final List<KubeJSForgeEventHandlerWrapper> listeners = new ArrayList<>();
     private final List<Consumer<GenericEvent<?>>> genericListeners = new ArrayList<>();
 
-	@Override
-	public void unregister() {
-        for (var listener : this.listeners) {
-            MinecraftForge.EVENT_BUS.unregister(listener);
-        }
-        this.listeners.clear();
-        for (var listener : this.genericListeners) {
-            MinecraftForge.EVENT_BUS.unregister(listener);
-        }
-        this.genericListeners.clear();
-	}
-
-	/**
-	 * @see PlatformEventHandler#instance()
-	 */
-	public static PlatformEventHandler instance() {
-		return INSTANCE;
-	}
-
     private static Class<?> readClass(Object o) {
         if (o instanceof String s) {
             return Kit.classOrNull(s);
