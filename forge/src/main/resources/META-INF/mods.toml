@@ -16,7 +16,7 @@ license = "GNU LGPLv3"
 
 [[mods]]
 modId = "kubejs"
-version = "${version}"
+version = "1605.3.19-build.299"
 displayName = "KubeJS (KesseractJS)"
 authors = "LatvianModder, ZZZank, Hellish Mods (G_cat), MundM2007"
 description = '''
