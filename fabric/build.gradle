@@ -106,7 +106,8 @@ unifiedPublishing {
 			}
 			
 			optional {
-				curseforge = modrinth = "roughly-enough-items"
+				curseforge = "roughly-enough-items"
+				modrinth = "rei"
 			}
 			optional {
 				curseforge = "probejs-legacy"
