@@ -52,7 +52,7 @@ JsonIO.write('kubejs/data.json', {recursion: data})
 // + more!
 ```
 
-* Fixes. Lot of 'em.
+* Fixes. Lots of 'em.
 
 ![screenshot](https://raw.githubusercontent.com/Hellish-Mods/KesseractJS/refs/heads/main/assets/jjjank.png)
 
