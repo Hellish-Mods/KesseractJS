@@ -56,7 +56,7 @@ jobs:
             forge/build/libs
             fabric/build/libs
 
-      - name: Release to CurseForge
+      - name: Release to CurseForge/Modrinth
         uses: gradle/gradle-build-action@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type != 'none' }}
         env:
@@ -66,4 +66,4 @@ jobs:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           RELEASE_TYPE: ${{ inputs.release_type }}
         with:
-          arguments: curseforge --stacktrace --no-daemon
+          arguments: curseforge modrinth --stacktrace --no-daemon
