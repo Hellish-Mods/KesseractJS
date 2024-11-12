@@ -64,4 +64,13 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
         }
         return null;
     }
+
+    /**
+     * @deprecated kept only for backward binary compat
+     * @see #onPlatformEvent(Object[])
+     */
+    @Deprecated
+    public static Object onPlatformEvent(BindingsEvent event, Object[] args) {
+        return onPlatformEvent(args);
+    }
 }
