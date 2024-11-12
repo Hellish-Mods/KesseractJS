@@ -47,6 +47,7 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	public void addTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
 		super.addTypeWrappers(type, typeWrappers);
 		typeWrappers.register(BiomeDictionary.Type.class, BiomeDictionaryWrapper::getBiomeType);
+        typeWrappers.register(ClassConvertible.class, ClassConvertible::of);
 	}
 
 	public static Object onPlatformEvent(Object[] args) {
