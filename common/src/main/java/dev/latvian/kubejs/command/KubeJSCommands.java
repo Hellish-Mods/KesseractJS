@@ -359,8 +359,9 @@ public class KubeJSCommands {
     }
 
     private static int reloadServer(CommandSourceStack source) {
-        ServerScriptManager.instance.reloadScriptManager(((MinecraftServerKJS) source.getServer()).getServerResourcesKJS()
-            .getResourceManager());
+        ServerScriptManager.instance.reloadScriptManager(
+            ((MinecraftServerKJS) source.getServer()).getServerResourcesKJS().getResourceManager()
+        );
         UtilsJS.postModificationEvents();
         source.sendSuccess(new TextComponent(
             "Done! To reload recipes, tags, loot tables and other datapack things, run /reload"), false);

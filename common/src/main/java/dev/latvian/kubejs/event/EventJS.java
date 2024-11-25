@@ -40,10 +40,10 @@ public class EventJS {
         val e = type.manager.get().events;
         boolean cancelled = false;
         for (val id : ids) {
+            cancelled = e.postToHandlers(id, e.handlers(id), this);
             if (cancelled) {
                 break; //prevent posting events after being cancelled
             }
-            cancelled = e.postToHandlers(id, e.handlers(id), this);
         }
         afterPosted(cancelled);
         return cancelled;

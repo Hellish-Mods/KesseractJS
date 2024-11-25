@@ -109,7 +109,7 @@ public class KubeJS {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
 
 		if (!CommonProperties.get().serverOnly) {
-			var tabEvent = new CreativeTabRegistryEventJS();
+			val tabEvent = new CreativeTabRegistryEventJS();
 			tab = tabEvent.create(KubeJS.MOD_ID, () -> ItemStackJS.of(new ItemStack(Items.PURPLE_DYE)));
 			tabEvent.post(ScriptType.STARTUP, KubeJSEvents.TAB_REGISTRY);
 		}
