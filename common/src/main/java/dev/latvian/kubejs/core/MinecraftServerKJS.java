@@ -3,9 +3,9 @@ package dev.latvian.kubejs.core;
 import dev.latvian.kubejs.server.ServerJS;
 import net.minecraft.server.ServerResources;
 
-public interface MinecraftServerKJS extends AsKJS {
+public interface MinecraftServerKJS extends AsKJS<ServerJS> {
 	@Override
-	default Object asKJS() {
+	default ServerJS asKJS() {
 		return ServerJS.instance;
 	}
 

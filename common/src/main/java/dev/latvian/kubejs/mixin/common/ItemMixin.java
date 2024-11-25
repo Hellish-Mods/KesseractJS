@@ -91,13 +91,6 @@ public abstract class ItemMixin implements ItemKJS {
 		}
 	}
 
-	@Inject(method = "appendHoverText", at = @At("RETURN"))
-	private void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn, CallbackInfo ci) {
-		if (itemBuilderKJS != null && !itemBuilderKJS.tooltip.isEmpty()) {
-			tooltip.addAll(itemBuilderKJS.tooltip);
-		}
-	}
-
 	@Inject(method = "getUseDuration", at = @At("HEAD"), cancellable = true)
 	private void getUseDuration(ItemStack itemStack, CallbackInfoReturnable<Integer> ci) {
 		if (itemBuilderKJS != null && itemBuilderKJS.useDuration != null) {

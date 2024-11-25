@@ -14,21 +14,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements EntityKJS {
 	@Unique
-	private final CompoundTag persistentDataKJS = new CompoundTag();
+	private final CompoundTag kjs$persistentData = new CompoundTag();
 
 	@Override
 	public CompoundTag getPersistentDataKJS() {
-		return persistentDataKJS;
+		return kjs$persistentData;
 	}
 
 	@Inject(method = "saveWithoutId", at = @At("RETURN"))
 	private void saveKJS(CompoundTag tag, CallbackInfoReturnable<CompoundTag> ci) {
-		tag.put("KubeJSPersistentData", persistentDataKJS);
+		tag.put("KubeJSPersistentData", kjs$persistentData);
 	}
 
 	@Inject(method = "load", at = @At("RETURN"))
 	private void loadKJS(CompoundTag tag, CallbackInfo ci) {
-		((MapLike<?, ?>) persistentDataKJS).clearML();
-		persistentDataKJS.merge(tag.getCompound("KubeJSPersistentData"));
+		((MapLike<?, ?>) kjs$persistentData).clearML();
+		kjs$persistentData.merge(tag.getCompound("KubeJSPersistentData"));
 	}
 }

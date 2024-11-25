@@ -1,6 +1,8 @@
 package dev.latvian.kubejs.item.ingredient;
 
 import dev.latvian.kubejs.item.ItemStackJS;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -12,11 +14,9 @@ import java.util.Set;
 /**
  * @author LatvianModder
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MatchAllIngredientJS implements IngredientJS {
-	public static MatchAllIngredientJS INSTANCE = new MatchAllIngredientJS();
-
-	private MatchAllIngredientJS() {
-	}
+	public static final MatchAllIngredientJS INSTANCE = new MatchAllIngredientJS();
 
 	@Override
 	public boolean test(ItemStackJS stack) {

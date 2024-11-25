@@ -36,7 +36,7 @@ public class RegisterRecipeHandlersEvent {
 
 	public void register(RecipeTypeJS type) {
 		map.put(Registries.getId(type.serializer, Registry.RECIPE_SERIALIZER_REGISTRY), type);
-		KubeJS.LOGGER.info("Registered custom recipe handler for type " + type);
+        KubeJS.LOGGER.info("Registered custom recipe handler for type {}", type);
 	}
 
 	public void register(ResourceLocation id, Supplier<RecipeJS> f) {

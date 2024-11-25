@@ -116,6 +116,8 @@ public class TextWrapper {
 
         var style = c.getStyle();
         t.bold(style.isBold())
+            .color(ColorWrapper.of(style.getColor()))
+            .font(style.getFont())
             .italic(style.isItalic())
             .underlined(style.isUnderlined())
             .strikethrough(style.isStrikethrough())

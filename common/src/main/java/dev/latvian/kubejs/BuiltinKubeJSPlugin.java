@@ -67,6 +67,7 @@ import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.DirectionWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.registry.ToolType;
 import net.fabricmc.api.EnvType;
@@ -182,7 +183,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		new ItemToolTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_TOOL_TIERS);
 		new ItemArmorTierEventJS().post(KubeJSEvents.ITEM_REGISTRY_ARMOR_TIERS);
 
-		for (var registryInfo : RegistryInfos.WITH_TYPE.values()) {
+		for (val registryInfo : RegistryInfos.WITH_TYPE.values()) {
 			registryInfo.fireRegistryEvent();
 		}
 //		new BlockRegistryEventJS().post(KubeJSEvents.BLOCK_REGISTRY);
@@ -387,8 +388,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 				return (BlockPos) o;
 			} else if (o instanceof BlockContainerJS) {
 				return ((BlockContainerJS) o).getPos();
-			} else if (o instanceof List && ((List<?>) o).size() >= 3) {
-				return new BlockPos(((Number) ((List<?>) o).get(0)).intValue(), ((Number) ((List<?>) o).get(1)).intValue(), ((Number) ((List<?>) o).get(2)).intValue());
+			} else if (o instanceof List<?> l && l.size() >= 3) {
+                return new BlockPos(
+                    ((Number) l.get(0)).intValue(),
+                    ((Number) l.get(1)).intValue(),
+                    ((Number) l.get(2)).intValue()
+                );
 			}
 
 			return BlockPos.ZERO;
@@ -399,7 +404,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 				return v;
 			} else if (o instanceof EntityJS ent) {
 				return ent.minecraftEntity.position();
-			} else if (o instanceof List l && l.size() >= 3) {
+			} else if (o instanceof List<?> l && l.size() >= 3) {
                 return new Vec3(
                     ((Number) l.get(0)).doubleValue(),
                     ((Number) l.get(1)).doubleValue(),
@@ -408,7 +413,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
             } else if (o instanceof BlockPos bp) {
                 return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
             } else if (o instanceof BlockContainerJS container) {
-				BlockPos bp = container.getPos();
+				val bp = container.getPos();
 				return new Vec3(bp.getX() + 0.5D, bp.getY() + 0.5D, bp.getZ() + 0.5D);
 			}
 
@@ -543,14 +548,14 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void generateDataJsons(DataJsonGenerator generator) {
-		for (var builder : RegistryInfos.ALL_BUILDERS) {
+		for (val builder : RegistryInfos.ALL_BUILDERS) {
 			builder.generateDataJsons(generator);
 		}
 	}
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
-		for (var builder : RegistryInfos.ALL_BUILDERS) {
+		for (val builder : RegistryInfos.ALL_BUILDERS) {
 			builder.generateAssetJsons(generator);
 		}
 	}
@@ -559,7 +564,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public void generateLang(Map<String, String> lang) {
 		lang.put("itemGroup.kubejs.kubejs", "KubeJS");
 
-		for (var builder : RegistryInfos.ALL_BUILDERS) {
+		for (val builder : RegistryInfos.ALL_BUILDERS) {
 			if (builder.overrideLangJson && builder.display != null) {
 				lang.put(builder.getTranslationKey(), builder.display.getString());
 			}

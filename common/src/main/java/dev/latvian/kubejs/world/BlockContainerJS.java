@@ -13,6 +13,7 @@ import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import lombok.val;
 import me.shedaniel.architectury.hooks.PlayerHooks;
 import me.shedaniel.architectury.registry.Registries;
 import net.minecraft.core.BlockPos;
@@ -23,11 +24,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -152,17 +151,17 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public void set(ResourceLocation id, Map<?, ?> properties, int flags) {
-		Block block = KubeJSRegistries.blocks().get(id);
-		BlockState state = block.defaultBlockState();
+		val block = KubeJSRegistries.blocks().get(id);
+        BlockState state = block.defaultBlockState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR) {
-			Map<String, Property> pmap = new HashMap<>();
+			val pmap = new HashMap<String, Property>();
 
-			for (Property property : state.getProperties()) {
+			for (val property : state.getProperties()) {
 				pmap.put(property.getName(), property);
 			}
 
-			for (Map.Entry entry : properties.entrySet()) {
+			for (val entry : properties.entrySet()) {
 				Property<?> property = pmap.get(String.valueOf(entry.getKey()));
 
 				if (property != null) {
@@ -203,24 +202,22 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public String getEntityId() {
-		BlockEntity entity = getEntity();
+		val entity = getEntity();
 		return entity == null ? "minecraft:air" : Registries.getId(entity.getType(), Registry.BLOCK_ENTITY_TYPE_REGISTRY).toString();
 	}
 
 	@Nullable
 	public CompoundTag getEntityData() {
-		BlockEntity entity = getEntity();
+		val entity = getEntity();
 
-		if (entity != null) {
-			return entity.save(new CompoundTag());
-		}
-
-		return null;
-	}
+        return entity == null
+            ? null
+            : entity.save(new CompoundTag());
+    }
 
 	public void setEntityData(@Nullable CompoundTag tag) {
 		if (tag != null) {
-			BlockEntity entity = getEntity();
+			val entity = getEntity();
 
 			if (entity != null) {
 				entity.load(entity.getBlockState(), tag);
@@ -229,7 +226,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public void mergeEntityData(@Nullable CompoundTag tag) {
-		CompoundTag t = getEntityData();
+		val t = getEntityData();
 
 		if (t == null) {
 			setEntityData(tag);
@@ -297,7 +294,8 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public void spawnLightning(boolean effectOnly, @Nullable EntityJS player) {
 		if (minecraftLevel instanceof ServerLevel) {
-			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
+			val e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
+            e.setVisualOnly(effectOnly);
 			e.moveTo(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 			e.setCause(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
 			minecraftLevel.addFreshEntity(e);

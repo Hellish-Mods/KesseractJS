@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.bindings;
 
-import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.MaterialJS;
 import dev.latvian.kubejs.block.MaterialListJS;
 import dev.latvian.kubejs.block.predicate.BlockEntityPredicate;
@@ -11,7 +10,6 @@ import dev.latvian.kubejs.util.Tags;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import lombok.val;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.level.block.Block;
