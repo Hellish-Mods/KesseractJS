@@ -16,7 +16,7 @@ license = "GNU LGPLv3"
 
 [[mods]]
 modId = "kubejs"
-version = "${version}"
+version = "1605.3.19-build.299"
 displayName = "KubeJS (KesseractJS)"
 authors = "LatvianModder, ZZZank, Hellish Mods (G_cat), MundM2007"
 description = '''
@@ -24,6 +24,16 @@ Dummy mod for KubeJS addons compat
 '''
 logoFile = "pack.png"
 license = "GNU LGPLv3"
+
+[[mods]]
+modId = "eventjs"
+version = "0.0.0"
+displayName = "EventJS (Dummy)"
+authors = "ZZZank"
+description = '''
+Dummy EventJS mod for telling modloader that we don't need another EventJS
+'''
+license = "GPLv3"
 
 [[dependencies.kubejs]]
 modId = "forge"

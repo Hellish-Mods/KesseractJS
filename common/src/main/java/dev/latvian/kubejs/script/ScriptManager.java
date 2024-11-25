@@ -5,6 +5,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPlugin;
 import dev.latvian.kubejs.event.EventsJS;
+import dev.latvian.kubejs.event.PlatformEventHandler;
 import dev.latvian.kubejs.event.StartupEventJS;
 import dev.latvian.kubejs.util.ClassFilter;
 import dev.latvian.kubejs.util.KubeJSPlugins;
@@ -53,6 +54,8 @@ public class ScriptManager {
     }
 
 	public void unload() {
+        PlatformEventHandler.onUnload(this);
+
 		events.clear();
 		packs.clear();
 		type.errors.clear();
