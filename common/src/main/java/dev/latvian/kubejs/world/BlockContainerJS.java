@@ -294,7 +294,8 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public void spawnLightning(boolean effectOnly, @Nullable EntityJS player) {
 		if (minecraftLevel instanceof ServerLevel) {
-			LightningBolt e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
+			val e = EntityType.LIGHTNING_BOLT.create(minecraftLevel);
+            e.setVisualOnly(effectOnly);
 			e.moveTo(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
 			e.setCause(player instanceof ServerPlayerJS ? ((ServerPlayerJS) player).minecraftPlayer : null);
 			minecraftLevel.addFreshEntity(e);
