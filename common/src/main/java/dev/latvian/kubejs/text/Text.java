@@ -316,9 +316,14 @@ public abstract class Text implements Iterable<Text>, Comparable<Text>, JsonSeri
 		return this;
 	}
 
+    public final Text font(ResourceLocation rl) {
+        font = rl;
+        return this;
+    }
+
+    @HideFromJS
 	public final Text font(@Nullable String value) {
-		font = value == null || value.isEmpty() ? null : new ResourceLocation(value);
-		return this;
+        return font(value == null || value.isEmpty() ? null : new ResourceLocation(value));
 	}
 
 	public final Text click(@Nullable Object o) {
