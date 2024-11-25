@@ -27,7 +27,10 @@ public class HideREIEventJS<T> extends EventJS {
 	}
 
 	public Collection<T> getAllIngredients() {
-		return (Collection<T>) registry.getEntryStacks().filter(this::filterType).map(EntryStack::getObject).collect(Collectors.toList());
+        return (Collection<T>) registry.getEntryStacks()
+            .filter(this::filterType)
+            .map(EntryStack::getObject)
+            .collect(Collectors.toList());
 	}
 
 	private boolean filterType(EntryStack stack) {

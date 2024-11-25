@@ -2,49 +2,54 @@ package dev.latvian.kubejs.integration.techreborn;
 
 import dev.latvian.kubejs.KubeJSInitializer;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
+import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 
 public class TechRebornIntegration implements KubeJSInitializer {
-	@Override
-	public void onKubeJSInitialization() {
-		if (Platform.isModLoaded("techreborn")) {
-			RegisterRecipeHandlersEvent.EVENT.register(event -> {
-				for (String s : new String[]{
-						// Default recipes
-						"techreborn:alloy_smelter",
-						"techreborn:assembling_machine",
-						"techreborn:centrifuge",
-						"techreborn:chemical_reactor",
-						"techreborn:compressor",
-						"techreborn:distillation_tower",
-						"techreborn:extractor",
-						"techreborn:grinder",
-						"techreborn:implosion_compressor",
-						"techreborn:industrial_electrolyzer",
-						"techreborn:recycler",
-						"techreborn:scrapbox",
-						"techreborn:vacuum_freezer",
-						"techreborn:solid_canning_machine",
-						"techreborn:wire_mill",
-						// Similar enough that the same serializer works
-						"techreborn:blast_furnace",
-				}) {
-					event.register(new ResourceLocation(s), TRRecipeJS::new);
-				}
 
-				for (String s : new String[]{
-						"techreborn:industrial_grinder",
-						"techreborn:industrial_grinder",
-						"techreborn:fluid_replicator",
-				}) {
-					event.register(new ResourceLocation(s), TRRecipeWithTankJS::new);
-				}
+    @Override
+    public void onKubeJSInitialization() {
+        if (!Platform.isModLoaded("techreborn")) {
+            return;
+        }
+        RegisterRecipeHandlersEvent.EVENT.register(TechRebornIntegration::registerRecipeHandlers);
+    }
 
-				// To be implemented later
-				// "techreborn:fusion_reactor", // See FusionReactorRecipe
-				// "techreborn:rolling_machine", // See RollingMachineRecipe
-			});
-		}
-	}
+    private static void registerRecipeHandlers(RegisterRecipeHandlersEvent event) {
+        for (val s : new String[]{
+            // Default recipes
+            "alloy_smelter",
+            "assembling_machine",
+            "centrifuge",
+            "chemical_reactor",
+            "compressor",
+            "distillation_tower",
+            "extractor",
+            "grinder",
+            "implosion_compressor",
+            "industrial_electrolyzer",
+            "recycler",
+            "scrapbox",
+            "vacuum_freezer",
+            "solid_canning_machine",
+            "wire_mill",
+            // Similar enough that the same serializer works
+            "blast_furnace",
+        }) {
+            event.register(new ResourceLocation("techreborn", s), TRRecipeJS::new);
+        }
+
+        for (val s : new String[]{
+            "industrial_grinder",
+            "industrial_grinder",
+            "fluid_replicator",
+        }) {
+            event.register(new ResourceLocation("techreborn", s), TRRecipeWithTankJS::new);
+        }
+
+        // To be implemented later
+        // "techreborn:fusion_reactor", // See FusionReactorRecipe
+        // "techreborn:rolling_machine", // See RollingMachineRecipe
+    }
 }

@@ -30,7 +30,12 @@ public class REIPlugin implements REIPluginV0 {
 
 	@Override
 	public void registerEntries(EntryRegistry entryRegistry) {
-		Function<Object, Collection<EntryStack>> itemSerializer = o -> EntryStack.ofItemStacks(CollectionUtils.map(IngredientJS.of(o).getStacks(), ItemStackJS::getItemStack));
+		Function<Object, Collection<EntryStack>> itemSerializer = o -> EntryStack.ofItemStacks(
+            CollectionUtils.map(
+                IngredientJS.of(o).getStacks(),
+                ItemStackJS::getItemStack
+            )
+        );
 
 		new HideREIEventJS<>(entryRegistry, EntryStack.Type.ITEM, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_HIDE_ITEMS);
 		new AddREIEventJS(entryRegistry, itemSerializer).post(ScriptType.CLIENT, REIIntegration.REI_ADD_ITEMS);

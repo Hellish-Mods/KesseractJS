@@ -15,6 +15,9 @@ import java.util.function.Function;
  */
 public class AddREIEventJS extends EventJS {
 	private final EntryRegistry registry;
+    /**
+     * itemSerializer
+     */
 	private final Function<Object, Collection<EntryStack>> function;
 	private final List<EntryStack> added = Lists.newArrayList();
 
@@ -26,7 +29,6 @@ public class AddREIEventJS extends EventJS {
 	public void add(Object o) {
 		for (Object o1 : ListJS.orSelf(o)) {
 			Collection<EntryStack> stacks = function.apply(o1);
-
 			if (stacks != null && !stacks.isEmpty()) {
 				for (EntryStack stack : stacks) {
 					if (stack != null && !stack.isEmpty()) {
