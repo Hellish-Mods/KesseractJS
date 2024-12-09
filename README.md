@@ -4,7 +4,7 @@
 [![cf](https://cf.way2muchnoise.eu/full_kesseractjs_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/kesseractjs)
 [![actions](https://github.com/hellish-mods/kesseractjs/actions/workflows/build_1605.yml/badge.svg)](https://github.com/hellish-mods/kesseractjs)
 
-[![logo](https://media.forgecdn.net/avatars/1002/899/638523320288453902.gif)](https://www.curseforge.com/minecraft/mc-mods/amber-jade)
+[![logo](https://media.forgecdn.net/avatars/1002/899/638523320288453902.gif)](https://www.curseforge.com/minecraft/mc-mods/kesseractjs)
 
 **KesseractJS** is a fork of [KubeJS](https://kubejs.com/), continuing its development for 1.16.5. It backport a lot of different features from the newer versions, and even adds some that are not present at all in the original mod. The latter are documented [on a dedicated wiki](https://wiki.modernmodpacks.site/wiki/hellish-mods/kesseractjs), and support for those are offered on [our discord server](https://discord.modernmodpacks.site), so don't be afraid to ask there.
 
