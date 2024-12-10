@@ -272,7 +272,7 @@ public class KubeJSClientEventHandler {
 
 	private void blockColors() {
         RegistryInfos.BLOCK.objects.values()
-            .stream().map(o -> (BlockBuilder) o)
+            .stream().filter(o -> o instanceof BlockBuilder).map(o -> (BlockBuilder) o)
             .filter(builder -> !builder.color.isEmpty())
             .forEach(builder -> ColorHandlers.registerBlockColors((state, world, pos, index) -> builder.color.get(index),
                 builder.getBlock()
