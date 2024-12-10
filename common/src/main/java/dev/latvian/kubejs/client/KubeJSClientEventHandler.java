@@ -109,7 +109,9 @@ public class KubeJSClientEventHandler {
 
 	private void renderLayers() {
 		for (var builder : RegistryInfos.BLOCK.objects.values()) {
+			if (!(builder instanceof BlockBuilder)) continue;
             var bBuilder = (BlockBuilder) builder;
+
 			switch (bBuilder.renderType) {
 				case "cutout" -> RenderTypes.register(RenderType.cutout(), bBuilder.get());
 				case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), bBuilder.get());
@@ -119,7 +121,9 @@ public class KubeJSClientEventHandler {
 			}
 		}
         for (var base : RegistryInfos.FLUID.objects.values()) {
+			if (!(base instanceof FluidBuilder)) continue;
             var builder = (FluidBuilder) base;
+
             switch (builder.renderType) {
                 case "cutout" -> RenderTypes.register(RenderType.cutout(), builder.stillFluid);
                 case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), builder.stillFluid);
