@@ -17,6 +17,7 @@ import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import lombok.val;
 import me.shedaniel.architectury.registry.BlockProperties;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.Direction;
@@ -24,6 +25,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -33,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +47,7 @@ public class BlockBuilder extends BuilderBase<Block> {
     @Deprecated
 	public transient BlockType type = null;
 	public transient MaterialJS material = MaterialListJS.INSTANCE.map.get("wood");
+    public transient Function<BlockState, MaterialColor> materialColorFn;
 	public transient float hardness = 0.5F;
 	public transient float resistance = -1F;
 	public transient float lightLevel = 0F;
@@ -127,6 +132,18 @@ public class BlockBuilder extends BuilderBase<Block> {
 		type.applyDefaults(this);
 		return this;
 	}
+
+    @JSInfo("Sets the block's map color. Defaults to NONE.")
+    public BlockBuilder materialColor(MaterialColor m) {
+        materialColorFn = MapColorHelper.reverse(m);
+        return this;
+    }
+
+    @JSInfo("Sets the block's map color dynamically per block state. If unset, defaults to NONE.")
+    public BlockBuilder dynamicMaterialColor(@Nullable Function<BlockState, Object> m) {
+        materialColorFn = m == null ? MapColorHelper.NONE : s -> MapColorHelper.of(m.apply(s));
+        return this;
+    }
 
 	public BlockBuilder material(MaterialJS m) {
 		material = m;
@@ -517,7 +534,9 @@ public class BlockBuilder extends BuilderBase<Block> {
     }
 
     public Block.Properties createProperties() {
-		BlockProperties properties = BlockProperties.of(material.getMinecraftMaterial());
+		val properties = materialColorFn == null
+            ? BlockProperties.of(material.getMinecraftMaterial())
+            : BlockProperties.of(material.getMinecraftMaterial(), materialColorFn);
 		properties.sound(material.getSound());
 
 		if (resistance >= 0F) {
@@ -583,7 +602,7 @@ public class BlockBuilder extends BuilderBase<Block> {
     }
 
     @JSInfo("""
-        I'm curious now, why call this method?""")
+        I'm curious now, why call this method instead of using event.createCustom(...)?""")
     @Deprecated
     public void setBlock(Block block) {
         this.object = block;
