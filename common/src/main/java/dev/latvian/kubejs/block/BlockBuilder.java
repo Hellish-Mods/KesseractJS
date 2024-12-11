@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.block.custom.BasicBlockJS;
 import dev.latvian.kubejs.block.custom.BlockType;
+import dev.latvian.kubejs.block.predicate.VanillaPredicates;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.kubejs.core.BlockKJS;
@@ -27,6 +28,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -79,10 +81,10 @@ public class BlockBuilder extends BuilderBase<Block> {
     public Consumer<LootBuilder> lootTable;
     public JsonObject blockstateJson = null;
     public JsonObject modelJson = null;
-    public transient boolean noValidSpawns = false;
-    public transient boolean suffocating = true;
-    public transient boolean viewBlocking = true;
-    public transient boolean redstoneConductor = true;
+    protected transient VanillaPredicates.Spawn validSpawns = VanillaPredicates.Spawn.TRUE;
+    protected transient BlockBehaviour.StatePredicate suffocating = VanillaPredicates.STATE_TRUE;
+    protected transient BlockBehaviour.StatePredicate viewBlocking = VanillaPredicates.STATE_TRUE;
+    protected transient BlockBehaviour.StatePredicate redstoneConductor = VanillaPredicates.STATE_TRUE;
     public transient boolean transparent = false;
     public transient Set<Property<?>> blockStateProperties = new HashSet<>();
 
@@ -584,22 +586,38 @@ public class BlockBuilder extends BuilderBase<Block> {
     }
 
     public BlockBuilder noValidSpawns(boolean b) {
-        noValidSpawns = b;
-        return this;
+        return setValidSpawns(b ? VanillaPredicates.Spawn.FALSE : VanillaPredicates.Spawn.TRUE);
     }
 
     public BlockBuilder suffocating(boolean b) {
-        suffocating = b;
-        return this;
+        return setSuffocating(b ? VanillaPredicates.STATE_TRUE : VanillaPredicates.STATE_FALSE);
     }
 
     public BlockBuilder viewBlocking(boolean b) {
-        viewBlocking = b;
-        return this;
+        return setViewBlocking(b ? VanillaPredicates.STATE_TRUE : VanillaPredicates.STATE_FALSE);
     }
 
     public BlockBuilder redstoneConductor(boolean b) {
-        redstoneConductor = b;
+        return setRedstoneConductor(b ? VanillaPredicates.STATE_TRUE : VanillaPredicates.STATE_FALSE);
+    }
+
+    public BlockBuilder setValidSpawns(VanillaPredicates.Spawn predicate) {
+        validSpawns = predicate == null ? VanillaPredicates.Spawn.TRUE : predicate;
+        return this;
+    }
+
+    public BlockBuilder setSuffocating(BlockBehaviour.StatePredicate predicate) {
+        suffocating = predicate == null ? VanillaPredicates.STATE_TRUE : predicate;
+        return this;
+    }
+
+    public BlockBuilder setViewBlocking(BlockBehaviour.StatePredicate predicate) {
+        viewBlocking = predicate == null ? VanillaPredicates.STATE_TRUE : predicate;
+        return this;
+    }
+
+    public BlockBuilder setRedstoneConductor(BlockBehaviour.StatePredicate predicate) {
+        redstoneConductor = predicate == null ? VanillaPredicates.STATE_TRUE : predicate;
         return this;
     }
 
@@ -693,21 +711,10 @@ public class BlockBuilder extends BuilderBase<Block> {
         properties.speedFactor(speedFactor);
         properties.jumpFactor(jumpFactor);
 
-        if (noValidSpawns) {
-            properties.isValidSpawn((blockState, blockGetter, blockPos, object) -> false);
-        }
-
-        if (!suffocating) {
-            properties.isSuffocating((blockState, blockGetter, blockPos) -> false);
-        }
-
-        if (!viewBlocking) {
-            properties.isViewBlocking((blockState, blockGetter, blockPos) -> false);
-        }
-
-        if (!redstoneConductor) {
-            properties.isRedstoneConductor((blockState, blockGetter, blockPos) -> false);
-        }
+        properties.isValidSpawn(setValidSpawns(null).validSpawns);
+        properties.isSuffocating(setSuffocating(null).suffocating);
+        properties.isViewBlocking(setViewBlocking(null).viewBlocking);
+        properties.isRedstoneConductor(setRedstoneConductor(null).redstoneConductor);
 
         if (randomTickCallback != null) {
             properties.randomTicks();
@@ -738,5 +745,25 @@ public class BlockBuilder extends BuilderBase<Block> {
     public BlockBuilder setModelJson(JsonObject modelJson) {
         this.modelJson = modelJson;
         return this;
+    }
+
+    @JSInfo("calling this method and corresponding setter is not recommended since returning different value based on context is allowed now")
+    public boolean getNoValidSpawns() {
+        return validSpawns == VanillaPredicates.Spawn.FALSE;
+    }
+
+    @JSInfo("calling this method and corresponding setter is not recommended since returning different value based on context is allowed now")
+    public boolean getSuffocating() {
+        return suffocating == VanillaPredicates.STATE_TRUE;
+    }
+
+    @JSInfo("calling this method and corresponding setter is not recommended since returning different value based on context is allowed now")
+    public boolean getViewBlocking() {
+        return viewBlocking == VanillaPredicates.STATE_TRUE;
+    }
+
+    @JSInfo("calling this method and corresponding setter is not recommended since returning different value based on context is allowed now")
+    public boolean getRedstoneConductor() {
+        return redstoneConductor == VanillaPredicates.STATE_TRUE;
     }
 }

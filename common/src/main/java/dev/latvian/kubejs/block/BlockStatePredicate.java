@@ -231,8 +231,13 @@ public abstract class BlockStatePredicate {
 			}
 		}
 
-		return predicate.list.size() == 1 ? predicate.list.get(0) : predicate.list.isEmpty() ? BlockStatePredicate.Empty.INSTANCE : predicate;
-	}
+        if (predicate.list.size() == 1) {
+            return predicate.list.get(0);
+        } else if (predicate.list.isEmpty()) {
+            return Empty.INSTANCE;
+        }
+        return predicate;
+    }
 
 	private static BlockStatePredicate of0(Object o) {
 		if (o instanceof Block) {
