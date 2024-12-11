@@ -9,16 +9,15 @@ import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.core.TagBuilderKJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemBuilder;
-import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.SetTag;
 import net.minecraft.tags.Tag;
-import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
@@ -374,22 +373,22 @@ public class TagEventJS<T> extends EventJS {
 		}
 
 		if (type.equals("items")) {
-            for (var builderBase : RegistryInfos.ITEM.objects.values()) {
+            for (val builderBase : RegistryInfos.ITEM) {
                 if (builderBase instanceof ItemBuilder builder) {
-                    for (ResourceLocation s : builder.tags) {
+                    for (val s : builder.tags) {
                         add(s, builder.id);
                     }
                 }
             }
-            for (BuilderBase<? extends Block> builderBase : RegistryInfos.BLOCK.objects.values()) {
+            for (val builderBase : RegistryInfos.BLOCK) {
                 if (builderBase instanceof BlockBuilder builder && builder.itemBuilder != null) {
-                    for (var s : builder.itemBuilder.tags) {
+                    for (val s : builder.itemBuilder.tags) {
                         add(s, builder.itemBuilder.id);
                     }
                 }
             }
 		} else if (type.equals("blocks")) {
-            for (BuilderBase<? extends Block> builderBase : RegistryInfos.BLOCK.objects.values()) {
+            for (val builderBase : RegistryInfos.BLOCK) {
                 if (builderBase instanceof BlockBuilder builder) {
                     for (var s : builder.tags) {
                         add(s, builder.id);

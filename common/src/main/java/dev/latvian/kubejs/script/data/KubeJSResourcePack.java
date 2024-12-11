@@ -7,6 +7,7 @@ import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.util.UtilsJS;
+import lombok.val;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
@@ -127,14 +128,13 @@ public abstract class KubeJSResourcePack implements PackResources {
 			}
 		} else {
 			if (path.equals("loot_tables")) {
-                for (ResourceLocation id : RegistryInfos.BLOCK.objects.keySet()) {
+                for (val id : RegistryInfos.BLOCK.objects.keySet()) {
                     list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
                 }
 			}
 		}
 
-		UtilsJS.tryIO(() ->
-		{
+		UtilsJS.tryIO(() -> {
 			Path root = KubeJSPaths.get(type).toAbsolutePath();
 
 			if (Files.exists(root) && Files.isDirectory(root)) {
