@@ -5,6 +5,7 @@ import dev.latvian.kubejs.block.custom.BasicBlockJS;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -136,13 +137,8 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
 		@Override
 		public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
-			var state = defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
-
-			if (properties.waterlogged) {
-				state = state.setValue(BlockStateProperties.WATERLOGGED, context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER);
-			}
-
-			return state;
+            return super.getStateForPlacement(context)
+                .setValue(FACING, context.getHorizontalDirection().getOpposite());
 		}
 
 		private boolean hasCustomShape() {

@@ -19,7 +19,7 @@ import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import lombok.val;
-import me.shedaniel.architectury.registry.BlockProperties;
+import me.shedaniel.architectury.registry.BlockPropertiesExtension;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +28,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -35,6 +37,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -48,9 +51,10 @@ public class BlockBuilder extends BuilderBase<Block> {
 
     @Deprecated
 	public transient BlockType type = null;
-    public transient SoundType soundType;
 	public transient MaterialJS material = MaterialListJS.INSTANCE.map.get("wood");
-    public transient Function<BlockState, MaterialColor> materialColorFn;
+    public transient SoundType soundType = material.getSound();
+    public transient Function<BlockState, MaterialColor> materialColorFn
+        = b -> material.getMinecraftMaterial().getColor();
 	public transient float hardness = 0.5F;
 	public transient float resistance = -1F;
 	public transient float lightLevel = 0F;
@@ -68,8 +72,7 @@ public class BlockBuilder extends BuilderBase<Block> {
 	public transient List<AABB> customShape = new ArrayList<>();
 	public transient boolean noCollission = false;
 	public transient boolean notSolid = false;
-	public transient boolean waterlogged = false;
-	public transient float slipperiness = 0.6F;
+    public transient float slipperiness = 0.6F;
 	public transient float speedFactor = 1.0F;
 	public transient float jumpFactor = 1.0F;
 	public Consumer<RandomTickCallbackJS> randomTickCallback = null;
@@ -81,6 +84,7 @@ public class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean viewBlocking = true;
 	public transient boolean redstoneConductor = true;
 	public transient boolean transparent = false;
+    public transient Set<Property<?>> blockStateProperties = new HashSet<>();
 
     public BlockBuilder(ResourceLocation id) {
 		super(id);
@@ -504,10 +508,42 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	public BlockBuilder waterlogged() {
-		waterlogged = true;
-		return this;
-	}
+    @JSInfo("""
+		Add a blockstate property to the block.
+		
+		For example, facing, lit, etc.""")
+    public BlockBuilder property(Property<?> property) {
+        if (property.getPossibleValues().size() <= 1) {
+            throw new IllegalArgumentException(String.format("Block \"%s\" has an illegal Blockstate Property \"%s\" which has <= 1 possible values. (%d possible values)", id, property.getName(), property.getPossibleValues().size()));
+        }
+        blockStateProperties.add(property);
+        return this;
+    }
+
+    @Deprecated
+    public BlockBuilder setWaterlogged(boolean waterlogged) {
+        ScriptType.STARTUP.console.warn("\"BlockBuilder.waterlogged\" is a deprecated property! Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" instead.");
+        if (waterlogged) {
+            property(BlockStateProperties.WATERLOGGED);
+        }
+        return this;
+    }
+
+    @Deprecated
+    public boolean getWaterlogged() {
+        ScriptType.STARTUP.console.warn("\"BlockBuilder.waterlogged\" is a deprecated property! Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" instead.");
+        return canBeWaterlogged();
+    }
+
+    @JSInfo("Makes the block can be waterlogged.")
+    public BlockBuilder waterlogged() {
+        return property(BlockStateProperties.WATERLOGGED);
+    }
+
+    @JSInfo("Checks if the block can be waterlogged.")
+    public boolean canBeWaterlogged() {
+        return blockStateProperties.contains(BlockStateProperties.WATERLOGGED);
+    }
 
 	public BlockBuilder noDrops() {
 		lootTable = null;
@@ -573,7 +609,7 @@ public class BlockBuilder extends BuilderBase<Block> {
             .transparent(true);
     }
 
-	public BlockBuilder defaultTranslucent() {
+    public BlockBuilder defaultTranslucent() {
 		return defaultCutout().renderType("translucent");
 	}
 
@@ -613,10 +649,7 @@ public class BlockBuilder extends BuilderBase<Block> {
     }
 
     public Block.Properties createProperties() {
-		val properties = materialColorFn == null
-            ? BlockProperties.of(material.getMinecraftMaterial())
-            : BlockProperties.of(material.getMinecraftMaterial(), materialColorFn);
-
+		val properties = new KubeJSBlockProperties(this);
 
 		properties.sound(material.getSound());
 
@@ -628,8 +661,8 @@ public class BlockBuilder extends BuilderBase<Block> {
 
 		properties.lightLevel(state -> (int) (lightLevel * 15F));
 
-		if (harvestTool != null && harvestLevel >= 0) {
-			properties.tool(harvestTool, harvestLevel);
+		if (harvestTool != null && harvestLevel >= 0 && properties instanceof BlockPropertiesExtension ex) {
+			ex.tool(harvestTool, harvestLevel);
 		}
 
 		if (noCollission) {
