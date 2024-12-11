@@ -199,22 +199,30 @@ public class BlockBuilder extends BuilderBase<Block> {
         return soundType(SoundType.GLASS);
     }
 
+    @JSInfo("""
+		Sets the hardness of the block. Defaults to 0.5.
+		
+		Setting this to -1 will make the block unbreakable like bedrock.""")
     public BlockBuilder hardness(float h) {
 		hardness = h;
 		return this;
 	}
 
+    @JSInfo("""
+		Sets the blast resistance of the block. Defaults to -1.""")
 	public BlockBuilder resistance(float r) {
 		resistance = r;
 		return this;
 	}
 
+    @JSInfo("Makes the block unbreakable.")
 	public BlockBuilder unbreakable() {
 		hardness = -1F;
 		resistance = Float.MAX_VALUE;
 		return this;
 	}
 
+    @JSInfo("Sets the light level of the block. Defaults to 0 (no light). providing a `1` equals to 15 light level for built block")
 	public BlockBuilder lightLevel(float light) {
 		lightLevel = light;
 		return this;
@@ -226,22 +234,28 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+    @JSInfo("Sets the opacity of the block. Opaque blocks do not let light through.")
 	public BlockBuilder opaque(boolean o) {
 		opaque = o;
 		return this;
 	}
 
+    @JSInfo("Sets the block should be a full block or not, like cactus or doors.")
 	public BlockBuilder fullBlock(boolean f) {
 		fullBlock = f;
 		return this;
 	}
 
+    @JSInfo("Makes the block require a tool to have drops when broken.")
 	public BlockBuilder requiresTool(boolean f) {
 		requiresTool = f;
 		return this;
 	}
 
-	public BlockBuilder renderType(String l) {
+
+    @JSInfo("""
+		Sets the render type of the block. Can be `cutout`, `cutout_mipped`, `translucent`, or `basic`.""")
+    public BlockBuilder renderType(String l) {
 		renderType = l;
 		return this;
 	}
@@ -363,8 +377,7 @@ public class BlockBuilder extends BuilderBase<Block> {
     }
 
     @JSInfo("""
-		Set the color of a specific layer of the block.
-		""")
+		Set the color of a specific layer of the block.""")
     public BlockBuilder color(int index, BlockTintFunction color) {
         if (!(tint instanceof BlockTintFunction.Mapped)) {
             tint = new BlockTintFunction.Mapped();
@@ -375,20 +388,22 @@ public class BlockBuilder extends BuilderBase<Block> {
     }
 
     @JSInfo("""
-		Set the color of a specific layer of the block.
-		""")
+		Set the color of a specific layer of the block.""")
     public BlockBuilder color(BlockTintFunction color) {
         tint = color;
         return this;
     }
 
+    @JSInfo("use 'textureAll(tex)' instead")
 	@Deprecated
 	public BlockBuilder texture(String tex) {
 		ScriptType.STARTUP.console.warn("Using 'texture(tex)' in block builders is deprecated! Please use 'textureAll(tex)' instead!");
 		return textureAll(tex);
 	}
 
-	public BlockBuilder textureAll(String tex) {
+    @JSInfo("""
+		Texture the block on all sides with the same texture.""")
+    public BlockBuilder textureAll(String tex) {
 		for (Direction direction : Direction.values()) {
 			textureSide(direction, tex);
 		}
@@ -397,22 +412,30 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	public BlockBuilder textureSide(Direction direction, String tex) {
+    @JSInfo("""
+		Texture a specific side of the block.""")
+    public BlockBuilder textureSide(Direction direction, String tex) {
 		return texture(direction.getSerializedName(), tex);
 	}
 
-	public BlockBuilder texture(String id, String tex) {
+    @JSInfo("""
+		Texture a specific texture key of the block.""")
+    public BlockBuilder texture(String id, String tex) {
 		textures.addProperty(id, tex);
 		return this;
 	}
 
-	public BlockBuilder model(String m) {
+    @JSInfo("""
+		Set the block's model.""")
+    public BlockBuilder model(String m) {
 		model = m;
 		itemBuilder.parentModel = model;
 		return this;
 	}
 
-	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
+    @JSInfo("""
+		Modifies the block's item representation.""")
+    public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
 		if (i == null) {
 			itemBuilder = null;
 			lootTable = null;
@@ -423,15 +446,19 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	public BlockBuilder noItem() {
+    @JSInfo("""
+		Set the block to have no corresponding item.""")
+    public BlockBuilder noItem() {
 		return item(null);
 	}
 
 	@Deprecated
+    @JSInfo("use `box(...)` instead")
 	public BlockBuilder shapeCube(double x0, double y0, double z0, double x1, double y1, double z1) {
 		return box(x0, y0, z0, x1, y1, z1, true);
 	}
 
+    @JSInfo("Set the shape of the block.")
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
 		if (scale16) {
 			customShape.add(new AABB(x0 / 16D, y0 / 16D, z0 / 16D, x1 / 16D, y1 / 16D, z1 / 16D));
@@ -442,6 +469,7 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
+    @JSInfo("Set the shape of the block.")
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1) {
 		return box(x0, y0, z0, x1, y1, z1, true);
 	}
@@ -464,11 +492,13 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return createShape(this.customShape);
 	}
 
+    @JSInfo("Makes the block not collide with entities.")
 	public BlockBuilder noCollission() {
 		noCollission = true;
 		return this;
 	}
 
+    @JSInfo("Makes the block not be solid.")
 	public BlockBuilder notSolid() {
 		notSolid = true;
 		return this;
