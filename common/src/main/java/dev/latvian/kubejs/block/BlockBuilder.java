@@ -14,6 +14,7 @@ import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.registry.BuilderBase;
+import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -25,6 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.AABB;
@@ -46,6 +48,7 @@ public class BlockBuilder extends BuilderBase<Block> {
 
     @Deprecated
 	public transient BlockType type = null;
+    public transient SoundType soundType;
 	public transient MaterialJS material = MaterialListJS.INSTANCE.map.get("wood");
     public transient Function<BlockState, MaterialColor> materialColorFn;
 	public transient float hardness = 0.5F;
@@ -150,7 +153,53 @@ public class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	public BlockBuilder hardness(float h) {
+    @JSInfo("Sets the block's sound type. Defaults to what matches the material of this block.")
+    public BlockBuilder soundType(SoundType m) {
+        if (m == null) {
+            soundType = null;
+            ConsoleJS.STARTUP.error("Invalid sound type!");
+            ConsoleJS.STARTUP.warn("Valid sound types: " + SoundTypeWrapper.INSTANCE.getMap().keySet());
+            return this;
+        }
+
+        soundType = m;
+        return this;
+    }
+
+    @JSInfo("Set the sound type to what matches the material of this block")
+    public BlockBuilder noSoundType() {
+        return soundType(null);
+    }
+
+    public BlockBuilder woodSoundType() {
+        return soundType(SoundType.WOOD);
+    }
+
+    public BlockBuilder stoneSoundType() {
+        return soundType(SoundType.STONE);
+    }
+
+    public BlockBuilder gravelSoundType() {
+        return soundType(SoundType.GRAVEL);
+    }
+
+    public BlockBuilder grassSoundType() {
+        return soundType(SoundType.GRASS);
+    }
+
+    public BlockBuilder sandSoundType() {
+        return soundType(SoundType.SAND);
+    }
+
+    public BlockBuilder cropSoundType() {
+        return soundType(SoundType.CROP);
+    }
+
+    public BlockBuilder glassSoundType() {
+        return soundType(SoundType.GLASS);
+    }
+
+    public BlockBuilder hardness(float h) {
 		hardness = h;
 		return this;
 	}
@@ -537,6 +586,8 @@ public class BlockBuilder extends BuilderBase<Block> {
 		val properties = materialColorFn == null
             ? BlockProperties.of(material.getMinecraftMaterial())
             : BlockProperties.of(material.getMinecraftMaterial(), materialColorFn);
+
+
 		properties.sound(material.getSound());
 
 		if (resistance >= 0F) {
