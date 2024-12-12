@@ -42,11 +42,15 @@ public class KMath {
         return new Matrix4f();
     }
 
-    public static double distSquared(Vector3f vec1, Vector3f vec2) {
+    public static float distSquared(Vector3f vec1, Vector3f vec2) {
         val x = vec1.x() - vec2.x();
         val y = vec1.y() - vec2.y();
         val z = vec1.z() - vec2.z();
-        return Math.sqrt(x * x + y * y + z * z);
+        return x * x + y * y + z * z;
+    }
+
+    public static double dist(Vector3f vec1, Vector3f vec2) {
+        return Math.sqrt(distSquared(vec1, vec2));
     }
 
     public static double rad(double value) {
