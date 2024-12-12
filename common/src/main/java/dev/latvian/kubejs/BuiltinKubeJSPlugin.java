@@ -11,6 +11,7 @@ import dev.latvian.kubejs.bindings.*;
 import dev.latvian.kubejs.block.*;
 import dev.latvian.kubejs.block.custom.*;
 import dev.latvian.kubejs.block.custom.builder.*;
+import dev.latvian.kubejs.block.predicate.BlockStatePredicate;
 import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.client.painter.screen.*;
 import dev.latvian.kubejs.entity.EntityJS;
@@ -90,6 +91,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.RandomIntGenerator;
@@ -353,6 +355,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Matrix4f", Matrix4f.class);
 		//
 		event.add("BlockPos", BlockPos.class);
+
+        //block
+        event.add("BlockProperties", BlockStateProperties.class);
 
 		KubeJS.PROXY.clientBindings(event);
 	}

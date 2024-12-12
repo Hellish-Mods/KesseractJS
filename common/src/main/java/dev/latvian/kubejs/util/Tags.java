@@ -17,19 +17,35 @@ import java.util.Collection;
 import java.util.Map;
 
 public class Tags {
+    public static Tag<Item> item(ResourceLocation id) {
+        return items().getTagOrEmpty(id);
+    }
+
 	public static TagCollection<Item> items() {
 		return SerializationTags.getInstance().getItems();
 	}
 
-	public static TagCollection<Block> blocks() {
+    public static Tag<Block> block(ResourceLocation id) {
+        return blocks().getTagOrEmpty(id);
+    }
+
+    public static TagCollection<Block> blocks() {
 		return SerializationTags.getInstance().getBlocks();
 	}
 
-	public static TagCollection<Fluid> fluids() {
+    public static Tag<Fluid> fluid(ResourceLocation id) {
+        return fluids().getTagOrEmpty(id);
+    }
+
+    public static TagCollection<Fluid> fluids() {
 		return SerializationTags.getInstance().getFluids();
 	}
 
-	public static TagCollection<EntityType<?>> entityTypes() {
+    public static Tag<EntityType<?>> entityType(ResourceLocation id) {
+        return entityTypes().getTagOrEmpty(id);
+    }
+
+    public static TagCollection<EntityType<?>> entityTypes() {
 		return SerializationTags.getInstance().getEntityTypes();
 	}
 

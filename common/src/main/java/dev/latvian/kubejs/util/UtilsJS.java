@@ -13,6 +13,7 @@ import dev.latvian.kubejs.core.JsonSerializableKJS;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.item.events.ItemModificationEventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.WorldJS;
@@ -53,13 +54,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -563,4 +558,20 @@ public class UtilsJS {
 		chars[0] = Character.toUpperCase(chars[0]);
 		return new String(chars);
 	}
+
+    private static Collection<BlockState> ALL_STATE_CACHE = null;
+
+    public static Collection<BlockState> getAllBlockStates() {
+        if (ALL_STATE_CACHE != null) {
+            return ALL_STATE_CACHE;
+        }
+
+        val states = new HashSet<BlockState>();
+        for (val block : RegistryInfos.BLOCK.getArchRegistry()) {
+            states.addAll(block.getStateDefinition().getPossibleStates());
+        }
+
+        ALL_STATE_CACHE = Collections.unmodifiableCollection(states);
+        return ALL_STATE_CACHE;
+    }
 }
