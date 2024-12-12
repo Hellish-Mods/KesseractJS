@@ -2,7 +2,7 @@ package dev.latvian.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
 import dev.latvian.kubejs.server.ServerJS;
-import dev.latvian.kubejs.world.ServerWorldJS;
+import dev.latvian.kubejs.world.events.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;

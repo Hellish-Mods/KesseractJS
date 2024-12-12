@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.entity;
 
-import dev.latvian.kubejs.world.WorldEventJS;
+import dev.latvian.kubejs.world.events.WorldEventJS;
 import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.world.entity.Entity;
 

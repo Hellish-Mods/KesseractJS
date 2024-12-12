@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.block.events;
 
 import dev.latvian.kubejs.world.BlockContainerJS;
-import dev.latvian.kubejs.world.WorldEventJS;
+import dev.latvian.kubejs.world.events.WorldEventJS;
 import dev.latvian.kubejs.world.WorldJS;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;

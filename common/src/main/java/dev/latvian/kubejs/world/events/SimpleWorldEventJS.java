@@ -1,4 +1,6 @@
-package dev.latvian.kubejs.world;
+package dev.latvian.kubejs.world.events;
+
+import dev.latvian.kubejs.world.WorldJS;
 
 /**
  * @author LatvianModder
