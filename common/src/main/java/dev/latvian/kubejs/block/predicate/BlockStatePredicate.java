@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.block.predicate;
 
+import com.github.bsideup.jabel.Desugar;
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
@@ -33,7 +34,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-public sealed interface BlockStatePredicate extends Predicate<BlockState> {
+@FunctionalInterface
+public interface BlockStatePredicate extends Predicate<BlockState> {
 	ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
 	@Override
@@ -221,6 +223,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 	}
 
+    @Desugar
 	record BlockMatch(Block block) implements BlockStatePredicate {
 		@Override
 		public boolean test(BlockState state) {
@@ -254,6 +257,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 	}
 
+    @Desugar
 	record StateMatch(BlockState state) implements BlockStatePredicate {
 		@Override
 		public boolean test(BlockState s) {
@@ -287,6 +291,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 	}
 
+    @Desugar
 	record TagMatch(Tag<Block> tag) implements BlockStatePredicate {
 		@Override
 		public boolean test(BlockState state) {
@@ -309,6 +314,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 	}
 
+    @Desugar
 	final class RegexMatch implements BlockStatePredicate {
 		public final Pattern pattern;
 		private final LinkedHashSet<Block> matchedBlocks;
@@ -350,6 +356,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 	}
 
+    @Desugar
 	record OrMatch(List<BlockStatePredicate> list) implements BlockStatePredicate {
 		@Override
 		public boolean test(BlockState state) {
@@ -416,6 +423,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 	}
 
+    @Desugar
 	final class NotMatch implements BlockStatePredicate {
 		private final BlockStatePredicate predicate;
 		private final Collection<BlockState> cachedStates;
@@ -475,6 +483,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 	}
 
+    @Desugar
 	final class AndMatch implements BlockStatePredicate {
 		private final List<BlockStatePredicate> list;
 		private final Collection<BlockState> cachedStates;

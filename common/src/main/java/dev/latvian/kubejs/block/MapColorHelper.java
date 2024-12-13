@@ -128,7 +128,7 @@ public record MapColorHelper(int id, String name, MaterialColor color, Vector3f 
 
 				if (dist < lastDist) {
 					closest = helper;
-					lastDist = (float) dist;
+					lastDist = dist;
 				}
 			}
 		}
