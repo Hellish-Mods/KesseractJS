@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.forge;
 
-import dev.latvian.kubejs.BuiltinKubeJSPlugin;
+import dev.latvian.kubejs.KubeJSPlugin;
 import dev.latvian.kubejs.event.forge.ClassConvertible;
 import dev.latvian.kubejs.event.forge.SidedNativeEvents;
 import dev.latvian.kubejs.event.forge.WrappedEventHandler;
@@ -12,11 +12,9 @@ import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import lombok.val;
 import net.minecraftforge.common.BiomeDictionary;
 
-public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
+public class BuiltinKubeJSForgePlugin extends KubeJSPlugin {
 	@Override
 	public void addClasses(ScriptType type, ClassFilter filter) {
-		super.addClasses(type, filter);
-
 		filter.allow("net.minecraftforge"); // Forge
 		filter.deny("net.minecraftforge.fml");
 		filter.deny("net.minecraftforge.accesstransformer");
@@ -28,8 +26,6 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 
 	@Override
 	public void addBindings(BindingsEvent event) {
-		super.addBindings(event);
-
 		if (event.type == ScriptType.STARTUP) {
             event.addFunction(
                 "onForgeEvent",
@@ -45,7 +41,6 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 
 	@Override
 	public void addTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
-		super.addTypeWrappers(type, typeWrappers);
 		typeWrappers.register(BiomeDictionary.Type.class, BiomeDictionaryWrapper::getBiomeType);
         typeWrappers.register(ClassConvertible.class, ClassConvertible::of);
 	}

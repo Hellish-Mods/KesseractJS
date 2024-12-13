@@ -49,7 +49,13 @@ public class KubeJSForge {
 		KubeJS.instance = new KubeJS();
 		KubeJS.instance.setup();
 		IntegrationManager.init();
-		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		ModLoadingContext.get().registerExtensionPoint(
+            ExtensionPoint.DISPLAYTEST,
+            () -> Pair.of(
+                () -> FMLNetworkConstants.IGNORESERVERONLY,
+                (a, b) -> true
+            )
+        );
 
 		MinecraftForge.EVENT_BUS.addGenericListener(Block.class, KubeJSForge::missingBlockMappings);
 		MinecraftForge.EVENT_BUS.addGenericListener(Item.class, KubeJSForge::missingItemMappings);
