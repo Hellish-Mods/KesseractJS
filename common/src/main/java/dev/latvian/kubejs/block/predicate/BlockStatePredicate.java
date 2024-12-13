@@ -16,7 +16,6 @@ import net.minecraft.tags.Tag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.structure.templatesystem.AlwaysTrueTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockStateMatchTest;
@@ -31,18 +30,16 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 @FunctionalInterface
-public interface BlockStatePredicate extends Predicate<BlockState> {
+public interface BlockStatePredicate {
 	ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
 
-	@Override
-	boolean test(BlockState state);
+	boolean check(BlockState state);
 
-	default boolean testBlock(Block block) {
-		return test(block.defaultBlockState());
+	default boolean checkBlock(Block block) {
+		return check(block.defaultBlockState());
 	}
 
 	@Nullable
@@ -136,7 +133,7 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 //	}
 
 	@SuppressWarnings("unchecked")
-	private static BlockStatePredicate ofSingle(Object o) {
+	static BlockStatePredicate ofSingle(Object o) {
 		if (o instanceof BlockStatePredicate bsp) {
 			return bsp;
 		} else if (o instanceof Block block) {
@@ -154,7 +151,7 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 	default Collection<BlockState> getBlockStates() {
 		val states = new HashSet<BlockState>();
 		for (val state : UtilsJS.getAllBlockStates()) {
-			if (test(state)) {
+			if (check(state)) {
 				states.add(state);
 			}
 		}
@@ -182,16 +179,6 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 		return set;
 	}
 
-	default boolean check(List<OreConfiguration> targetStates) {
-		for (val state : targetStates) {
-			if (test(state.state)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	enum Simple implements BlockStatePredicate {
 		ALL(true),
 		NONE(false);
@@ -203,12 +190,12 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 
 		@Override
-		public boolean test(BlockState state) {
+		public boolean check(BlockState state) {
 			return match;
 		}
 
 		@Override
-		public boolean testBlock(Block block) {
+		public boolean checkBlock(Block block) {
 			return match;
 		}
 
@@ -226,12 +213,12 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
     @Desugar
 	record BlockMatch(Block block) implements BlockStatePredicate {
 		@Override
-		public boolean test(BlockState state) {
+		public boolean check(BlockState state) {
 			return state.is(block);
 		}
 
 		@Override
-		public boolean testBlock(Block block) {
+		public boolean checkBlock(Block block) {
 			return this.block == block;
 		}
 
@@ -260,12 +247,12 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
     @Desugar
 	record StateMatch(BlockState state) implements BlockStatePredicate {
 		@Override
-		public boolean test(BlockState s) {
+		public boolean check(BlockState s) {
 			return state == s;
 		}
 
 		@Override
-		public boolean testBlock(Block block) {
+		public boolean checkBlock(Block block) {
 			return state.getBlock() == block;
 		}
 
@@ -294,12 +281,12 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
     @Desugar
 	record TagMatch(Tag<Block> tag) implements BlockStatePredicate {
 		@Override
-		public boolean test(BlockState state) {
+		public boolean check(BlockState state) {
 			return state.is(tag);
 		}
 
 		@Override
-		public boolean testBlock(Block block) {
+		public boolean checkBlock(Block block) {
 			return block.is(tag);
 		}
 
@@ -332,12 +319,12 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 
 		@Override
-		public boolean test(BlockState state) {
+		public boolean check(BlockState state) {
 			return matchedBlocks.contains(state.getBlock());
 		}
 
 		@Override
-		public boolean testBlock(Block block) {
+		public boolean checkBlock(Block block) {
 			return matchedBlocks.contains(block);
 		}
 
@@ -359,9 +346,9 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
     @Desugar
 	record OrMatch(List<BlockStatePredicate> list) implements BlockStatePredicate {
 		@Override
-		public boolean test(BlockState state) {
+		public boolean check(BlockState state) {
 			for (val predicate : list) {
-				if (predicate.test(state)) {
+				if (predicate.check(state)) {
 					return true;
 				}
 			}
@@ -370,9 +357,9 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 
 		@Override
-		public boolean testBlock(Block block) {
+		public boolean checkBlock(Block block) {
 			for (val predicate : list) {
-				if (predicate.testBlock(block)) {
+				if (predicate.checkBlock(block)) {
 					return true;
 				}
 			}
@@ -435,7 +422,7 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 
 			for (val entry : RegistryInfos.BLOCK.entrySet()) {
 				for (val state : entry.getValue().getStateDefinition().getPossibleStates()) {
-					if (!predicate.test(state)) {
+					if (!predicate.check(state)) {
 						cachedStates.add(state);
 					}
 				}
@@ -443,13 +430,13 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 
 		@Override
-		public boolean test(BlockState state) {
-			return !predicate.test(state);
+		public boolean check(BlockState state) {
+			return !predicate.check(state);
 		}
 
 		@Override
-		public boolean testBlock(Block block) {
-			return !predicate.testBlock(block);
+		public boolean checkBlock(Block block) {
+			return !predicate.checkBlock(block);
 		}
 
 		@Override
@@ -496,7 +483,7 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 				for (val state : entry.getValue().getStateDefinition().getPossibleStates()) {
 					var match = true;
 					for (val predicate : list) {
-						if (!predicate.test(state)) {
+						if (!predicate.check(state)) {
 							match = false;
 							break;
 						}
@@ -509,9 +496,9 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 
 		@Override
-		public boolean test(BlockState state) {
+		public boolean check(BlockState state) {
 			for (val predicate : list) {
-				if (!predicate.test(state)) {
+				if (!predicate.check(state)) {
 					return false;
 				}
 			}
@@ -519,9 +506,9 @@ public interface BlockStatePredicate extends Predicate<BlockState> {
 		}
 
 		@Override
-		public boolean testBlock(Block block) {
+		public boolean checkBlock(Block block) {
 			for (val predicate : list) {
-				if (!predicate.testBlock(block)) {
+				if (!predicate.checkBlock(block)) {
 					return false;
 				}
 			}

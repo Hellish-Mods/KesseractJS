@@ -83,10 +83,10 @@ public class WorldgenRemoveEventJS extends StartupEventJS {
 		}
 
 		removeFeature(properties._worldgenLayer, featureConfiguration -> {
-			if (featureConfiguration instanceof OreConfiguration) {
-				return properties.blocks.check(((OreConfiguration) featureConfiguration).state);
-			} else if (featureConfiguration instanceof ReplaceBlockConfiguration) {
-				return properties.blocks.check(((ReplaceBlockConfiguration) featureConfiguration).state);
+			if (featureConfiguration instanceof OreConfiguration ore) {
+				return properties.blocks.check(ore.state);
+			} else if (featureConfiguration instanceof ReplaceBlockConfiguration repl) {
+				return properties.blocks.check(repl.state);
 			}
 
 			return false;
