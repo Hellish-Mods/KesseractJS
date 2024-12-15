@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.world;
+package dev.latvian.kubejs.world.events;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
@@ -9,6 +9,8 @@ import dev.latvian.kubejs.player.FakeServerPlayerDataJS;
 import dev.latvian.kubejs.player.ServerPlayerDataJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
+import dev.latvian.kubejs.world.WorldCommandSender;
+import dev.latvian.kubejs.world.WorldJS;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;

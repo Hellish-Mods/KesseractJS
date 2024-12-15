@@ -3,6 +3,7 @@ package dev.latvian.kubejs.util;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
+import lombok.val;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -140,14 +141,14 @@ public class ConsoleJS {
 	}
 
 	private String string(Object object) {
-		Object o = UtilsJS.wrap(object, JSObjectType.ANY);
-		String s = o == null || o.getClass().isPrimitive() || o instanceof Boolean || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]");
+		val o = UtilsJS.wrap(object, JSObjectType.ANY);
+		val s = o == null || o.getClass().isPrimitive() || o instanceof Boolean || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]");
 
 		if (lineNumber <= 0 && group.isEmpty()) {
 			return s;
 		}
 
-		StringBuilder builder = new StringBuilder();
+		val builder = new StringBuilder();
 
 		if (lineNumber > 0) {
 			int[] lineP = {0};

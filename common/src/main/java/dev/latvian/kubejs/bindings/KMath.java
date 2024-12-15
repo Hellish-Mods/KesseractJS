@@ -2,6 +2,7 @@ package dev.latvian.kubejs.bindings;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.*;
+import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -41,8 +42,15 @@ public class KMath {
         return new Matrix4f();
     }
 
-    public static PoseStack poseStack() {
-        return new PoseStack();
+    public static float distSquared(Vector3f vec1, Vector3f vec2) {
+        val x = vec1.x() - vec2.x();
+        val y = vec1.y() - vec2.y();
+        val z = vec1.z() - vec2.z();
+        return x * x + y * y + z * z;
+    }
+
+    public static double dist(Vector3f vec1, Vector3f vec2) {
+        return Math.sqrt(distSquared(vec1, vec2));
     }
 
     public static double rad(double value) {

@@ -9,7 +9,7 @@ import dev.latvian.kubejs.text.Text;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.WrappedJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import dev.latvian.kubejs.world.ServerWorldJS;
+import dev.latvian.kubejs.world.events.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import lombok.Getter;
 import me.shedaniel.architectury.hooks.EntityHooks;

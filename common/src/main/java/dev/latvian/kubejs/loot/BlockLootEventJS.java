@@ -2,7 +2,7 @@ package dev.latvian.kubejs.loot;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.kubejs.block.BlockStatePredicate;
+import dev.latvian.kubejs.block.predicate.BlockStatePredicate;
 import dev.latvian.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -58,7 +58,7 @@ public class BlockLootEventJS extends LootEventJS {
 			ItemStack item1 = item.isEmpty() ? new ItemStack(block.asItem()) : item;
 
 			if (!item1.isEmpty()) {
-				addBlock(new BlockStatePredicate.FromID(block), loot -> {
+				addBlock(new BlockStatePredicate.BlockMatch(block), loot -> {
 					loot.addPool(pool -> {
 						pool.addItem(item1);
 						pool.survivesExplosion();

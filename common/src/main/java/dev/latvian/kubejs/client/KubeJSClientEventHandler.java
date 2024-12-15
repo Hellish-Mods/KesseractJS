@@ -21,6 +21,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.Tags;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
 import dev.latvian.kubejs.world.ClientWorldJS;
+import lombok.val;
 import me.shedaniel.architectury.event.events.GuiEvent;
 import me.shedaniel.architectury.event.events.TextureStitchEvent;
 import me.shedaniel.architectury.event.events.TooltipEvent;
@@ -92,7 +93,7 @@ public class KubeJSClientEventHandler {
 
     private void preAtlasStitch(TextureAtlas atlas, Consumer<ResourceLocation> consumer) {
         var stitchEvent = new AtlasSpriteRegistryEventJS(consumer);
-        for (var builder : RegistryInfos.FLUID) {
+        for (val builder : RegistryInfos.FLUID) {
             if (builder instanceof FluidBuilder f) {
                 stitchEvent.register(ResourceLocation.tryParse(f.flowingTexture));
                 stitchEvent.register(ResourceLocation.tryParse(f.stillTexture));
@@ -108,26 +109,24 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void renderLayers() {
-		for (var builder : RegistryInfos.BLOCK.objects.values()) {
-			if (!(builder instanceof BlockBuilder)) continue;
-            var bBuilder = (BlockBuilder) builder;
-
-			switch (bBuilder.renderType) {
-				case "cutout" -> RenderTypes.register(RenderType.cutout(), bBuilder.get());
-				case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), bBuilder.get());
-				case "translucent" -> RenderTypes.register(RenderType.translucent(), bBuilder.get());
-				//default:
-				//	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
-			}
-		}
-        for (var base : RegistryInfos.FLUID.objects.values()) {
-			if (!(base instanceof FluidBuilder)) continue;
-            var builder = (FluidBuilder) base;
-
-            switch (builder.renderType) {
-                case "cutout" -> RenderTypes.register(RenderType.cutout(), builder.stillFluid);
-                case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), builder.stillFluid);
-                case "translucent" -> RenderTypes.register(RenderType.translucent(), builder.stillFluid);
+		for (val base : RegistryInfos.BLOCK) {
+            if (base instanceof BlockBuilder builder) {
+                switch (builder.renderType) {
+                    case "cutout" -> RenderTypes.register(RenderType.cutout(), builder.get());
+                    case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), builder.get());
+                    case "translucent" -> RenderTypes.register(RenderType.translucent(), builder.get());
+//                    default:
+//                    	RenderTypeLookup.setRenderLayer(block, RenderType.getSolid());
+                }
+            }
+        }
+        for (val base : RegistryInfos.FLUID) {
+            if (base instanceof FluidBuilder builder) {
+                switch (builder.renderType) {
+                    case "cutout" -> RenderTypes.register(RenderType.cutout(), builder.stillFluid);
+                    case "cutout_mipped" -> RenderTypes.register(RenderType.cutoutMipped(), builder.stillFluid);
+                    case "translucent" -> RenderTypes.register(RenderType.translucent(), builder.stillFluid);
+                }
             }
         }
 	}
@@ -237,7 +236,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void itemColors() {
-        for (BuilderBase<? extends Item> base : RegistryInfos.ITEM.objects.values()) {
+        for (val base : RegistryInfos.ITEM) {
             if (base instanceof ItemBuilder builder && builder.tint != null) {
                 ColorHandlers.registerItemColors(
                     builder.tint.asItemColor(),
@@ -246,10 +245,8 @@ public class KubeJSClientEventHandler {
             }
         }
 
-        for (BuilderBase<? extends Block> o : RegistryInfos.BLOCK.objects.values()) {
-            if (o instanceof BlockBuilder builder
-                && builder.itemBuilder != null
-                && !builder.color.isEmpty()) {
+        for (val o : RegistryInfos.BLOCK) {
+            if (o instanceof BlockBuilder builder && builder.itemBuilder != null && !builder.color.isEmpty()) {
                 ColorHandlers.registerItemColors(
                     (stack, index) -> builder.color.get(index),
                     Objects.requireNonNull(
@@ -260,7 +257,7 @@ public class KubeJSClientEventHandler {
             }
         }
 
-        for (var base : RegistryInfos.FLUID.objects.values()) {
+        for (val base : RegistryInfos.FLUID) {
             if (base instanceof FluidBuilder builder && builder.bucketColor != 0xFFFFFFFF) {
                 ColorHandlers.registerItemColors(
                     (stack, index) -> index == 1 ? builder.bucketColor : 0xFFFFFFFF,
@@ -271,13 +268,15 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void blockColors() {
-        RegistryInfos.BLOCK.objects.values()
-            .stream().filter(o -> o instanceof BlockBuilder).map(o -> (BlockBuilder) o)
-            .filter(builder -> !builder.color.isEmpty())
-            .forEach(builder -> ColorHandlers.registerBlockColors((state, world, pos, index) -> builder.color.get(index),
-                builder.getBlock()
-            ));
-	}
+        for (val o : RegistryInfos.BLOCK) {
+            if (o instanceof BlockBuilder builder && !builder.color.isEmpty()) {
+                ColorHandlers.registerBlockColors(
+                    (state, world, pos, index) -> builder.color.get(index),
+                    builder.getBlock()
+                );
+            }
+        }
+    }
 
 	private void postAtlasStitch(TextureAtlas atlas) {
 		if (!ClientProperties.get().getExportAtlases()) {

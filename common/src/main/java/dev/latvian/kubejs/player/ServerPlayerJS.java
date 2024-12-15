@@ -6,7 +6,7 @@ import dev.latvian.kubejs.net.PaintMessage;
 import dev.latvian.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.BlockContainerJS;
-import dev.latvian.kubejs.world.ServerWorldJS;
+import dev.latvian.kubejs.world.events.ServerWorldJS;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

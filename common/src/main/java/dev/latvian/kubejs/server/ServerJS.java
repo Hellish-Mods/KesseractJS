@@ -11,7 +11,7 @@ import dev.latvian.kubejs.util.AttachedData;
 import dev.latvian.kubejs.util.MessageSender;
 import dev.latvian.kubejs.util.WithAttachedData;
 import dev.latvian.kubejs.world.AttachWorldDataEvent;
-import dev.latvian.kubejs.world.ServerWorldJS;
+import dev.latvian.kubejs.world.events.ServerWorldJS;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import net.minecraft.Util;

@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.block.events;
 
 import dev.latvian.kubejs.block.BlockModificationProperties;
-import dev.latvian.kubejs.block.BlockStatePredicate;
+import dev.latvian.kubejs.block.predicate.BlockStatePredicate;
 import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.kubejs.event.EventJS;
 import net.minecraft.world.level.block.Block;

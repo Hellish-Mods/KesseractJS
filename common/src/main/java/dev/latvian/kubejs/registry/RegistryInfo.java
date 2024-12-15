@@ -9,6 +9,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
+import lombok.val;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -25,10 +26,10 @@ import java.util.function.Supplier;
 public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>, TypeWrapperFactory<T> {
 
     public static <T> RegistryInfo<T> of(ResourceKey<? extends Registry<?>> key, Class<T> type) {
-		var r = RegistryInfos.MAP.get(key);
+		val r = RegistryInfos.MAP.get(key);
 
 		if (r == null) {
-			var reg = new RegistryInfo<>(UtilsJS.cast(key), type);
+			val reg = new RegistryInfo<>(UtilsJS.cast(key), type);
 			RegistryInfos.MAP.put(key, reg);
 			return reg;
 		}
@@ -91,7 +92,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	public void addType(String type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory, boolean isDefault) {
-		var b = new BuilderType<>(type, builderType, factory);
+		val b = new BuilderType<>(type, builderType, factory);
 		types.put(type, b);
 
 		if (isDefault) {
@@ -168,7 +169,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 
 		int added = 0;
 
-		for (var builder : this) {
+		for (val builder : this) {
 			if (builder.dummyBuilder || (!builder.getRegistryType().bypassServerOnly && CommonProperties.get().serverOnly)) {
 				continue;
 			}
@@ -230,11 +231,11 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 			return (T) o;
 		}
 
-		var id = UtilsJS.getMCID(o);
-		var value = getValue(id);
+		val id = UtilsJS.getMCID(o);
+		val value = getValue(id);
 
 		if (value == null) {
-            var e = new IllegalArgumentException(String.format("No such element with id %s in registry %s!", id, this));
+            val e = new IllegalArgumentException(String.format("No such element with id %s in registry %s!", id, this));
             ConsoleJS.STARTUP.error("Error while wrapping registry element type!", e);
 			throw e;
 		}
@@ -243,7 +244,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	public void fireRegistryEvent() {
-		var event = customRegEvent == null
+		val event = customRegEvent == null
 				? new RegistryEventJS<>(this)
 				: customRegEvent.get();
 		event.post(ScriptType.STARTUP, eventIds);

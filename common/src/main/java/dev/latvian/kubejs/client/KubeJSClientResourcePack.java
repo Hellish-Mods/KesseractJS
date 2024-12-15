@@ -12,6 +12,7 @@ import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
@@ -67,21 +68,21 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
         new GenerateClientAssetsEventJS(generator).post(ScriptType.CLIENT, KubeJSEvents.CLIENT_GENERATE_ASSET);
 
 		//read lang json and add into lang event
-		try (var in = Files.list(KubeJSPaths.ASSETS)) {
-			for (var dir : in.filter(Files::isDirectory).collect(Collectors.toList())) {
-				var langDir = dir.resolve("lang");
+		try (val in = Files.list(KubeJSPaths.ASSETS)) {
+			for (val dir : in.filter(Files::isDirectory).collect(Collectors.toList())) {
+				val langDir = dir.resolve("lang");
 				if (!Files.exists(langDir) || !Files.isDirectory(langDir)) {
 					continue;
 				}
-				var namespace = dir.getFileName().toString();
-				for (var path : Files.list(langDir).filter(Files::isRegularFile).filter(Files::isReadable).collect(Collectors.toList())) {
-					var fileName = path.getFileName().toString();
+				val namespace = dir.getFileName().toString();
+				for (val path : Files.list(langDir).filter(Files::isRegularFile).filter(Files::isReadable).collect(Collectors.toList())) {
+					val fileName = path.getFileName().toString();
 					if (!fileName.endsWith(".json")) {
 						continue;
 					}
-					try (var reader = Files.newBufferedReader(path)) {
-						var json = JsonUtils.GSON.fromJson(reader, Map.class);
-						var lang = fileName.substring(0, fileName.length() - 5);
+					try (val reader = Files.newBufferedReader(path)) {
+						val json = JsonUtils.GSON.fromJson(reader, Map.class);
+						val lang = fileName.substring(0, fileName.length() - 5);
 						langEvent.get(namespace, lang).addAll(json);
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -96,8 +97,8 @@ public class KubeJSClientResourcePack extends KubeJSResourcePack {
 		langEvent.get("kubejs_generated", "en_us").addAll(langMap);
         langEvent.post(ScriptType.CLIENT, KubeJSEvents.CLIENT_LANG);
 
-		for (var lang2entries : langEvent.namespace2lang2entries.values()) {
-			for (var entries : lang2entries.values()) {
+		for (val lang2entries : langEvent.namespace2lang2entries.values()) {
+			for (val entries : lang2entries.values()) {
 				generator.json(entries.path(), entries.asJson());
 			}
 		}

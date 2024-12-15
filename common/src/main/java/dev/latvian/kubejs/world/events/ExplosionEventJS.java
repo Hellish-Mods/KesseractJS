@@ -1,8 +1,10 @@
-package dev.latvian.kubejs.world;
+package dev.latvian.kubejs.world.events;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.player.EntityArrayList;
+import dev.latvian.kubejs.world.BlockContainerJS;
+import dev.latvian.kubejs.world.WorldJS;
 import me.shedaniel.architectury.hooks.ExplosionHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -67,12 +69,12 @@ public abstract class ExplosionEventJS extends WorldEventJS {
 		}
 
 		public float getSize() {
-			return ExplosionHooks.getRadius(explosion);
+			return explosion.radius;
 		}
 
 		public void setSize(float s) {
-			ExplosionHooks.setRadius(explosion, s);
-		}
+            explosion.radius = s;
+        }
 	}
 
 	public static class Post extends ExplosionEventJS {
