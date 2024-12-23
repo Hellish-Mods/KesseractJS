@@ -9,6 +9,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.core.MinecraftServerKJS;
+import dev.latvian.kubejs.core.PlayerKJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.GroupIngredientJS;
 import dev.latvian.kubejs.item.ingredient.ModIngredientJS;
@@ -28,6 +29,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -189,6 +191,12 @@ public class KubeJSCommands {
                 .then(Commands.literal("remove")
                     .then(Commands.argument("player", EntityArgument.players())
                         .then(Commands.argument("stage", StringArgumentType.string())
+                            .suggests((cx, builder) ->
+                                SharedSuggestionProvider.suggest(
+                                    ((PlayerKJS) cx.getSource().getPlayerOrException()).kjs$getStages().getAll(),
+                                    builder
+                                )
+                            )
                             .executes(context -> removeStage(
                                 context.getSource(),
                                 EntityArgument.getPlayers(context, "player"),
