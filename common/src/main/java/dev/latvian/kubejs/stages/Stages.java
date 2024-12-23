@@ -63,11 +63,11 @@ public abstract class Stages {
 			return NoStages.NULL_INSTANCE;
 		}
 
-		Stages stages = ((PlayerKJS) player).getStagesRawKJS();
+		Stages stages = ((PlayerKJS) player).kjs$getStagesRaw();
 
 		if (stages == null) {
 			stages = createEntityStages(player);
-			((PlayerKJS) player).setStagesKJS(stages);
+			((PlayerKJS) player).kjs$setStages(stages);
 		}
 
 		return stages;
