@@ -4,6 +4,7 @@ import dev.latvian.kubejs.util.KubeJSPlugins;
 import lombok.val;
 
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -111,7 +112,7 @@ public class CommonProperties {
     }
 
     public void setPackMode(String s) {
-        packMode = s;
+        packMode = Objects.requireNonNull(s);
         properties.setProperty("packmode", s);
         save();
     }

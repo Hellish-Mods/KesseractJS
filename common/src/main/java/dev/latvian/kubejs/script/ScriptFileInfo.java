@@ -58,7 +58,7 @@ public class ScriptFileInfo {
 	}
 
 	public boolean isIgnored() {
-		return getProp(ScriptProperty.IGNORED);
+		return getProp(ScriptProperty.IGNORE);
 	}
 
     public String getPackMode() {
