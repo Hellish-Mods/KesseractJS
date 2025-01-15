@@ -1,8 +1,5 @@
 package dev.latvian.kubejs.block;
 
-import com.github.bsideup.jabel.Desugar;
-import dev.latvian.mods.rhino.BaseFunction;
-import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
@@ -26,7 +23,6 @@ import java.util.List;
 public interface BlockTintFunction {
 	Color getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index);
 
-    @Desugar
 	record Fixed(Color color) implements BlockTintFunction {
 		@Override
 		public Color getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {

@@ -1,9 +1,7 @@
 package dev.latvian.kubejs.item;
 
-import com.github.bsideup.jabel.Desugar;
 import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.mods.rhino.BaseFunction;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.mod.util.color.Color;
@@ -28,7 +26,6 @@ public interface ItemTintFunction {
 		return (stack, index) -> getColor(stack, index).getArgbKJS();
 	}
 
-	@Desugar
 	record Fixed(Color color) implements ItemTintFunction {
 		@Override
 		public Color getColor(ItemStack stack, int index) {

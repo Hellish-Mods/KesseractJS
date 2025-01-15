@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.client.asset;
 
-import com.github.bsideup.jabel.Desugar;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +10,6 @@ import java.util.Map;
 /**
  * @author ZZZank
  */
-@Desugar
 public record LangEntry(String namespace, String lang, Map<String, String> entries) {
     public LangEntry(String namespace, String lang) {
         this(namespace, lang, new HashMap<>());

@@ -1,6 +1,5 @@
 package dev.latvian.kubejs.block;
 
-import com.github.bsideup.jabel.Desugar;
 import com.mojang.math.Vector3f;
 import dev.latvian.kubejs.bindings.KMath;
 import dev.latvian.mods.rhino.Undefined;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Desugar
 public record MapColorHelper(int id, String name, MaterialColor color, Vector3f rgb) implements Function<BlockState, MaterialColor> {
 	public static final Map<String, MapColorHelper> NAME_MAP = new HashMap<>(96);
 	public static final Map<Integer, MapColorHelper> ID_MAP = new HashMap<>(96);
@@ -97,7 +95,7 @@ public record MapColorHelper(int id, String name, MaterialColor color, Vector3f 
 		} else if (o instanceof MaterialColor c) {
 			return c;
 		} else if (o instanceof CharSequence s) {
-			if (s.length() == 0) {
+			if (s.isEmpty()) {
 				return MaterialColor.NONE;
 			} else if (s.charAt(0) == '#') {
 				return findClosest(Integer.decode(s.toString())).color;
