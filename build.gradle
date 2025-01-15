@@ -5,7 +5,7 @@ plugins {
 }
 
 architectury {
-	minecraft = rootProject.minecraft_version
+	minecraft = minecraft_version
 }
 
 subprojects {
@@ -16,8 +16,11 @@ subprojects {
 	}
 
 	dependencies {
-		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-		mappings loom.officialMojangMappings()
+		minecraft("com.mojang:minecraft:${rootProject.minecraft_version}")
+        mappings(loom.layered {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-${rootProject.parchment_version}@zip")
+        })
 
         //lambok: https://projectlombok.org/setup/gradle
         compileOnly 'org.projectlombok:lombok:1.18.34'
