@@ -58,4 +58,7 @@ public class KubeJSPlugin {
 
 	public void generateLang(Map<String, String> lang) {
 	}
+
+    public void loadCommonProperties(CommonProperties properties) {
+    }
 }

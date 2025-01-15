@@ -1,91 +1,118 @@
 package dev.latvian.kubejs;
 
-import java.io.Reader;
-import java.io.Writer;
+import dev.latvian.kubejs.util.KubeJSPlugins;
+import lombok.val;
+
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Properties;
 
 /**
  * @author LatvianModder
  */
 public class CommonProperties {
-	private static CommonProperties instance;
+    private static CommonProperties INSTANCE;
 
-	public static CommonProperties get() {
-		if (instance == null) {
-			instance = new CommonProperties();
-		}
+    public static CommonProperties get() {
+        if (INSTANCE == null) {
+            INSTANCE = new CommonProperties();
+        }
 
-		return instance;
-	}
+        return INSTANCE;
+    }
 
-	private final Properties properties;
-	private boolean writeProperties;
+    public static void reload() {
+        INSTANCE = new CommonProperties();
+    }
 
-	public boolean hideServerScriptErrors;
-	public boolean serverOnly;
-	public boolean announceReload;
-	public boolean invertClassLoader;
-	public String packMode;
-	public boolean debugInfo;
+    private final Properties properties;
+    private boolean writeProperties;
 
-	private CommonProperties() {
-		properties = new Properties();
+    public boolean hideServerScriptErrors;
+    public boolean serverOnly;
+    public boolean announceReload;
+    public boolean invertClassLoader;
+    public String packMode;
+    public boolean debugInfo;
+    public boolean saveDevPropertiesInConfig;
+    public boolean allowAsyncStreams;
+    public boolean matchJsonRecipes;
+    public boolean ignoreCustomUniqueRecipeIds;
+    public boolean startupErrorGUI;
+    public String startupErrorReportUrl;
 
-		try {
-			Path propertiesFile = KubeJSPaths.CONFIG.resolve("common.properties");
-			writeProperties = false;
+    private CommonProperties() {
+        properties = new Properties();
 
-			if (Files.exists(propertiesFile)) {
-				try (Reader reader = Files.newBufferedReader(propertiesFile)) {
-					properties.load(reader);
-				}
-			} else {
-				writeProperties = true;
-			}
+        try {
+            writeProperties = false;
 
-			hideServerScriptErrors = get("hideServerScriptErrors", false);
-			serverOnly = get("serverOnly", false);
-			announceReload = get("announceReload", true);
-			invertClassLoader = "true".equals(properties.getProperty("invertClassLoader")); // Advanced option, not recommended to be set to true
-			packMode = get("packmode", "default");
-			debugInfo = get("debugInfo", false);
+            if (Files.exists(KubeJSPaths.COMMON_PROPERTIES)) {
+                try (val reader = Files.newBufferedReader(KubeJSPaths.COMMON_PROPERTIES)) {
+                    properties.load(reader);
+                }
+            } else {
+                writeProperties = true;
+            }
 
-			if (writeProperties) {
-				try (Writer writer = Files.newBufferedWriter(propertiesFile)) {
-					properties.store(writer, "KubeJS Common Properties");
-				}
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+            hideServerScriptErrors = get("hideServerScriptErrors", false);
+            serverOnly = get("serverOnly", false);
+            announceReload = get("announceReload", true);
+            packMode = get("packmode", "");
+            saveDevPropertiesInConfig = get("saveDevPropertiesInConfig", false);
+            allowAsyncStreams = get("allowAsyncStreams", true);
+            matchJsonRecipes = get("matchJsonRecipes", true);
+            ignoreCustomUniqueRecipeIds = get("ignoreCustomUniqueRecipeIds", false);
+            startupErrorGUI = get("startupErrorGUI", true);
+            startupErrorReportUrl = get("startupErrorReportUrl", "");
 
-		KubeJS.LOGGER.info("Loaded common.properties");
-	}
+            KubeJSPlugins.forEachPlugin(p -> p.loadCommonProperties(this));
 
-	private void remove(String key) {
-		String s = properties.getProperty(key);
+            if (writeProperties) {
+                save();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-		if (s != null) {
-			properties.remove(key);
-			writeProperties = true;
-		}
-	}
+        KubeJS.LOGGER.info("Loaded common.properties");
+    }
 
-	private String get(String key, String def) {
-		String s = properties.getProperty(key);
+    public void remove(String key) {
+        val s = properties.getProperty(key);
 
-		if (s == null) {
-			properties.setProperty(key, def);
-			writeProperties = true;
-			return def;
-		}
+        if (s != null) {
+            properties.remove(key);
+            writeProperties = true;
+        }
+    }
 
-		return s;
-	}
+    public String get(String key, String def) {
+        val s = properties.getProperty(key);
 
-	private boolean get(String key, boolean def) {
-		return get(key, def ? "true" : "false").equals("true");
-	}
+        if (s == null) {
+            properties.setProperty(key, def);
+            writeProperties = true;
+            return def;
+        }
+
+        return s;
+    }
+
+    public boolean get(String key, boolean def) {
+        return get(key, def ? "true" : "false").equals("true");
+    }
+
+    public void save() {
+        try (val writer = Files.newBufferedWriter(KubeJSPaths.COMMON_PROPERTIES)) {
+            properties.store(writer, "KubeJS Common Properties");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void setPackMode(String s) {
+        packMode = s;
+        properties.setProperty("packmode", s);
+        save();
+    }
 }

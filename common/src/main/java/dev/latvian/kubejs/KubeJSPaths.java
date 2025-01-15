@@ -3,6 +3,7 @@ package dev.latvian.kubejs;
 import dev.latvian.kubejs.util.UtilsJS;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.server.packs.PackType;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,17 +22,46 @@ public class KubeJSPaths {
 	public static final Path EXPORTED = DIRECTORY.resolve("exported");
 	public static final Path README = DIRECTORY.resolve("README.txt");
 
-	static {
-		if (Files.notExists(DIRECTORY)) {
-			UtilsJS.tryIO(() -> Files.createDirectories(DIRECTORY));
-		}
+    public static final Path COMMON_PROPERTIES = CONFIG.resolve("common.properties");
+    public static final Path CLIENT_PROPERTIES = CONFIG.resolve("client.properties");
+//    public static final Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.properties");
+//    public static final Path LOCAL = dir(Platform.getGameFolder().resolve("local").resolve("kubejs"));
+//    public static final Path LOCAL_CACHE = dir(LOCAL.resolve("cache"));
+//    public static final Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.properties");
+//    public static final Path EXPORT = dir(LOCAL.resolve("export"));
+//    public static final Path EXPORTED_PACKS = dir(LOCAL.resolve("exported_packs"));
 
-		if (Files.notExists(CONFIG)) {
-			UtilsJS.tryIO(() -> Files.createDirectories(CONFIG));
-		}
+    public static final MutableBoolean FIRST_RUN = new MutableBoolean(false);
 
-		if (Files.notExists(EXPORTED)) {
-			UtilsJS.tryIO(() -> Files.createDirectories(EXPORTED));
+    static Path dir(Path dir, boolean markFirstRun) {
+        if (Files.notExists(dir)) {
+            try {
+                Files.createDirectories(dir);
+
+                if (markFirstRun) {
+                    FIRST_RUN.setTrue();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return dir;
+    }
+
+    static Path dir(Path dir) {
+        return dir(dir, false);
+    }
+
+    static {
+        createDirIfAbsent(DIRECTORY);
+        createDirIfAbsent(CONFIG);
+        createDirIfAbsent(EXPORTED);
+    }
+
+    private static void createDirIfAbsent(Path directory) {
+        if (Files.notExists(directory)) {
+			UtilsJS.tryIO(() -> Files.createDirectories(directory));
 		}
 	}
 
