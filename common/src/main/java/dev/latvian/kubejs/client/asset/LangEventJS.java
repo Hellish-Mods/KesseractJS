@@ -7,6 +7,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class LangEventJS extends EventJS {
 		namespace2lang2entries = new HashMap<>();
 	}
 
+    @NotNull
 	public LangEntry get(String namespace, String lang) {
 		if (namespace == null || lang == null || namespace.isEmpty() || lang.isEmpty() || !PATTERN.matcher(lang).matches()) {
 			throw new IllegalArgumentException("Invalid namespace or lang: [" + namespace + ", " + lang + "]");

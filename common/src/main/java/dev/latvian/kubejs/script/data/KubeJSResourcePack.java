@@ -1,206 +1,301 @@
 package dev.latvian.kubejs.script.data;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
+import dev.latvian.kubejs.DevProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSPaths;
-import dev.latvian.kubejs.registry.RegistryInfos;
-import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.kubejs.util.ConsoleJS;
 import lombok.val;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.ResourcePackFileNotFoundException;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author LatvianModder
  */
-public abstract class KubeJSResourcePack implements PackResources {
-	private final PackType packType;
-	private Map<ResourceLocation, JsonElement> cachedResources;
+public abstract class KubeJSResourcePack implements ExportablePackResources {
+    private final PackType packType;
+    private Map<ResourceLocation, GeneratedData> generated;
+    private Set<String> generatedNamespaces;
 
-	public KubeJSResourcePack(PackType t) {
-		packType = t;
-		Objects.requireNonNull(KubeJS.instance, "KubeJS has not been initialized, this won't happen unless some OTHER mod failed to load first! Check your latest.log!");
-	}
+    public KubeJSResourcePack(PackType type) {
+        packType = type;
+    }
 
-	private static String getFullPath(PackType type, ResourceLocation location) {
-		return String.format("%s/%s/%s", type.getDirectory(), location.getNamespace(), location.getPath());
-	}
+    private static String getFullPath(PackType type, ResourceLocation location) {
+        return String.format("%s/%s/%s", type.getDirectory(), location.getNamespace(), location.getPath());
+    }
 
-	@Override
-	@Environment(EnvType.CLIENT)
-	public InputStream getRootResource(String fileName) throws IOException {
-		if (fileName.equals("pack.png")) {
-			return KubeJSResourcePack.class.getResourceAsStream("/kubejs_logo.png");
-		}
+    @Override
+    public InputStream getRootResource(String fileName) throws IOException {
+        return switch (fileName) {
+            case PACK_META -> GeneratedData.PACK_META.get();
+            case "pack.png" -> GeneratedData.PACK_ICON.get();
+            default -> throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), fileName);
+        };
+    }
 
-		throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), fileName);
-	}
+    @Override
+    public InputStream getResource(PackType type, ResourceLocation location) throws IOException {
+        val generated = type == packType ? getGenerated().get(location) : null;
 
-	@Override
-	public InputStream getResource(PackType type, ResourceLocation location) throws IOException {
-		String resourcePath = getFullPath(type, location);
+        if (generated == GeneratedData.INTERNAL_RELOAD) {
+            close();
+        }
 
-		if (type != packType) {
-			throw new IllegalStateException(packType.getDirectory() + " KubeJS pack can't load " + resourcePath + "!");
-		}
+        if (generated != null) {
+            return generated.get();
+        }
 
-		Path file = KubeJSPaths.DIRECTORY.resolve(resourcePath);
+        throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), getFullPath(type, location));
+    }
 
-		if (Files.exists(file)) {
-			return Files.newInputStream(file);
-		} else {
-			if (location.getPath().endsWith(".json")) {
-				JsonElement json = getCachedResources().get(location);
+    @Override
+    public boolean hasResource(PackType type, ResourceLocation location) {
+        return type == packType && getGenerated().get(location) != null;
+    }
 
-				if (json != null) {
-					return new ByteArrayInputStream(json.toString().getBytes(StandardCharsets.UTF_8));
-				}
-			}
-		}
+    /**
+     * {@link GeneratedData#id()} -> {@link GeneratedData}
+     */
+    public Map<ResourceLocation, GeneratedData> getGenerated() {
+        if (generated == null) {
+            generated = new HashMap<>();
+            generate(generated);
 
-		throw new ResourcePackFileNotFoundException(KubeJSPaths.DIRECTORY.toFile(), resourcePath);
-	}
+            val debug = DevProperties.get().logGeneratedData || DevProperties.get().debugInfo;
 
-	@Override
-	public boolean hasResource(PackType type, ResourceLocation location) {
-		if (location.getPath().endsWith(".json")) {
-			JsonElement json = getCachedResources().get(location);
+            try {
+                val root = KubeJSPaths.get(packType);
 
-			if (json != null) {
-				return true;
-			}
-		}
+                for (val dir : Files.list(root).filter(Files::isDirectory).toList()) {
+                    val name = dir.getFileName().toString();
 
-		return type == packType && Files.exists(KubeJSPaths.DIRECTORY.resolve(getFullPath(type, location)));
-	}
+                    if (debug) {
+                        KubeJS.LOGGER.info("# Walking namespace '{}'", name);
+                    }
 
-	public Map<ResourceLocation, JsonElement> getCachedResources() {
-		if (cachedResources == null) {
-			Map<ResourceLocation, JsonElement> map = new HashMap<>();
-			generateJsonFiles(map);
+                    for (val path : Files.walk(dir)
+                        .filter(KubeJSResourcePack::filterPath)
+                        .toList()
+                    ) {
 
-			cachedResources = new HashMap<>();
+                        val data = GeneratedData.of(
+                            name,
+                            dir.relativize(path).toString().replace('\\', '/').toLowerCase(),
+                            () -> {
+                                try {
+                                    return Files.readAllBytes(path);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                    return new byte[0];
+                                }
+                            }
+                        );
 
-			for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
-				cachedResources.put(new ResourceLocation(entry.getKey().getNamespace(), entry.getKey().getPath() + ".json"), entry.getValue());
-			}
-		}
-		return cachedResources;
-	}
+                        if (debug) {
+                            KubeJS.LOGGER.info(
+                                "- File found: '{}' ({} bytes)",
+                                data.id(),
+                                data.data().get().length
+                            );
+                        }
 
-	public void generateJsonFiles(Map<ResourceLocation, JsonElement> map) {
-	}
+                        if (skipFile(data)) {
+                            if (debug) {
+                                KubeJS.LOGGER.info("- Skipping '{}'", data.id());
+                            }
+                            continue;
+                        }
 
-	@Override
-	public Collection<ResourceLocation> getResources(PackType type, String namespace, String path, int maxDepth, Predicate<String> filter) {
-		if (type != packType) {
-			return Collections.emptySet();
-		}
-
-		List<ResourceLocation> list = Lists.newArrayList();
-
-		if (type == PackType.CLIENT_RESOURCES) {
-			if (path.equals("lang")) {
-				list.add(new ResourceLocation(KubeJS.MOD_ID, "lang/en_us.json"));
-			}
-		} else {
-			if (path.equals("loot_tables")) {
-                for (val id : RegistryInfos.BLOCK.objects.keySet()) {
-                    list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
+                        generated.put(data.id(), data);
+                    }
                 }
-			}
-		}
+            } catch (Exception ex) {
+                KubeJS.LOGGER.error(
+                    "Failed to load files from kubejs/{}",
+                    packType.getDirectory(),
+                    ex
+                );
+            }
 
-		UtilsJS.tryIO(() -> {
-			Path root = KubeJSPaths.get(type).toAbsolutePath();
+            generated.put(GeneratedData.INTERNAL_RELOAD.id(), GeneratedData.INTERNAL_RELOAD);
 
-			if (Files.exists(root) && Files.isDirectory(root)) {
-				Path inputPath = root.getFileSystem().getPath(path);
+            generated = Map.copyOf(generated);
 
-                Files.walk(root)
-                    .map(p -> root.relativize(p.toAbsolutePath()))
-                    .filter(p -> p.getNameCount() > 1 && p.getNameCount() - 1 <= maxDepth)
-                    .filter(p -> !p.toString().endsWith(".mcmeta"))
-                    .filter(p -> p.subpath(1, p.getNameCount()).startsWith(inputPath))
-                    .filter(p -> filter.test(p.getFileName().toString()))
-                    .map(p -> new ResourceLocation(
-                        p.getName(0).toString(),
-                        Joiner.on('/').join(p.subpath(1, Math.min(maxDepth, p.getNameCount())))
-                    ))
-                    .forEach(list::add);
-			}
-		});
+            if (debug) {
+                KubeJS.LOGGER.info("Generated {} data ({} files)", packType, generated.size());
+            }
+        }
 
-		return list;
-	}
+        return generated;
+    }
 
-	@Override
-	public Set<String> getNamespaces(PackType type) {
-		if (type != packType) {
-			return Collections.emptySet();
-		}
+    public void generate(Map<ResourceLocation, GeneratedData> map) {
+    }
 
-		HashSet<String> namespaces = new HashSet<>();
-		namespaces.add("kubejs_generated");
-		namespaces.add(KubeJS.MOD_ID);
+    protected boolean skipFile(GeneratedData data) {
+        return false;
+    }
 
-		for (var builder : RegistryInfos.ALL_BUILDERS) {
-			namespaces.add(builder.id.getNamespace());
-		}
+    @Override
+    public Collection<ResourceLocation> getResources(
+        PackType type,
+        String namespace,
+        String path,
+        int maxDepth,
+        Predicate<String> filter
+    ) {
+        if (type != packType) {
+            return Collections.emptySet();
+        }
+        if (!path.endsWith("/")) {
+            path = path + "/";
+        }
 
-		UtilsJS.tryIO(() ->
-		{
-			Path root = KubeJSPaths.get(type).toAbsolutePath();
+        val filtered = new ArrayList<ResourceLocation>();
 
-			if (Files.exists(root) && Files.isDirectory(root)) {
-				Files.walk(root, 1)
-						.map(path -> root.relativize(path.toAbsolutePath()))
-						.filter(path -> path.getNameCount() > 0)
-						.map(p -> p.toString().replaceAll("/$", ""))
-						.filter(s -> !s.isEmpty())
-						.forEach(namespaces::add);
-			}
-		});
+        for (val generated : getGenerated().values()) {
+            val id = generated.id();
 
-		return namespaces;
-	}
+            if (id.getNamespace().equals(namespace)
+                && id.getPath().startsWith(path)
+                && filter.test(id.getPath())
+            ) {
+                filtered.add(id);
+            }
+        }
 
-	@Nullable
-	@Override
-	public <T> T getMetadataSection(MetadataSectionSerializer<T> serializer) {
-		return null;
-	}
+        return filtered;
+    }
 
-	@Override
-	public String getName() {
-		return "KubeJS Resource Pack [" + packType.getDirectory() + "]";
-	}
+    @Override
+    public Set<String> getNamespaces(PackType type) {
+        if (type != packType) {
+            return Collections.emptySet();
+        }
+        if (generatedNamespaces == null) {
+            generatedNamespaces = getGenerated()
+                .keySet()
+                .stream()
+                .map(ResourceLocation::getNamespace)
+                .collect(Collectors.toSet());
+        }
 
-	@Override
-	public void close() {
-		cachedResources = null;
-	}
+        return generatedNamespaces;
+    }
+
+    @Nullable
+    @Override
+    public <T> T getMetadataSection(MetadataSectionSerializer<T> serializer) throws IOException {
+        try (val in = this.getRootResource(PACK_META)) {
+            return AbstractPackResources.getMetadataFromStream(serializer, in);
+        }
+    }
+
+    @Override
+    public String getName() {
+        return "KubeJS Resource Pack [" + packType.getDirectory() + "]";
+    }
+
+    @Override
+    public void close() {
+        generated = null;
+        generatedNamespaces = null;
+    }
+
+    @Override
+    public void export(Path root) throws IOException {
+        for (val file : getGenerated().entrySet()) {
+            val path = root.resolve(
+                packType.getDirectory() + "/" + file.getKey().getNamespace() + "/" + file.getKey().getPath());
+            Files.createDirectories(path.getParent());
+            Files.write(path, file.getValue().data().get());
+        }
+
+        Files.write(root.resolve(PACK_META), GeneratedData.PACK_META.data().get());
+        Files.write(root.resolve("pack.png"), GeneratedData.PACK_ICON.data().get());
+    }
+
+    public static Stream<Path> tryWalk(Path path) {
+        try {
+            return Files.walk(path);
+        } catch (Exception ignore) {
+        }
+
+        return Stream.empty();
+    }
+
+    public static void scanForInvalidFiles(String pathName, Path path) throws IOException {
+        Files.list(path)
+            .filter(Files::isDirectory)
+            .flatMap(KubeJSResourcePack::tryWalk)
+            .filter(KubeJSResourcePack::filterPath)
+            .forEach(p -> {
+                try {
+                    val fileName = p.getFileName().toString().toCharArray();
+
+                    for (val c : fileName) {
+                        if (c >= 'A' && c <= 'Z') {
+                            val pathForLog = path.relativize(p)
+                                .toString()
+                                .replace('\\', '/');
+                            ConsoleJS.STARTUP.errorf("Invalid file name: Uppercase '%s' in %s%s",
+                                c,
+                                pathName,
+                                pathForLog
+                            );
+                            break;
+                        } else if (!ResourceLocation.validPathChar(c)) {
+                            val pathForLog = path.relativize(p)
+                                .toString()
+                                .replace('\\', '/');
+                            ConsoleJS.STARTUP.errorf("Invalid file name: Invalid character '%s' in %s%s",
+                                c,
+                                pathName,
+                                pathForLog
+                            );
+                            break;
+                        }
+                    }
+                } catch (Exception ex) {
+                    val pathForLog = path.relativize(p)
+                        .toString()
+                        .replace('\\', '/');
+                    ConsoleJS.STARTUP.error("Invalid file name: %s%s".formatted(pathName, pathForLog));
+                }
+            });
+    }
+
+    private static boolean filterPath(Path path) {
+        try {
+            if (!Files.isReadable(path)
+                || !Files.isRegularFile(path)
+                || Files.isHidden(path)) {
+                return false;
+            }
+            val name = path.getFileName().toString().toLowerCase(Locale.ROOT);
+            return !name.endsWith(".zip")
+                && !name.equals(".ds_store")
+                && !name.equals("thumbs.db")
+                && !name.equals("desktop.ini");
+        } catch (IOException e) {
+            KubeJS.LOGGER.error(
+                "unable to determine whether file with path {} is valid, skipping",
+                path
+            );
+        }
+        return false;
+    }
 }

@@ -2,6 +2,7 @@ package dev.latvian.kubejs.client.asset;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public record LangEntry(String namespace, String lang, Map<String, String> entri
     }
 
     public void addAll(Map<String, String> map) {
-        for (var entry : map.entrySet()) {
+        for (val entry : map.entrySet()) {
             add(entry.getKey(), entry.getValue());
         }
     }
@@ -31,16 +32,16 @@ public record LangEntry(String namespace, String lang, Map<String, String> entri
         entries.putIfAbsent(key, text);
     }
 
-    public JsonObject asJson() {
-        JsonObject obj = new JsonObject();
-        for (var entry : entries.entrySet()) {
+    public JsonObject toJson() {
+        val obj = new JsonObject();
+        for (val entry : entries.entrySet()) {
             obj.addProperty(entry.getKey(), entry.getValue());
         }
         return obj;
     }
 
     @JSInfo("`{namespace}:lang/{lang}`")
-    public ResourceLocation path() {
+    public ResourceLocation toPath() {
         return new ResourceLocation(namespace, "lang/" + lang);
     }
 
