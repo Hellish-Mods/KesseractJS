@@ -1,5 +1,6 @@
 package dev.latvian.kubejs;
 
+import com.google.common.base.Stopwatch;
 import dev.latvian.kubejs.block.events.KubeJSBlockEventHandler;
 import dev.latvian.kubejs.client.KubeJSClient;
 import dev.latvian.kubejs.entity.KubeJSEntityEventHandler;
@@ -25,6 +26,7 @@ import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.kubejs.world.KubeJSWorldEventHandler;
 import dev.latvian.kubejs.world.gen.FlatChunkGeneratorKJS;
 import lombok.val;
+import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
 import me.shedaniel.architectury.utils.EnvExecutor;
 import net.minecraft.core.Registry;
@@ -39,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -49,6 +52,7 @@ public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+    public static Mod thisMod;
 
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation(MOD_ID, path);
@@ -68,6 +72,7 @@ public class KubeJS {
 
 	public KubeJS() throws Throwable {
 		instance = this;
+        thisMod = Platform.getMod(MOD_ID);
 		Locale.setDefault(Locale.US);
 		new KubeJSBackgroundThread().start();
 
@@ -96,7 +101,15 @@ public class KubeJS {
 
 		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
-        KubeJSPlugins.initFromMods();
+        {
+            val pluginTimer = Stopwatch.createStarted();
+            LOGGER.info("Looking for KubeJS plugins...");
+            val allMods = new ArrayList<>(Platform.getMods());
+            allMods.remove(thisMod);
+            allMods.addFirst(thisMod);
+            KubeJSPlugins.load(allMods);
+            LOGGER.info("Done in {}", pluginTimer.stop());
+        }
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS, "/data/kubejs/example_startup_script.js");
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS, "/data/kubejs/example_client_script.js");
