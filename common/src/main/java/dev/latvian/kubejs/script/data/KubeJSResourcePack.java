@@ -140,14 +140,17 @@ public abstract class KubeJSResourcePack implements PackResources {
 			if (Files.exists(root) && Files.isDirectory(root)) {
 				Path inputPath = root.getFileSystem().getPath(path);
 
-				Files.walk(root)
-						.map(p -> root.relativize(p.toAbsolutePath()))
-						.filter(p -> p.getNameCount() > 1 && p.getNameCount() - 1 <= maxDepth)
-						.filter(p -> !p.toString().endsWith(".mcmeta"))
-						.filter(p -> p.subpath(1, p.getNameCount()).startsWith(inputPath))
-						.filter(p -> filter.test(p.getFileName().toString()))
-						.map(p -> new ResourceLocation(p.getName(0).toString(), Joiner.on('/').join(p.subpath(1, Math.min(maxDepth, p.getNameCount())))))
-						.forEach(list::add);
+                Files.walk(root)
+                    .map(p -> root.relativize(p.toAbsolutePath()))
+                    .filter(p -> p.getNameCount() > 1 && p.getNameCount() - 1 <= maxDepth)
+                    .filter(p -> !p.toString().endsWith(".mcmeta"))
+                    .filter(p -> p.subpath(1, p.getNameCount()).startsWith(inputPath))
+                    .filter(p -> filter.test(p.getFileName().toString()))
+                    .map(p -> new ResourceLocation(
+                        p.getName(0).toString(),
+                        Joiner.on('/').join(p.subpath(1, Math.min(maxDepth, p.getNameCount())))
+                    ))
+                    .forEach(list::add);
 			}
 		});
 

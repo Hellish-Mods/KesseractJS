@@ -102,7 +102,8 @@ public class ServerScriptManager extends ScriptManager {
 	public List<PackResources> resourcePackList(List<PackResources> original) {
 		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
 		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
-		List<PackResources> list = new ArrayList<>(1 + original.size() + 10 + 1);
+
+		List<PackResources> list = new ArrayList<>();
 		//10 is expected kjs server resource size, obviously a little bit small
 		list.add(virtualDataPackLow);
 		list.addAll(original);

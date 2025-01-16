@@ -39,10 +39,9 @@ import java.util.concurrent.CompletableFuture;
 public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void init() {
-		if (Minecraft.getInstance() == null) // You'd think that this is impossible, but not when you use runData gradle task
-		{
-			return;
-		}
+        if (Minecraft.getInstance() == null) {
+            return;// You'd think that this is impossible, but not when you use runData gradle task
+        }
 
 		reloadClientScripts();
 
@@ -142,8 +141,10 @@ public class KubeJSClient extends KubeJSCommon {
 			}
 			 */
 
-			mc.player.sendMessage(new TextComponent("Done! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
-		});
+            if (mc.player != null) {
+                mc.player.sendMessage(new TextComponent("Done! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
+            }
+        });
 	}
 
 	@Override
