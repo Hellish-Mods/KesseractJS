@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  */
 public enum ScriptType {
 	STARTUP("startup", "KubeJS Startup", () -> KubeJS.startupScriptManager),
-	SERVER("server", "KubeJS Server", () -> ServerScriptManager.instance),
+	SERVER("server", "KubeJS Server", ServerScriptManager::scriptManager),
 	CLIENT("client", "KubeJS Client", () -> KubeJS.clientScriptManager);
 
 	static {

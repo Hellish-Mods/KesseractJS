@@ -20,7 +20,7 @@ import dev.latvian.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerResources;
@@ -38,16 +38,20 @@ import java.util.Map;
 /**
  * @author LatvianModder
  */
-public class ServerScriptManager extends ScriptManager {
+public class ServerScriptManager {
 	public static ServerScriptManager instance;
 
-	@JSInfo("use `ServerScriptManager.instance` directly")
-	@Deprecated
+    public static ScriptManager scriptManager() {
+        if (instance == null) {
+            return null;
+        }
+        return instance.scriptManager;
+    }
+
 	public final ScriptManager scriptManager;
 
 	public ServerScriptManager() {
-		super(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS, "/data/kubejs/example_server_script.js");
-		scriptManager = this;
+		scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS, "/data/kubejs/example_server_script.js");
 	}
 
 	public void init(ServerResources serverResources) {
@@ -62,24 +66,24 @@ public class ServerScriptManager extends ScriptManager {
 	}
 
 	public void reloadScriptManager(ResourceManager resourceManager) {
-		unload();
-		loadFromDirectory();
+        scriptManager.unload();
+        scriptManager.loadFromDirectory();
 
 		Map<String, List<ResourceLocation>> resPacks = new HashMap<>();
-		for (var resource : resourceManager.listResources("kubejs", s -> s.endsWith(".js"))) {
+		for (val resource : resourceManager.listResources("kubejs", s -> s.endsWith(".js"))) {
 			resPacks.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
 		}
 
-		for (var entry : resPacks.entrySet()) {
-			var pack = new ScriptPack(this, new ScriptPackInfo(entry.getKey(), "kubejs/"));
+		for (val entry : resPacks.entrySet()) {
+			val pack = new ScriptPack(scriptManager, new ScriptPackInfo(entry.getKey(), "kubejs/"));
 
-			for (var id : entry.getValue()) {
+			for (val id : entry.getValue()) {
 				pack.info.scripts.add(new ScriptFileInfo(pack.info, id.getPath().substring(7)));
 			}
 
-			for (var fileInfo : pack.info.scripts) {
-				ScriptSource.FromResource scriptSource = info -> resourceManager.getResource(info.id);
-				Throwable error = fileInfo.preload(scriptSource);
+			for (val fileInfo : pack.info.scripts) {
+				val scriptSource = (ScriptSource.FromResource) info -> resourceManager.getResource(info.id);
+				val error = fileInfo.preload(scriptSource);
 
 				if (fileInfo.isIgnored()) {
 					continue;
@@ -93,15 +97,15 @@ public class ServerScriptManager extends ScriptManager {
 			}
 
 			pack.scripts.sort(null);
-			this.packs.put(pack.info.namespace, pack);
+			scriptManager.packs.put(pack.info.namespace, pack);
 		}
 
-		load();
+        scriptManager.load();
 	}
 
 	public List<PackResources> resourcePackList(List<PackResources> original) {
-		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
-		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
+		val virtualDataPackLow = new VirtualKubeJSDataPack(false);
+		val virtualDataPackHigh = new VirtualKubeJSDataPack(true);
 
 		List<PackResources> list = new ArrayList<>();
 		//10 is expected kjs server resource size, obviously a little bit small
@@ -110,9 +114,9 @@ public class ServerScriptManager extends ScriptManager {
 		list.add(new KubeJSServerResourcePack());
 		list.add(virtualDataPackHigh);
 
-		var resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
+		val resourceManager = new SimpleReloadableResourceManager(PackType.SERVER_DATA);
 
-		for (var resource : list) {
+		for (val resource : list) {
 			resourceManager.add(resource);
 		}
 

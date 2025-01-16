@@ -566,12 +566,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	public void generateLang(Map<String, String> lang) {
-		lang.put("itemGroup.kubejs.kubejs", KubeJS.MOD_NAME);
+	public void generateLang(Map<String, String> enusLang) {
+		enusLang.put("itemGroup.kubejs.kubejs", KubeJS.MOD_NAME);
 
 		for (val builder : RegistryInfos.ALL_BUILDERS) {
 			if (builder.overrideLangJson && builder.display != null) {
-				lang.put(builder.getTranslationKey(), builder.display.getString());
+				enusLang.put(builder.getTranslationKey(), builder.display.getString());
 			}
 		}
 	}

@@ -53,16 +53,15 @@ public class ScriptFileInfo {
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 
-				if (line.startsWith("//")) {
-					String[] s = line.substring(2).split(":", 2);
+                if (!line.startsWith("//")) {
+                    break;
+                }
+                String[] s = line.substring(2).split(":", 2);
 
-					if (s.length == 2) {
-						properties.put(s[0].trim().toLowerCase(), s[1].trim());
-					}
-				} else {
-					break;
-				}
-			}
+                if (s.length == 2) {
+                    properties.put(s[0].trim().toLowerCase(), s[1].trim());
+                }
+            }
 
 			priority = Integer.parseInt(getProperty("priority", "0"));
 			ignored = getProperty("ignored", "false").equals("true");

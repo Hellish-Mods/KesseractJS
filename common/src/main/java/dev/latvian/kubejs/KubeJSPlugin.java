@@ -56,7 +56,7 @@ public class KubeJSPlugin {
 	public void generateAssetJsons(AssetJsonGenerator generator) {
 	}
 
-	public void generateLang(Map<String, String> lang) {
+	public void generateLang(Map<String, String> enusLang) {
 	}
 
     public void loadCommonProperties(CommonProperties properties) {

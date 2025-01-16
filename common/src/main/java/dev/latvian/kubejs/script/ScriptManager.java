@@ -3,7 +3,6 @@ package dev.latvian.kubejs.script;
 import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
-import dev.latvian.kubejs.KubeJSPlugin;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.event.PlatformEventHandler;
 import dev.latvian.kubejs.event.StartupEventJS;
@@ -12,12 +11,9 @@ import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.*;
 import dev.latvian.mods.rhino.util.remapper.RemapperManager;
-import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import lombok.val;
 import org.apache.commons.io.IOUtils;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -30,14 +26,13 @@ import java.util.Optional;
  */
 public class ScriptManager {
 
-	private static final ThreadLocal<Context> CURRENT_CONTEXT = new ThreadLocal<>();
-
-	public final ScriptType type;
+    public final ScriptType type;
 	public final Path directory;
 	public final String exampleScript;
 	public final EventsJS events;
 	public final Map<String, ScriptPack> packs;
 	private final ClassFilter classFilter;
+
 	public boolean firstLoad;
 	private Map<String, Optional<NativeJavaClass>> javaClassCache;
 	public Context context;
@@ -68,23 +63,25 @@ public class ScriptManager {
 		if (Files.notExists(directory)) {
 			UtilsJS.tryIO(() -> Files.createDirectories(directory));
 
-			try (InputStream in = KubeJS.class.getResourceAsStream(exampleScript);
-				 OutputStream out = Files.newOutputStream(directory.resolve("script.js"))) {
-				out.write(IOUtils.toByteArray(in));
-			} catch (Exception ex) {
+			try (val in = KubeJS.class.getResourceAsStream(exampleScript);
+                 val out = Files.newOutputStream(directory.resolve("script.js"))) {
+                if (in != null) {
+                    out.write(IOUtils.toByteArray(in));
+                }
+            } catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 
-		ScriptPack pack = new ScriptPack(this, new ScriptPackInfo(directory.getFileName().toString(), ""));
+		val pack = new ScriptPack(this, new ScriptPackInfo(directory.getFileName().toString(), ""));
 		KubeJS.loadScripts(pack, directory, "");
 
-		for (ScriptFileInfo fileInfo : pack.info.scripts) {
-			ScriptSource.FromPath scriptSource = info -> directory.resolve(info.file);
+		for (val fileInfo : pack.info.scripts) {
+			val scriptSource = (ScriptSource.FromPath) info -> directory.resolve(info.file);
 
-			Throwable error = fileInfo.preload(scriptSource);
+			val error = fileInfo.preload(scriptSource);
 
-			String packMode = fileInfo.getPackMode();
+			val packMode = fileInfo.getPackMode();
 			if (fileInfo.isIgnored() || (!packMode.equals("default") && !packMode.equals(CommonProperties.get().packMode))) {
 				continue;
 			}
@@ -104,15 +101,9 @@ public class ScriptManager {
 		return classFilter.isAllowed(name);
 	}
 
-	@Nullable
-	public static Context getCurrentContext() {
-		return CURRENT_CONTEXT.get();
-	}
-
     public void load() {
         //top level
         this.context = Context.enterWithNewFactory();
-        CURRENT_CONTEXT.set(context);
         topScope = context.initStandardObjects();
 
         //context related
@@ -123,28 +114,28 @@ public class ScriptManager {
         context.setCustomProperty("type", type);
 
         //type wrapper / binding
-        TypeWrappers typeWrappers = context.getTypeWrappers();
-        var bindingEvent = new BindingsEvent(this, context, topScope);
+        val typeWrappers = context.getTypeWrappers();
+        val bindingEvent = new BindingsEvent(this, context, topScope);
         BindingsEvent.EVENT.invoker().accept(bindingEvent);
 
-        for (KubeJSPlugin plugin : KubeJSPlugins.all()) {
+        for (val plugin : KubeJSPlugins.all()) {
             plugin.addTypeWrappers(type, typeWrappers);
             plugin.addBindings(bindingEvent);
         }
 
-        long startAll = System.currentTimeMillis();
+        val startAll = System.currentTimeMillis();
 
 		int loaded = 0;
 		int total = 0;
-		for (ScriptPack pack : packs.values()) {
+		for (val pack : packs.values()) {
 			try {
 				pack.context = context;
 				pack.scope = context.initStandardObjects();
                 pack.scope.setParentScope(topScope);
 
-				for (ScriptFile file : pack.scripts) {
+				for (val file : pack.scripts) {
 					total++;
-					long start = System.currentTimeMillis();
+					val start = System.currentTimeMillis();
 
 					if (file.load()) {
 						loaded++;
@@ -163,7 +154,13 @@ public class ScriptManager {
 			}
 		}
 
-		type.console.info("Loaded " + loaded + "/" + total + " KubeJS " + type.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
+		type.console.infof(
+            "Loaded %d/%d KubeJS %s scripts in %s s",
+            loaded,
+            total,
+            type.name,
+            (System.currentTimeMillis() - startAll) / 1000D
+        );
         Context.exit();
 
 		events.postToHandlers(KubeJSEvents.LOADED, events.handlers(KubeJSEvents.LOADED), new StartupEventJS());
@@ -176,7 +173,7 @@ public class ScriptManager {
 	}
 
 	public NativeJavaClass loadJavaClass(Scriptable scope, Object[] args) {
-		String name = args[0].toString();
+		val name = args[0].toString();
 
 		if (name.isEmpty()) {
 			throw Context.reportRuntimeError("Class name can't be empty!");
@@ -186,7 +183,7 @@ public class ScriptManager {
 			javaClassCache = new HashMap<>();
 		}
 
-		Optional<NativeJavaClass> ch = javaClassCache.get(name);
+		val ch = javaClassCache.get(name);
 
 		if (ch == null) {
 			javaClassCache.put(name, Optional.empty());
@@ -196,8 +193,8 @@ public class ScriptManager {
 					throw Context.reportRuntimeError("Class '" + name + "' is not allowed!");
 				}
 
-				Class<?> c = Class.forName(name);
-				NativeJavaClass njc = new NativeJavaClass(scope, c);
+				val c = Class.forName(name);
+				val njc = new NativeJavaClass(scope, c);
 				javaClassCache.put(name, Optional.of(njc));
 				return njc;
 			} catch (Throwable ex) {
