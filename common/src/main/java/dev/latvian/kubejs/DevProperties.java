@@ -43,7 +43,7 @@ public class DevProperties {
 		properties = new Properties();
 
 		try {
-			var propertiesFile = dev.latvian.mods.kubejs.KubeJSPaths.getLocalDevProperties();
+			val propertiesFile = KubeJSPaths.getLocalDevProperties();
 			writeProperties = false;
 
 			if (Files.exists(propertiesFile)) {
