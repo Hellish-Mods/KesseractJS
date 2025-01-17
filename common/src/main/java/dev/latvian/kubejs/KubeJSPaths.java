@@ -1,7 +1,6 @@
 package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.util.UtilsJS;
-import dev.latvian.mods.kubejs.CommonProperties;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.server.packs.PackType;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -35,16 +34,18 @@ public class KubeJSPaths {
     public static final MutableBoolean FIRST_RUN = new MutableBoolean(false);
 
     static Path dir(Path dir, boolean markFirstRun) {
-        if (Files.notExists(dir)) {
-            try {
-                Files.createDirectories(dir);
+        if (Files.exists(dir)) {
+            return dir;
+        }
 
-                if (markFirstRun) {
-                    FIRST_RUN.setTrue();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+        try {
+            Files.createDirectories(dir);
+
+            if (markFirstRun) {
+                FIRST_RUN.setTrue();
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         return dir;
