@@ -13,6 +13,7 @@ import dev.latvian.kubejs.util.MapJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
+import lombok.val;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.*;
@@ -110,11 +111,11 @@ public class TextWrapper {
         if (c == null) {
             return new TextString("null");
         }
-        var t = c instanceof TranslatableComponent transl
+        val t = c instanceof TranslatableComponent transl
             ? new TextTranslate(transl.getKey(), transl.getArgs())
             : new TextString(c.getContents());
 
-        var style = c.getStyle();
+        val style = c.getStyle();
         t.bold(style.isBold())
             .color(ColorWrapper.of(style.getColor()))
             .font(style.getFont())
@@ -126,7 +127,7 @@ public class TextWrapper {
             .click(style.getClickEvent())
             .hover(style.getHoverEvent());
 
-        for (var sibling : c.getSiblings()) {
+        for (val sibling : c.getSiblings()) {
             t.append(fromComponent(sibling));
         }
 
@@ -239,25 +240,25 @@ public class TextWrapper {
             return ce;
         }
         //json
-        var json = MapJS.json(o);
+        val json = MapJS.json(o);
         if (json != null) {
-            var action = GsonHelper.getAsString(json, "action");
-            var value = GsonHelper.getAsString(json, "value");
+            val action = GsonHelper.getAsString(json, "action");
+            val value = GsonHelper.getAsString(json, "value");
             return new ClickEvent(
                 Objects.requireNonNull(ClickEvent.Action.getByName(action), "Invalid click event action " + action + "!"),
                 value
             );
         }
         //string
-        var s = o.toString();
-        var split = s.split(":", 2);
+        val s = o.toString();
+        val split = s.split(":", 2);
         return switch (split[0]) {
             case "command" -> new ClickEvent(ClickEvent.Action.RUN_COMMAND, split[1]);
             case "suggest_command" -> new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, split[1]);
             case "copy" -> new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, split[1]);
             case "file" -> new ClickEvent(ClickEvent.Action.OPEN_FILE, split[1]);
             default -> {
-                var action = ClickEvent.Action.getByName(split[0]);
+                val action = ClickEvent.Action.getByName(split[0]);
                 if (action != null) {
                     yield new ClickEvent(action, split[1]);
                 }
@@ -295,7 +296,7 @@ public class TextWrapper {
                     ListJS a = map.getOrNewList("with");
                     with = new Object[a.size()];
                     for (int i = 0, size = a.size(); i < size; i++) {
-                        var elem = a.get(i);
+                        val elem = a.get(i);
                         with[i] = elem instanceof MapJS || elem instanceof ListJS
                             ? ofWrapped(elem)
                             : elem;

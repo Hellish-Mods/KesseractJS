@@ -3,6 +3,7 @@ package dev.latvian.kubejs.client.asset;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import lombok.val;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -43,7 +44,7 @@ public class LangEventJS extends EventJS {
 		if (stack == null || stack.isEmpty()) {
 			return;
 		}
-		var desc = stack.getItem().getDescriptionId();
+		val desc = stack.getItem().getDescriptionId();
 		if (desc != null && !desc.isEmpty()) {
 			get(stack.getMod(), lang).add(desc, name);
 		}
@@ -53,9 +54,9 @@ public class LangEventJS extends EventJS {
 		if (block == null || block == Blocks.AIR) {
 			return;
 		}
-		var desc = block.getDescriptionId();
+		val desc = block.getDescriptionId();
 		if (desc != null && !desc.isEmpty()) {
-			var modid = Registry.BLOCK.getKey(block).getNamespace();
+			val modid = Registry.BLOCK.getKey(block).getNamespace();
 			get(modid, lang).add(desc, name);
 		}
 	}

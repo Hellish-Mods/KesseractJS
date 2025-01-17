@@ -38,7 +38,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var modelLocation = model.isEmpty() ? newID("block/", "").toString() : model;
+		val modelLocation = model.isEmpty() ? newID("block/", "").toString() : model;
 		bs.variant("facing=north", v -> v.model(modelLocation));
 		bs.variant("facing=east", v -> v.model(modelLocation).y(90));
 		bs.variant("facing=south", v -> v.model(modelLocation).y(180));
@@ -48,7 +48,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 	@Override
 	protected void generateBlockModelJsons(AssetJsonGenerator gen) {
 		gen.blockModel(id, mg -> {
-			var side = getTextureOrDefault("side", newID("block/", "").toString());
+			val side = getTextureOrDefault("side", newID("block/", "").toString());
 
 			mg.texture("side", side);
 			mg.texture("front", getTextureOrDefault("front", newID("block/", "_front").toString()));

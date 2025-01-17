@@ -473,7 +473,7 @@ public interface BlockStatePredicate {
 
 			for (val entry : RegistryInfos.BLOCK.entrySet()) {
 				for (val state : entry.getValue().getStateDefinition().getPossibleStates()) {
-					var match = true;
+                    boolean match = true;
 					for (val predicate : list) {
 						if (!predicate.check(state)) {
 							match = false;

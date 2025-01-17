@@ -1,5 +1,6 @@
 package dev.latvian.kubejs;
 
+import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 
@@ -80,7 +81,7 @@ public class DevProperties {
 	}
 
 	public void remove(String key) {
-		var s = properties.getProperty(key);
+		val s = properties.getProperty(key);
 
 		if (s != null) {
 			properties.remove(key);
@@ -89,15 +90,15 @@ public class DevProperties {
 	}
 
 	public String get(String key, String def) {
-		var s = properties.getProperty(key);
+		val got = properties.getProperty(key);
 
-		if (s == null) {
+		if (got == null) {
 			properties.setProperty(key, def);
 			writeProperties = true;
 			return def;
 		}
 
-		return s;
+		return got;
 	}
 
 	public boolean get(String key, boolean def) {

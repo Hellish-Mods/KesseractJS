@@ -118,7 +118,7 @@ public record MapColorHelper(int id, String name, MaterialColor color, Vector3f 
 	public static MapColorHelper findClosest(int rgbi) {
 		val rgb = new Vector3f((rgbi >> 16 & 0xFF) / 255F, (rgbi >> 8 & 0xFF) / 255F, (rgbi & 0xFF) / 255F);
 		MapColorHelper closest = null;
-		var lastDist = Float.MAX_VALUE;
+        float lastDist = Float.MAX_VALUE;
 
 		for (val helper : NAME_MAP.values()) {
 			if (helper.color != MaterialColor.NONE) {

@@ -13,6 +13,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.custom.SeedItemBuilder;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -95,18 +96,18 @@ public class CropBlockBuilder extends BlockBuilder {
 
 		//This should work as a minimum crop-like table
 		lootTable = loot -> {
-			var condition = new JsonObject();
+			val condition = new JsonObject();
 			condition.addProperty("condition", "minecraft:block_state_property");
 			condition.addProperty("block", this.newID("", "").toString());
-			var properties = new JsonObject();
+			val properties = new JsonObject();
 			properties.addProperty("age", String.valueOf(this.age));
 			condition.add("properties", properties);
 
-			var function = new JsonObject();
+			val function = new JsonObject();
 			function.addProperty("function", "minecraft:apply_bonus");
 			function.addProperty("enchantment", "minecraft:fortune");
 			function.addProperty("formula", "minecraft:binomial_with_bonus_count");
-			var parameters = new JsonObject();
+			val parameters = new JsonObject();
 			parameters.addProperty("extra", 3);
 			parameters.addProperty("probability", 0.5714286); //Same as vanilla
 			function.add("parameters", parameters);

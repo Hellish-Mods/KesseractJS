@@ -1,5 +1,7 @@
 package dev.latvian.kubejs.util;
 
+import lombok.val;
+
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
@@ -14,7 +16,7 @@ public class Lazy<T> implements Supplier<T> {
 
 	public static <T> Lazy<T> serviceLoader(Class<T> type) {
         return of(() -> {
-            var loaded = ServiceLoader.load(type).iterator();
+            val loaded = ServiceLoader.load(type).iterator();
             if (loaded.hasNext()) {
                 return loaded.next();
             }

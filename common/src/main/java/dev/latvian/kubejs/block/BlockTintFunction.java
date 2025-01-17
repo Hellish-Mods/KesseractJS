@@ -7,6 +7,7 @@ import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import lombok.val;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -35,7 +36,7 @@ public interface BlockTintFunction {
 
 		@Override
 		public Color getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
-			var f = map.get(index);
+			val f = map.get(index);
 			return f == null ? null : f.getColor(state, level, pos, index);
 		}
 	}
@@ -66,10 +67,10 @@ public interface BlockTintFunction {
 		} else if (o instanceof BlockTintFunction f) {
 			return f;
 		} else if (o instanceof List<?> list) {
-			var map = new Mapped();
+			val map = new Mapped();
 
 			for (int i = 0, size = list.size(); i < size; i++) {
-				var fn = of(list.get(i));
+				val fn = of(list.get(i));
 				if (fn != null) {
 					map.map.put(i, fn);
 				}
@@ -77,7 +78,7 @@ public interface BlockTintFunction {
 
 			return map;
 		} else if (o instanceof CharSequence) {
-            var fn = switch (o.toString()) {
+            val fn = switch (o.toString()) {
                 case "grass" -> GRASS;
                 case "foliage" -> FOLIAGE;
                 case "evergreen_foliage" -> EVERGREEN_FOLIAGE;

@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block.custom.builder;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
@@ -28,7 +29,7 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
-		final var texture = textures.get("texture").getAsString();
+		val texture = textures.get("texture").getAsString();
 
 		generator.blockModel(newID("", "_double"), m -> {
 			m.parent("minecraft:block/cube_all");

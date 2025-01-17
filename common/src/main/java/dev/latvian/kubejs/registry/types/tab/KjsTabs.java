@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.registry.types.tab;
 
-import dev.latvian.kubejs.KubeJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import lombok.val;
 import net.minecraft.world.item.CreativeModeTab;
 
 import java.util.HashMap;
@@ -16,7 +16,7 @@ public abstract class KjsTabs {
     private static final Map<String, CreativeModeTab> TABS = new HashMap<>();
 
     static {
-        for (var tab : CreativeModeTab.TABS) {
+        for (val tab : CreativeModeTab.TABS) {
             TABS.put(tab.getRecipeFolderName(), tab);
         }
     }

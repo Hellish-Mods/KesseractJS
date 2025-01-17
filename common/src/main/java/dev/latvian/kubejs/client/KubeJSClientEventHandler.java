@@ -94,7 +94,7 @@ public class KubeJSClientEventHandler {
 	}
 
     private void preAtlasStitch(TextureAtlas atlas, Consumer<ResourceLocation> consumer) {
-        var stitchEvent = new AtlasSpriteRegistryEventJS(consumer);
+        val stitchEvent = new AtlasSpriteRegistryEventJS(consumer);
         for (val builder : RegistryInfos.FLUID) {
             if (builder instanceof FluidBuilder f) {
                 stitchEvent.register(ResourceLocation.tryParse(f.flowingTexture));

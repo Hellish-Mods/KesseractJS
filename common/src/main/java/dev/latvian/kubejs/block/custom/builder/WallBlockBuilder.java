@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block.custom.builder;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
@@ -21,9 +22,9 @@ public class WallBlockBuilder extends MultipartShapedBlockBuilder {
 
 	@Override
 	protected void generateMultipartBlockStateJson(MultipartBlockStateGenerator bs) {
-		var modPost = newID("block/", "_post").toString();
-		var modSide = newID("block/", "_side").toString();
-		var modSideTall = newID("block/", "_side_tall").toString();
+		val modPost = newID("block/", "_post").toString();
+		val modSide = newID("block/", "_side").toString();
+		val modSideTall = newID("block/", "_side_tall").toString();
 
 		bs.part("up=true", modPost);
 		bs.part("north=low", p -> p.model(modSide).uvlock());
@@ -44,7 +45,7 @@ public class WallBlockBuilder extends MultipartShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		val texture = textures.get("texture").getAsString();
 
 		generator.blockModel(newID("", "_post"), m -> {
 			m.parent("minecraft:block/template_wall_post");

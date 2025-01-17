@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block.custom.builder;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -27,8 +28,8 @@ public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 
 	@Override
 	protected void generateMultipartBlockStateJson(MultipartBlockStateGenerator bs) {
-		var modPost = newID("block/", "_post").toString();
-		var modSide = newID("block/", "_side").toString();
+		val modPost = newID("block/", "_post").toString();
+		val modSide = newID("block/", "_side").toString();
 
 		bs.part("", modPost);
 		bs.part("north=true", p -> p.model(modSide).uvlock());
@@ -45,7 +46,7 @@ public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		val texture = textures.get("texture").getAsString();
 
 		generator.blockModel(newID("", "_post"), m -> {
 			m.parent("minecraft:block/fence_post");

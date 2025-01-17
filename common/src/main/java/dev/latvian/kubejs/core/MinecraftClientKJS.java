@@ -2,8 +2,7 @@ package dev.latvian.kubejs.core;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.latvian.kubejs.client.ClientProperties;
-import dev.latvian.kubejs.util.ConsoleJS;
-import dev.latvian.mods.rhino.util.HideFromJS;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -38,7 +37,7 @@ public interface MinecraftClientKJS {
 	}
 
 	default String kjs$getCurrentWorldName() {
-		var server = kjs$self().getCurrentServer();
+		val server = kjs$self().getCurrentServer();
 		return server == null ? "Singleplayer" : server.name;
 	}
 

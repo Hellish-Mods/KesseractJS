@@ -366,7 +366,7 @@ public class TagEventJS<T> extends EventJS {
 
 		tags = new HashMap<>();
 
-		for (var entry : map.entrySet()) {
+		for (val entry : map.entrySet()) {
 			TagWrapper<T> w = new TagWrapper<>(this, entry.getKey(), entry.getValue());
 			tags.put(entry.getKey(), w);
 			ConsoleJS.SERVER.debug(type + "/#" + entry.getKey() + "; " + w.proxyList.size());
@@ -390,7 +390,7 @@ public class TagEventJS<T> extends EventJS {
 		} else if (type.equals("blocks")) {
             for (val builderBase : RegistryInfos.BLOCK) {
                 if (builderBase instanceof BlockBuilder builder) {
-                    for (var s : builder.tags) {
+                    for (val s : builder.tags) {
                         add(s, builder.id);
                     }
                 }

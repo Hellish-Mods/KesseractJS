@@ -15,9 +15,9 @@ import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.registry.types.tab.KjsTabs;
 import dev.latvian.kubejs.util.ConsoleJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import lombok.val;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -304,7 +304,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public ItemBuilder group(String groupId) {
-		var tab = KjsTabs.get(groupId);
+		val tab = KjsTabs.get(groupId);
 		if (tab != null) {
 			this.group = tab;
 		}
@@ -313,7 +313,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@JSInfo("Colorizes item's texture of the given index. Index is used when you have multiple layers, e.g. a crushed ore (of rock + ore).")
 	public ItemBuilder color(int index, ItemTintFunction color) {
-		if (!(tint instanceof ItemTintFunction.Mapped mapped)) {
+		if (!(tint instanceof ItemTintFunction.Mapped)) {
 			tint = new ItemTintFunction.Mapped();
 		}
 		((ItemTintFunction.Mapped) tint).map.put(index, color);
@@ -403,7 +403,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	public Item.Properties createItemProperties() {
-		var properties = new KubeJSItemProperties(this);
+		val properties = new KubeJSItemProperties(this);
 
 		properties.tab(group);
 
@@ -416,7 +416,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 		properties.rarity(rarity.rarity);
 
 		if (tools != null) {
-			for (var entry : tools.entrySet()) {
+			for (val entry : tools.entrySet()) {
 				appendToolType(properties, entry.getKey(), entry.getValue());
 			}
 		}

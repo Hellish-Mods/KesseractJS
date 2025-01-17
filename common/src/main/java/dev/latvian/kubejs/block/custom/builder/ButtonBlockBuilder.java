@@ -5,6 +5,7 @@ import dev.latvian.kubejs.block.custom.WoodenButtonBlockJS;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
@@ -35,8 +36,8 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var mod0 = newID("block/", "").toString();
-		var mod1 = newID("block/", "_pressed").toString();
+		val mod0 = newID("block/", "").toString();
+		val mod1 = newID("block/", "_pressed").toString();
 
 		bs.variant("face=ceiling,facing=east,powered=false", v -> v.model(mod0).x(180).y(270));
 		bs.variant("face=ceiling,facing=east,powered=true", v -> v.model(mod1).x(180).y(270));
@@ -66,7 +67,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		val texture = textures.get("texture").getAsString();
 
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/button");

@@ -33,7 +33,7 @@ public class KubeJSErrorScreen extends Screen {
 	protected void init() {
 		super.init();
 
-        var formatted = new TextComponent("");
+        val formatted = new TextComponent("");
         formatted.append(
             new TextComponent("There were KubeJS startup errors ")
                 .append(new TextComponent("[" + type.errors.size() + "]").withStyle(ChatFormatting.DARK_RED))

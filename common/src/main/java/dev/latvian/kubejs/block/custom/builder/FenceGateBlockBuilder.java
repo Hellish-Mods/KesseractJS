@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block.custom.builder;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -32,7 +33,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	public FenceGateBlockBuilder behaviour(String wt) {
-		for (var type : WoodType.values().collect(Collectors.toList())) {
+		for (val type : WoodType.values().collect(Collectors.toList())) {
 			if (type.name().equals(wt)) {
 				behaviour = type;
 				return this;
@@ -49,10 +50,10 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var mod = newID("block/", "").toString();
-		var modOpen = newID("block/", "_open").toString();
-		var modWall = newID("block/", "_wall").toString();
-		var modWallOpen = newID("block/", "_wall_open").toString();
+		val mod = newID("block/", "").toString();
+		val modOpen = newID("block/", "_open").toString();
+		val modWall = newID("block/", "_wall").toString();
+		val modWallOpen = newID("block/", "_wall_open").toString();
 
 		bs.variant("facing=east,in_wall=false,open=false", v -> v.model(mod).y(270).uvlock());
 		bs.variant("facing=east,in_wall=false,open=true", v -> v.model(modOpen).y(270).uvlock());
@@ -74,7 +75,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		val texture = textures.get("texture").getAsString();
 
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/template_fence_gate");
