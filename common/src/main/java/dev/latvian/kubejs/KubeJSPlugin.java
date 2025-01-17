@@ -61,4 +61,7 @@ public class KubeJSPlugin {
 
     public void loadCommonProperties(CommonProperties properties) {
     }
+
+    public void loadDevProperties(DevProperties properties) {
+    }
 }

@@ -2,7 +2,7 @@ package dev.latvian.kubejs.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.kubejs.CommonProperties;
 import lombok.val;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;

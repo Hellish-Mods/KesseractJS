@@ -155,13 +155,13 @@ public class KubeJS {
 
 		val pathPrefix = path;
 
-		UtilsJS.tryIO(() -> Files
-				.walk(dir, 10)
-				.filter(Files::isRegularFile)
-				.map(file -> dir.relativize(file).toString().replace(File.separatorChar, '/'))
-				.filter(name -> name.endsWith(".js"))
-				.forEach(fileName -> pack.info.scripts.add(new ScriptFileInfo(pack.info, pathPrefix + fileName))));
-	}
+        UtilsJS.tryIO(() -> Files
+            .walk(dir, 10)
+            .filter(Files::isRegularFile)
+            .map(file -> dir.relativize(file).toString().replace(File.separatorChar, '/'))
+            .filter(name -> name.endsWith(".js"))
+            .forEach(fileName -> pack.info.scripts.add(new ScriptFileInfo(pack.info, pathPrefix + fileName))));
+    }
 
 	public static String appendModId(String id) {
 		return id.indexOf(':') == -1 ? (MOD_ID + ":" + id) : id;

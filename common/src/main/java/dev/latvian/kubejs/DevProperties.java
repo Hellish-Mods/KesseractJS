@@ -1,9 +1,7 @@
 package dev.latvian.kubejs;
 
-import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSPaths;
 import me.shedaniel.architectury.platform.Platform;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.kubejs.util.KubeJSPlugins;
 
 import java.io.Reader;
 import java.io.Writer;

@@ -1,6 +1,7 @@
 package dev.latvian.kubejs;
 
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.CommonProperties;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.server.packs.PackType;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -24,12 +25,12 @@ public class KubeJSPaths {
 
     public static final Path COMMON_PROPERTIES = CONFIG.resolve("common.properties");
     public static final Path CLIENT_PROPERTIES = CONFIG.resolve("client.properties");
-//    public static final Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.properties");
-//    public static final Path LOCAL = dir(Platform.getGameFolder().resolve("local").resolve("kubejs"));
-//    public static final Path LOCAL_CACHE = dir(LOCAL.resolve("cache"));
-//    public static final Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.properties");
-//    public static final Path EXPORT = dir(LOCAL.resolve("export"));
-//    public static final Path EXPORTED_PACKS = dir(LOCAL.resolve("exported_packs"));
+    public static final Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.properties");
+    public static final Path LOCAL = dir(Platform.getGameFolder().resolve("local").resolve("kubejs"));
+    public static final Path LOCAL_CACHE = dir(LOCAL.resolve("cache"));
+    public static final Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.properties");
+    public static final Path EXPORT = dir(LOCAL.resolve("export"));
+    public static final Path EXPORTED_PACKS = dir(LOCAL.resolve("exported_packs"));
 
     public static final MutableBoolean FIRST_RUN = new MutableBoolean(false);
 
@@ -68,4 +69,8 @@ public class KubeJSPaths {
 	public static Path get(PackType type) {
 		return type == PackType.CLIENT_RESOURCES ? ASSETS : DATA;
 	}
+
+    static Path getLocalDevProperties() {
+        return CommonProperties.get().saveDevPropertiesInConfig ? CONFIG_DEV_PROPERTIES : LOCAL_DEV_PROPERTIES;
+    }
 }
