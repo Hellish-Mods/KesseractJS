@@ -1,15 +1,17 @@
 package dev.latvian.kubejs.script;
 
+import dev.latvian.kubejs.script.prop.ScriptProperties;
+import dev.latvian.kubejs.script.prop.ScriptProperty;
 import dev.latvian.kubejs.util.UtilsJS;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -19,72 +21,51 @@ public class ScriptFileInfo {
 	private static final Pattern FILE_FIXER = Pattern.compile("[^\\w.\\/]");
 
 	public final ScriptPackInfo pack;
-	public final String file;
+	public final String filePath;
 	public final ResourceLocation id;
 	public final String location;
-	private final Map<String, String> properties;
-	private int priority;
-	private boolean ignored;
-	private String packMode;
+    private final ScriptProperties properties = new ScriptProperties();
 
-	public ScriptFileInfo(ScriptPackInfo p, String f) {
-		pack = p;
-		file = f;
-        id = new ResourceLocation(
-            pack.namespace,
-            FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase(Locale.ROOT)
-        );
-        location = UtilsJS.getID(pack.namespace + ":" + pack.pathStart + file);
-		properties = new HashMap<>();
-		priority = 0;
-		ignored = false;
-		packMode = "default";
-	}
+    public ScriptFileInfo(ScriptPackInfo packInfo, String filePath) {
+		pack = packInfo;
+		this.filePath = filePath;
+        val fixedPath = FILE_FIXER.matcher(pack.pathStart + this.filePath)
+            .replaceAll("_")
+            .toLowerCase(Locale.ROOT);
+        id = new ResourceLocation(pack.namespace, fixedPath);
+        location = UtilsJS.getID(pack.namespace + ":" + pack.pathStart + this.filePath);
+    }
 
 	@Nullable
 	public Throwable preload(ScriptSource source) {
-		properties.clear();
-		priority = 0;
-		ignored = false;
-
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(source.createStream(this), StandardCharsets.UTF_8))) {
-			String line;
-
-			while ((line = reader.readLine()) != null) {
-				line = line.trim();
-
-                if (!line.startsWith("//")) {
-                    break;
-                }
-                String[] s = line.substring(2).split(":", 2);
-
-                if (s.length == 2) {
-                    properties.put(s[0].trim().toLowerCase(), s[1].trim());
-                }
-            }
-
-			priority = Integer.parseInt(getProperty("priority", "0"));
-			ignored = getProperty("ignored", "false").equals("true");
-			packMode = getProperty("packmode", "default");
+        try (val reader = new BufferedReader(new InputStreamReader(
+            source.createStream(this),
+            StandardCharsets.UTF_8
+        ))) {
+            properties.reload(reader);
 			return null;
 		} catch (Throwable ex) {
 			return ex;
 		}
 	}
 
-	public String getProperty(String s, String def) {
-		return properties.getOrDefault(s, def);
-	}
+    public <T> T getProp(ScriptProperty<T> property) {
+        return properties.getOrDefault(property);
+    }
 
-	public int getPriority() {
-		return priority;
+    public int getPriority() {
+		return getProp(ScriptProperty.PRIORITY);
 	}
 
 	public boolean isIgnored() {
-		return ignored;
+		return getProp(ScriptProperty.IGNORED);
 	}
 
-	public String getPackMode() {
-		return packMode;
-	}
+    public String getPackMode() {
+        return getProp(ScriptProperty.PACKMODE);
+    }
+
+    public List<String> getRequiredModIds() {
+        return getProp(ScriptProperty.REQUIRE);
+    }
 }

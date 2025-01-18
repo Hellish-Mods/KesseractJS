@@ -77,7 +77,7 @@ public class ScriptManager {
 		KubeJS.loadScripts(pack, directory, "");
 
 		for (val fileInfo : pack.info.scripts) {
-			val scriptSource = (ScriptSource.FromPath) info -> directory.resolve(info.file);
+			val scriptSource = (ScriptSource.FromPath) info -> directory.resolve(info.filePath);
 
 			val error = fileInfo.preload(scriptSource);
 

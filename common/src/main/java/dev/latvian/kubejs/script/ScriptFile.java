@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.script;
 
 import dev.latvian.mods.rhino.mod.RhinoProperties;
+import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,8 +14,9 @@ import java.nio.charset.StandardCharsets;
  */
 public class ScriptFile implements Comparable<ScriptFile> {
 	public final ScriptPack pack;
-	public final ScriptFileInfo info;
 	public final ScriptSource source;
+
+	public final ScriptFileInfo info;
 
 	private Throwable error;
 
@@ -32,8 +34,8 @@ public class ScriptFile implements Comparable<ScriptFile> {
 	public boolean load() {
 		error = null;
 
-		try (InputStream stream = source.createStream(info)) {
-			String script = new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8);
+		try (val stream = source.createStream(info)) {
+			val script = new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8);
             if (RhinoProperties.INSTANCE.enableCompiler) {
                 pack.context
                     .compileString(script, info.location, 1, null)
