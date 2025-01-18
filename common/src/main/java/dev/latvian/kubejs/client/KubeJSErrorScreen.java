@@ -53,7 +53,8 @@ public class KubeJSErrorScreen extends Screen {
                         .append(
                             new TextComponent(error
                                 .replace("Error occurred while handling event ", "Error in ")
-                                .replace("dev.latvian.mods.kubejs.", "...")
+                                .replace("dev.latvian.mods.rhino.", "...rhino.")
+                                .replace("dev.latvian.kubejs.", "...")
                             )
                                 .withStyle(style)));
                 i++;
