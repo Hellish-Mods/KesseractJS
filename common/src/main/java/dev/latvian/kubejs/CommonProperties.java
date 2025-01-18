@@ -62,7 +62,7 @@ public class CommonProperties {
             allowAsyncStreams = get("allowAsyncStreams", true);
             matchJsonRecipes = get("matchJsonRecipes", true);
             ignoreCustomUniqueRecipeIds = get("ignoreCustomUniqueRecipeIds", false);
-            startupErrorGUI = get("startupErrorGUI", true);
+            startupErrorGUI = get("startupErrorGUI", false);
             startupErrorReportUrl = get("startupErrorReportUrl", "");
 
             KubeJSPlugins.forEachPlugin(p -> p.loadCommonProperties(this));
