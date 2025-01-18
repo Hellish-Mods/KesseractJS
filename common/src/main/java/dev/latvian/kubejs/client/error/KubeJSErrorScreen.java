@@ -1,27 +1,33 @@
-package dev.latvian.kubejs.client;
+package dev.latvian.kubejs.client.error;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.CommonProperties;
 import lombok.val;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.*;
 import net.minecraft.util.Mth;
 
+import java.util.List;
 import java.util.Objects;
 
 public class KubeJSErrorScreen extends Screen {
-	public final ScriptType type;
-	private MultiLineLabel multilineMessage;
+    public static boolean used = !CommonProperties.get().startupErrorGUI;
 
-	public KubeJSErrorScreen(ScriptType type) {
+	public final ScriptType type;
+    private final Screen lastScreen;
+    private final boolean canClose;
+    private MultiLineLabel multilineMessage;
+
+	public KubeJSErrorScreen(ScriptType type, Screen lastScreen, boolean canClose) {
 		super(new TextComponent(""));
 		this.type = type;
-		this.multilineMessage = MultiLineLabel.EMPTY;
+        this.lastScreen = lastScreen;
+        this.canClose = canClose;
+        this.multilineMessage = MultiLineLabel.EMPTY;
 	}
 
 	@Override
@@ -43,21 +49,18 @@ public class KubeJSErrorScreen extends Screen {
 		val style = Style.EMPTY.withColor(TextColor.fromRgb(0xD19893));
 
         {
-            var i = 0;
-            for (val error : type.errors) {
-                if (i != 0) {
-                    formatted.append("\n");
-                }
-                formatted.append(
-                    new TextComponent((i + 1) + ") ").withStyle(ChatFormatting.DARK_RED)
-                        .append(
-                            new TextComponent(error
-                                .replace("Error occurred while handling event ", "Error in ")
-                                .replace("dev.latvian.mods.rhino.", "...rhino.")
-                                .replace("dev.latvian.kubejs.", "...")
-                            )
-                                .withStyle(style)));
-                i++;
+            List<String> errors = type.errors;
+            for (int i = 0, errorsSize = errors.size(); i < errorsSize; i++) {
+                formatted.append("\n")
+                    .append(
+                        new TextComponent((i + 1) + ") ").withStyle(ChatFormatting.DARK_RED)
+                            .append(
+                                new TextComponent(errors.get(i)
+                                    .replace("Error occurred while handling event ", "Error in ")
+                                    .replace("dev.latvian.mods.rhino.", "...rhino.")
+                                    .replace("dev.latvian.kubejs.", "...")
+                                )
+                                    .withStyle(style)));
             }
         }
 
@@ -65,23 +68,22 @@ public class KubeJSErrorScreen extends Screen {
 		int i = this.height - 26;
 
 		if (CommonProperties.get().startupErrorReportUrl.isBlank()) {
-			this.addWidget(new Button(this.width / 2 - 155, i, 150, 20, new TextComponent("Open startup.log"), this::openLog));
-			this.addWidget(new Button(this.width / 2 - 155 + 160, i, 150, 20, new TextComponent("Quit"), this::quit));
+			this.addButton(new Button(this.width / 2 - 155, i, 150, 20, new TextComponent("Open startup.log"), this::openLog));
+			this.addButton(new Button(this.width / 2 - 155 + 160, i, 150, 20, new TextComponent("Back"), this::quit));
 		} else {
-			this.addWidget(new Button(this.width / 4 - 55, i, 100, 20, new TextComponent("Open startup.log"), this::openLog));
-			this.addWidget(new Button(this.width / 2 - 50, i, 100, 20, new TextComponent("Report"), this::report));
-			this.addWidget(new Button(this.width * 3 / 4 - 45, i, 100, 20, new TextComponent("Quit"), this::quit));
+			this.addButton(new Button(this.width / 4 - 55, i, 100, 20, new TextComponent("Open startup.log"), this::openLog));
+			this.addButton(new Button(this.width / 2 - 50, i, 100, 20, new TextComponent("Report"), this::report));
+			this.addButton(new Button(this.width * 3 / 4 - 45, i, 100, 20, new TextComponent("Quit"), this::quit));
 		}
 	}
 
 	private void quit(Button button) {
-        if (minecraft == null) {
-            minecraft = Minecraft.getInstance();
-            if (minecraft == null) {
-                throw new IllegalStateException("Minecraft instance not exist, try to exit by throwing an exception");
-            }
+        used = true;
+        if (canClose) {
+            onClose();
+        } else {
+            minecraft.stop();
         }
-        minecraft.stop();
     }
 
 	private void report(Button button) {
@@ -118,6 +120,11 @@ public class KubeJSErrorScreen extends Screen {
 
 	@Override
 	public boolean shouldCloseOnEsc() {
-		return false;
+		return canClose;
 	}
+
+    @Override
+    public void onClose() {
+        minecraft.setScreen(lastScreen);
+    }
 }

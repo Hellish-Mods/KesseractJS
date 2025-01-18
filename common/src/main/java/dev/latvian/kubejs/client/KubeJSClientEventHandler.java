@@ -1,11 +1,11 @@
 package dev.latvian.kubejs.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.latvian.kubejs.CommonProperties;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.client.asset.AtlasSpriteRegistryEventJS;
+import dev.latvian.kubejs.client.error.KubeJSErrorScreen;
 import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.kubejs.client.painter.world.WorldPainterObject;
@@ -136,9 +136,9 @@ public class KubeJSClientEventHandler {
     public InteractionResultHolder<Screen> setScreen(Screen screen) {
         if (screen instanceof TitleScreen
             && !ScriptType.STARTUP.errors.isEmpty()
-            && CommonProperties.get().startupErrorGUI
+            && !KubeJSErrorScreen.used
         ) {
-            return InteractionResultHolder.success(new KubeJSErrorScreen(ScriptType.STARTUP));
+            return InteractionResultHolder.success(new KubeJSErrorScreen(ScriptType.STARTUP, screen, true));
         }
         return InteractionResultHolder.pass(null);
     }
