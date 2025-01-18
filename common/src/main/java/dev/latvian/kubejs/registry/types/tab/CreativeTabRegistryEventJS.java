@@ -25,7 +25,7 @@ public class CreativeTabRegistryEventJS extends EventJS {
 	public CreativeModeTab create(String id, Supplier<ItemStackJS> icon) {
         ResourceLocation fullId;
         try {
-            fullId = new ResourceLocation(KubeJS.MOD_ID, id);
+            fullId = KubeJS.rl(id);
         } catch (Exception e) {
             ConsoleJS.STARTUP.error(String.format("Tab id '%s' is not valid!", id), e);
             return null;

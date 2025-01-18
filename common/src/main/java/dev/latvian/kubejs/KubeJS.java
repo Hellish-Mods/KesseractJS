@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -165,6 +164,10 @@ public class KubeJS {
 		return id.indexOf(':') == -1 ? (MOD_ID + ":" + id) : id;
 	}
 
+    public static ResourceLocation rl(String path) {
+        return new ResourceLocation(MOD_ID, path);
+    }
+
 	public static Path getGameDirectory() {
 		return Platform.getGameFolder();
 	}
@@ -185,7 +188,7 @@ public class KubeJS {
 		UtilsJS.init();
 		KubeJSNet.init();
 		new StartupEventJS().post(ScriptType.STARTUP, KubeJSEvents.INIT);
-		Registry.register(Registry.CHUNK_GENERATOR, new ResourceLocation(KubeJS.MOD_ID, "flat"), FlatChunkGeneratorKJS.CODEC);
+		Registry.register(Registry.CHUNK_GENERATOR, rl("flat"), FlatChunkGeneratorKJS.CODEC);
 		//KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> FlatChunkGeneratorKJS.CODEC);
 	}
 
