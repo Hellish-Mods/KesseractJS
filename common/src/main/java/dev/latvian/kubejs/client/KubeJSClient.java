@@ -14,6 +14,7 @@ import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import lombok.val;
 import me.shedaniel.architectury.hooks.PackRepositoryHooks;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -46,7 +47,7 @@ public class KubeJSClient extends KubeJSCommon {
 		reloadClientScripts();
 
 		new KubeJSClientEventHandler().init();
-		PackRepository list = Minecraft.getInstance().getResourcePackRepository();
+		val list = Minecraft.getInstance().getResourcePackRepository();
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
 		setup();
 
@@ -67,7 +68,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	public static void copyDefaultOptionsFile(File optionsFile) {
 		if (!optionsFile.exists()) {
-			Path defOptions = KubeJSPaths.CONFIG.resolve("defaultoptions.txt");
+			val defOptions = KubeJSPaths.CONFIG.resolve("defaultoptions.txt");
 
 			if (Files.exists(defOptions)) {
 				try {
@@ -129,8 +130,15 @@ public class KubeJSClient extends KubeJSCommon {
 
 	private void reload(PreparableReloadListener listener) {
 		long start = System.currentTimeMillis();
-		Minecraft mc = Minecraft.getInstance();
-		listener.reload(CompletableFuture::completedFuture, mc.getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), mc).thenAccept(unused -> {
+		val mc = Minecraft.getInstance();
+        listener.reload(
+            CompletableFuture::completedFuture,
+            mc.getResourceManager(),
+            InactiveProfiler.INSTANCE,
+            InactiveProfiler.INSTANCE,
+            Util.backgroundExecutor(),
+            mc
+        ).thenAccept(unused -> {
 			/*
 			long ms = System.currentTimeMillis() - start;
 

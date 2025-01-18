@@ -51,7 +51,7 @@ public class KubeJSPaths {
         return dir;
     }
 
-    static Path dir(Path dir) {
+    public static Path dir(Path dir) {
         return dir(dir, false);
     }
 

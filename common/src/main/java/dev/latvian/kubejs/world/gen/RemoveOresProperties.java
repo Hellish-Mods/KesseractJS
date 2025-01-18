@@ -1,6 +1,6 @@
 package dev.latvian.kubejs.world.gen;
 
-import dev.latvian.kubejs.block.predicate.BlockStatePredicate;
+import dev.latvian.kubejs.block.BlockStatePredicate;
 import net.minecraft.world.level.levelgen.GenerationStep;
 
 /**

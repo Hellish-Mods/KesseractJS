@@ -38,14 +38,14 @@ public class ScriptManager {
 	public Context context;
     public ScriptableObject topScope;
 
-    public ScriptManager(ScriptType t, Path p, String e) {
-		type = t;
-		directory = p;
-		exampleScript = e;
+    public ScriptManager(ScriptType type, Path path, String examplePath) {
+		this.type = type;
+		directory = path;
+		exampleScript = examplePath;
 		events = new EventsJS(this);
 		packs = new LinkedHashMap<>();
 		firstLoad = true;
-		classFilter = KubeJSPlugins.createClassFilter(type);
+		classFilter = KubeJSPlugins.createClassFilter(this.type);
     }
 
 	public void unload() {

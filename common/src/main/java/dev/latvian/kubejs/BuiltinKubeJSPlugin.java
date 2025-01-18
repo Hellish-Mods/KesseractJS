@@ -11,7 +11,7 @@ import dev.latvian.kubejs.bindings.*;
 import dev.latvian.kubejs.block.*;
 import dev.latvian.kubejs.block.custom.*;
 import dev.latvian.kubejs.block.custom.builder.*;
-import dev.latvian.kubejs.block.predicate.BlockStatePredicate;
+import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.client.painter.screen.*;
 import dev.latvian.kubejs.entity.EntityJS;

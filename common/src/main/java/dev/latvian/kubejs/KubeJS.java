@@ -28,7 +28,7 @@ import dev.latvian.kubejs.world.gen.FlatChunkGeneratorKJS;
 import lombok.val;
 import me.shedaniel.architectury.platform.Mod;
 import me.shedaniel.architectury.platform.Platform;
-import me.shedaniel.architectury.utils.EnvExecutor;
+import me.shedaniel.architectury.utils.Env;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -77,29 +77,27 @@ public class KubeJS {
 		new KubeJSBackgroundThread().start();
 
 		if (Files.notExists(KubeJSPaths.README)) {
-			UtilsJS.tryIO(() -> {
-                val list = Arrays.asList(
-                    "Find more info on the website: https://kubejs.com/",
-                    "",
-                    "Directory information:",
-                    "",
-                    "assets - Acts as a resource pack, you can put any client resources in here, like textures, models, etc. Example: assets/kubejs/textures/item/test_item.png",
-                    "data - Acts as a datapack, you can put any server resources in here, like loot tables, functions, etc. Example: data/kubejs/loot_tables/blocks/test_block.json",
-                    "",
-                    "startup_scripts - Scripts that get loaded once during game startup - Used for adding items and other things that can only happen while the game is loading (Can be reloaded with /kubejs reload_startup_scripts, but it may not work!)",
-                    "server_scripts - Scripts that get loaded every time server resources reload - Used for modifying recipes, tags, loot tables, and handling server events (Can be reloaded with /reload)",
-                    "client_scripts - Scripts that get loaded every time client resources reload - Used for JEI events, tooltips and other client side things (Can be reloaded with F3+T)",
-                    "",
-                    "config - KubeJS config storage. This is also the only directory that scripts can access other than world directory",
-                    "exported - Data dumps like texture atlases end up here",
-                    "",
-                    "You can find type-specific logs in logs/kubejs/ directory"
-                );
-                Files.write(KubeJSPaths.README, list);
-			});
+			UtilsJS.tryIO(() -> Files.writeString(KubeJSPaths.README, """
+                Find out more info on the website: https://kubejs.com/
+                
+                Directory information:
+                
+                assets - Acts as a resource pack, you can put any client resources in here, like textures, models, etc. Example: assets/kubejs/textures/item/test_item.png
+                data - Acts as a datapack, you can put any server resources in here, like loot tables, functions, etc. Example: data/kubejs/loot_tables/blocks/test_block.json
+                
+                startup_scripts - Scripts that get loaded once during game startup - Used for adding items and other things that can only happen while the game is loading (Can be reloaded with '/kubejs reload startup_scripts')
+                server_scripts - Scripts that get loaded every time server resources reload - Used for modifying recipes, tags, loot tables, and handling server events (Can be reloaded with /reload or '/kubejs reload server_scripts')
+                client_scripts - Scripts that get loaded every time client resources reload - Used for JEI events, tooltips and other client side things (Can be reloaded with F3+T or '/kubejs reload client_scripts')
+                
+                config - KubeJS config storage. This is also the only directory that scripts can access other than world directory
+                exported - Data dumps like texture atlases end up here
+                
+                You can find type-specific logs in logs/kubejs/ directory"""));
 		}
 
-		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
+        PROXY = Platform.getEnvironment() == Env.CLIENT
+            ? new KubeJSClient()
+            : new KubeJSCommon();
 
         {
             val pluginTimer = Stopwatch.createStarted();

@@ -1,4 +1,4 @@
-package dev.latvian.kubejs.block.predicate;
+package dev.latvian.kubejs.block;
 
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.util.ListJS;
@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+/**
+ * ideally should be in {@link dev.latvian.kubejs.block.predicate}, but kept here for backward compat
+ */
 @FunctionalInterface
 public interface BlockStatePredicate {
 	ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
