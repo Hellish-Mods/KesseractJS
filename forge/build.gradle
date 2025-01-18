@@ -15,7 +15,7 @@ loom {
 
 	forge {
 		convertAccessWideners = true
-		extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+		extraAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
 
 		mixinConfig "kubejs-common.mixins.json"
 		mixinConfig "kubejs.mixins.json"
@@ -101,10 +101,8 @@ shadowJar {
 }
 
 remapJar {
-    setInput(downgradeJar.archiveFile)
-    dependsOn(downgradeJar)
-//	input.set shadowJar.archiveFile
-//	dependsOn shadowJar
+    setInput(shadeDowngradedApi.archiveFile)
+    dependsOn(shadowJar)
 	archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
 	archiveClassifier.set null
 }
@@ -130,6 +128,8 @@ components.java {
 		skip()
 	}
 }
+
+assemble.dependsOn(downgradeJar, shadeDowngradedApi)
 
 unifiedPublishing {
 	project {
