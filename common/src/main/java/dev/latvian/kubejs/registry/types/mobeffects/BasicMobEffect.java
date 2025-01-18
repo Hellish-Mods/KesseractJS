@@ -2,11 +2,11 @@ package dev.latvian.kubejs.registry.types.mobeffects;
 
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.NotNull;
@@ -55,10 +55,10 @@ public class BasicMobEffect extends MobEffect {
 	@Override
 	public void removeAttributeModifiers(LivingEntity livingEntity, AttributeMap attributeMap, int i) {
 		this.applyAttributeModifications();
-		for (Map.Entry<Attribute, AttributeModifier> entry : this.attributeMap.entrySet()) {
-			AttributeInstance attributeInstance = attributeMap.getInstance(entry.getKey());
-			if (attributeInstance != null) {
-				attributeInstance.removeModifier(entry.getValue());
+		for (val entry : this.attributeMap.entrySet()) {
+			val instance = attributeMap.getInstance(entry.getKey());
+			if (instance != null) {
+				instance.removeModifier(entry.getValue());
 			}
 		}
 	}
@@ -66,12 +66,12 @@ public class BasicMobEffect extends MobEffect {
 	@Override
 	public void addAttributeModifiers(LivingEntity livingEntity, AttributeMap attributeMap, int i) {
 		this.applyAttributeModifications();
-		for (var attributeAttributeModifierEntry : this.attributeMap.entrySet()) {
-			AttributeInstance attributeInstance = attributeMap.getInstance(attributeAttributeModifierEntry.getKey());
-			if (attributeInstance != null) {
-				AttributeModifier attributeModifier = attributeAttributeModifierEntry.getValue();
-				attributeInstance.removeModifier(attributeModifier);
-				attributeInstance.addPermanentModifier(new AttributeModifier(attributeModifier.getId(), this.getDescriptionId() + " " + i, this.getAttributeModifierValue(i, attributeModifier), attributeModifier.getOperation()));
+		for (val entry : this.attributeMap.entrySet()) {
+			val instance = attributeMap.getInstance(entry.getKey());
+			if (instance != null) {
+				val modifier = entry.getValue();
+				instance.removeModifier(modifier);
+				instance.addPermanentModifier(new AttributeModifier(modifier.getId(), this.getDescriptionId() + " " + i, this.getAttributeModifierValue(i, modifier), modifier.getOperation()));
 			}
 		}
 

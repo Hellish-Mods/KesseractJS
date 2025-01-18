@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.item.custom;
 
 import dev.latvian.kubejs.item.ItemBuilder;
+import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.resources.ResourceLocation;
@@ -36,7 +37,7 @@ public class ShearsItemBuilder extends ItemBuilder {
 
 	@Override
 	public Item createObject() {
-		var item = new ShearsItemKJS(this);
+		val item = new ShearsItemKJS(this);
 		DispenserBlock.registerBehavior(item, new ShearsDispenseItemBehavior());
 		return item;
 	}

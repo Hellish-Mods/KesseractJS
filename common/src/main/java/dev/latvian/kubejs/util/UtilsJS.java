@@ -55,6 +55,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,6 +74,10 @@ public class UtilsJS {
     public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     public static final Predicate<Object> ALWAYS_TRUE = o -> true;
+
+    public static <K, T> ArrayList<T> keyIgnoredArrayList(K key) {
+        return new ArrayList<>();
+    }
 
     public interface TryIO {
 		void run() throws IOException;
@@ -242,14 +247,14 @@ public class UtilsJS {
 			return map;
 		}
 		// Lists, Collections, Iterables, GSON Arrays
-		else if (o instanceof Iterable itr) {
+		else if (o instanceof Iterable<?> itr) {
 			if (!type.checkList()) {
 				return null;
 			}
 
-			ListJS list = new ListJS();
+			val list = new ListJS();
 
-			for (Object o1 : itr) {
+			for (val o1 : itr) {
 				list.add(o1);
 			}
 
@@ -273,9 +278,9 @@ public class UtilsJS {
 				return null;
 			}
 
-			MapJS map = new MapJS(((JsonObject) o).size());
+			val map = new MapJS(((JsonObject) o).size());
 
-			for (var entry : ((JsonObject) o).entrySet()) {
+			for (val entry : ((JsonObject) o).entrySet()) {
 				map.put(entry.getKey(), entry.getValue());
 			}
 

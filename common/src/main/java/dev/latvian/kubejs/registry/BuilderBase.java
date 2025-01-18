@@ -6,6 +6,7 @@ import dev.latvian.kubejs.generator.DataJsonGenerator;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import lombok.val;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -147,14 +148,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 
 	@Override
 	public String toString() {
-		var n = getClass().getName();
-		int i = n.lastIndexOf('.');
-
-		if (i != -1) {
-			n = n.substring(i + 1);
-		}
-
-		return n + "[" + id + "]";
+        return getClass().getSimpleName() + "[" + id + "]";
 	}
 
     @Deprecated

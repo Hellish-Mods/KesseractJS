@@ -1,9 +1,9 @@
 package dev.latvian.kubejs.event;
 
 import dev.latvian.kubejs.script.ScriptManager;
+import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.RhinoException;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,17 +24,13 @@ public class EventsJS {
 		map = new Object2ObjectOpenHashMap<>();
 	}
 
-	public void listen(String id, IEventHandler handler) {
-		id = id.replace("yeet", "remove");
-
-		var list = map.get(id);
-		if (list == null) {
-			list = new ObjectArrayList<>();
-			map.put(id, list);
-		}
-
-		list.add(handler);
-	}
+    public void listen(String id, IEventHandler handler) {
+        map.computeIfAbsent(
+                id.replace("yeet", "remove"),
+                UtilsJS::keyIgnoredArrayList
+            )
+            .add(handler);
+    }
 
     @NotNull
 	public List<IEventHandler> handlers(String id) {

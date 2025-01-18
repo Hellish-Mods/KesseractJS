@@ -1,10 +1,11 @@
 package dev.latvian.kubejs.server;
 
-import com.google.gson.JsonElement;
 import dev.latvian.kubejs.generator.DataJsonGenerator;
 import dev.latvian.kubejs.registry.RegistryInfos;
+import dev.latvian.kubejs.script.data.GeneratedData;
 import dev.latvian.kubejs.script.data.KubeJSResourcePack;
 import dev.latvian.kubejs.util.KubeJSPlugins;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 
@@ -16,12 +17,13 @@ public class KubeJSServerResourcePack extends KubeJSResourcePack {
 	}
 
 	@Override
-	public void generateJsonFiles(Map<ResourceLocation, JsonElement> map) {
-		DataJsonGenerator generator = new DataJsonGenerator(map);
-		KubeJSPlugins.forEachPlugin(p -> p.generateDataJsons(generator));
+	public void generate(Map<ResourceLocation, GeneratedData> map) {
+        val generator = new DataJsonGenerator(map);
 
-		for (var builder : RegistryInfos.ALL_BUILDERS) {
-			builder.generateDataJsons(generator);
-		}
+        for (val builder : RegistryInfos.ALL_BUILDERS) {
+            builder.generateDataJsons(generator);
+        }
+
+        KubeJSPlugins.forEachPlugin(p -> p.generateDataJsons(generator));
 	}
 }

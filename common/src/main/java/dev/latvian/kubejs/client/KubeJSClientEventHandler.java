@@ -5,6 +5,7 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSPaths;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.client.asset.AtlasSpriteRegistryEventJS;
+import dev.latvian.kubejs.client.error.KubeJSErrorScreen;
 import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.client.painter.world.WorldPaintEventJS;
 import dev.latvian.kubejs.client.painter.world.WorldPainterObject;
@@ -15,7 +16,6 @@ import dev.latvian.kubejs.item.ItemBuilder;
 import dev.latvian.kubejs.item.events.ItemTooltipEventJS;
 import dev.latvian.kubejs.item.OldItemTooltipEventJS;
 import dev.latvian.kubejs.player.AttachPlayerDataEvent;
-import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.Tags;
@@ -35,19 +35,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.block.Block;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -87,12 +88,13 @@ public class KubeJSClientEventHandler {
 		GuiEvent.RENDER_HUD.register(Painter.INSTANCE::inGameScreenDraw);
 		GuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
 		GuiEvent.INIT_POST.register(this::guiPostInit);
+        GuiEvent.SET_SCREEN.register(this::setScreen);
         TextureStitchEvent.PRE.register(this::preAtlasStitch);
 		TextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
     private void preAtlasStitch(TextureAtlas atlas, Consumer<ResourceLocation> consumer) {
-        var stitchEvent = new AtlasSpriteRegistryEventJS(consumer);
+        val stitchEvent = new AtlasSpriteRegistryEventJS(consumer);
         for (val builder : RegistryInfos.FLUID) {
             if (builder instanceof FluidBuilder f) {
                 stitchEvent.register(ResourceLocation.tryParse(f.flowingTexture));
@@ -130,6 +132,16 @@ public class KubeJSClientEventHandler {
             }
         }
 	}
+
+    public InteractionResultHolder<Screen> setScreen(Screen screen) {
+        if (screen instanceof TitleScreen
+            && !ScriptType.STARTUP.errors.isEmpty()
+            && !KubeJSErrorScreen.used
+        ) {
+            return InteractionResultHolder.success(new KubeJSErrorScreen(ScriptType.STARTUP, screen, true));
+        }
+        return InteractionResultHolder.pass(null);
+    }
 
 	private void debugInfoLeft(List<String> lines) {
 		if (Minecraft.getInstance().player != null) {

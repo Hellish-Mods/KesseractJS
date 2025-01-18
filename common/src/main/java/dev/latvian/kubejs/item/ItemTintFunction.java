@@ -1,9 +1,7 @@
 package dev.latvian.kubejs.item;
 
-import com.github.bsideup.jabel.Desugar;
 import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.mods.rhino.BaseFunction;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.mod.util.color.Color;
@@ -11,6 +9,7 @@ import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import lombok.val;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +27,6 @@ public interface ItemTintFunction {
 		return (stack, index) -> getColor(stack, index).getArgbKJS();
 	}
 
-	@Desugar
 	record Fixed(Color color) implements ItemTintFunction {
 		@Override
 		public Color getColor(ItemStack stack, int index) {
@@ -41,15 +39,15 @@ public interface ItemTintFunction {
 
 		@Override
 		public Color getColor(ItemStack stack, int index) {
-			var f = map.get(index);
+			val f = map.get(index);
 			return f == null ? null : f.getColor(stack, index);
 		}
 	}
 
 	ItemTintFunction BLOCK = (stack, index) -> {
 		if (stack.getItem() instanceof BlockItem block) {
-			var s = block.getBlock().defaultBlockState();
-			var internal = ((BlockKJS) s.getBlock()).getBlockBuilderKJS();
+			val s = block.getBlock().defaultBlockState();
+			val internal = ((BlockKJS) s.getBlock()).getBlockBuilderKJS();
 
 			if (internal != null && internal.tint != null) {
 				return internal.tint.getColor(s, null, null, index);
@@ -62,7 +60,7 @@ public interface ItemTintFunction {
 	ItemTintFunction POTION = (stack, index) -> new SimpleColor(PotionUtils.getColor(stack));
 	ItemTintFunction MAP = (stack, index) -> new SimpleColor(MapItem.getColor(stack));
 	ItemTintFunction DISPLAY_COLOR_NBT = (stack, index) -> {
-		var tag = stack.getTagElement("display");
+		val tag = stack.getTagElement("display");
 
 		if (tag != null && tag.contains("color", 99)) {
 			return new SimpleColor(tag.getInt("color"));
@@ -78,10 +76,10 @@ public interface ItemTintFunction {
 		} else if (o instanceof ItemTintFunction f) {
 			return f;
 		} else if (o instanceof List<?> list) {
-			var map = new Mapped();
+			val map = new Mapped();
 
 			for (int i = 0; i < list.size(); i++) {
-				var f = of(list.get(i));
+				val f = of(list.get(i));
 
 				if (f != null) {
 					map.map.put(i, f);
@@ -90,7 +88,7 @@ public interface ItemTintFunction {
 
 			return map;
 		} else if (o instanceof CharSequence) {
-			var fn = switch (o.toString()) {
+			val fn = switch (o.toString()) {
 				case "block" -> BLOCK;
 				case "potion" -> POTION;
 				case "map" -> MAP;

@@ -12,6 +12,7 @@ import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.MutableUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
 import dev.latvian.mods.rhino.util.unit.UnitStorage;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
@@ -122,7 +123,7 @@ public class Painter {
 	}
 
 	public void setVariable(String key, Unit variable) {
-		Unit original = unitStorage.getVariable(key);
+		val original = unitStorage.getVariable(key);
 
 		if (original instanceof MutableUnit) {
 			((MutableUnit) original).set(variable.get());
@@ -134,7 +135,7 @@ public class Painter {
 	}
 
     public void inGameScreenDraw(PoseStack matrices, float delta) {
-        var mc = Minecraft.getInstance();
+        val mc = Minecraft.getInstance();
 
         if (mc.player == null || mc.options.renderDebug || mc.screen != null) {
             return;
@@ -144,7 +145,7 @@ public class Painter {
         RenderSystem.enableDepthTest();
         //RenderSystem.disableLighting();
 
-        var event = new ScreenPaintEventJS(mc, matrices, delta);
+        val event = new ScreenPaintEventJS(mc, matrices, delta);
         deltaUnit.set(delta);
         screenWidthUnit.set(event.width);
         screenHeightUnit.set(event.height);
@@ -153,13 +154,13 @@ public class Painter {
         mouseYUnit.set(event.height / 2F);
         event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
-        for (var object : getScreenObjects()) {
+        for (val object : getScreenObjects()) {
             if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
                 object.preDraw(event);
             }
         }
 
-        for (var object : getScreenObjects()) {
+        for (val object : getScreenObjects()) {
             if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
                 object.draw(event);
             }
@@ -167,7 +168,7 @@ public class Painter {
     }
 
     public void guiScreenDraw(Screen screen, PoseStack matrices, int mouseX, int mouseY, float delta) {
-        var mc = Minecraft.getInstance();
+        val mc = Minecraft.getInstance();
 
         if (mc.player == null) {
             return;
@@ -177,7 +178,7 @@ public class Painter {
         RenderSystem.defaultBlendFunc();
         //RenderSystem.disableLighting();
 
-        var event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
+        val event = new ScreenPaintEventJS(mc, screen, matrices, mouseX, mouseY, delta);
         deltaUnit.set(delta);
         screenWidthUnit.set(event.width);
         screenHeightUnit.set(event.height);
@@ -187,13 +188,13 @@ public class Painter {
 //        event.resetShaderColor();
         event.post(KubeJSEvents.CLIENT_PAINT_SCREEN);
 
-        for (var object : getScreenObjects()) {
+        for (val object : getScreenObjects()) {
             if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
                 object.preDraw(event);
             }
         }
 
-        for (var object : getScreenObjects()) {
+        for (val object : getScreenObjects()) {
             if (object.visible && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
                 object.draw(event);
             }

@@ -5,6 +5,7 @@ import dev.latvian.kubejs.bindings.TextWrapper;
 import dev.latvian.kubejs.block.BlockBuilder;
 import dev.latvian.kubejs.block.events.DetectorBlockEventJS;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -61,7 +62,7 @@ public class DetectorBlock extends Block {
         if (level.isClientSide) {
             return;
         }
-		var p = !blockState.getValue(BlockStateProperties.POWERED);
+		val p = !blockState.getValue(BlockStateProperties.POWERED);
 
 		if (p == level.hasNeighborSignal(blockPos)) {
 			level.setBlock(blockPos, blockState.setValue(BlockStateProperties.POWERED, p), 2);

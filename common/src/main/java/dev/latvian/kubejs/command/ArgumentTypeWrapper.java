@@ -11,6 +11,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.util.ClassWrapper;
 import dev.latvian.kubejs.util.ConsoleJS;
+import lombok.val;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.AngleArgument;
 import net.minecraft.commands.arguments.ColorArgument;
@@ -121,7 +122,7 @@ public enum ArgumentTypeWrapper {
 	private static Map<ResourceLocation, ClassWrapper<?>> byNameCache;
 
 	public static ClassWrapper<?> byName(ResourceLocation name) {
-		var wrapper = getOrCacheByName().get(name);
+		val wrapper = getOrCacheByName().get(name);
 		if (wrapper == null) {
 			throw new IllegalStateException("No argument type found for " + name);
 		}
@@ -129,7 +130,7 @@ public enum ArgumentTypeWrapper {
 	}
 
 	public static void printAll() {
-		for (var argType : getOrCacheByName().entrySet()) {
+		for (val argType : getOrCacheByName().entrySet()) {
 			ConsoleJS.SERVER.info("Argument type: " + argType.getKey() + " -> " + argType.getValue());
 		}
 	}
@@ -138,7 +139,7 @@ public enum ArgumentTypeWrapper {
 	private static Map<ResourceLocation, ClassWrapper<?>> getOrCacheByName() {
 		if (byNameCache == null) {
 			byNameCache = new HashMap<>();
-			for (var argType : ArgumentTypes.BY_CLASS.entrySet()) {
+			for (val argType : ArgumentTypes.BY_CLASS.entrySet()) {
 				byNameCache.putIfAbsent(argType.getValue().name, new ClassWrapper(argType.getKey()));
 			}
 		}

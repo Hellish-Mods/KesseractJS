@@ -32,9 +32,9 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 	private final Map<String, String> pathToData;
 	private final Set<String> namespaces;
 
-	public VirtualKubeJSDataPack(boolean h) {
+	public VirtualKubeJSDataPack(boolean highPriority) {
 		super(new File("dummy"));
-		high = h;
+		high = highPriority;
 		locationToData = new HashMap<>();
 		pathToData = new HashMap<>();
 		namespaces = new HashSet<>();

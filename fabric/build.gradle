@@ -66,8 +66,8 @@ shadowJar {
 }
 
 remapJar {
-	input.set shadowJar.archiveFile
-	dependsOn shadowJar
+	setInput(shadeDowngradedApi.archiveFile)
+	dependsOn(shadowJar)
 	archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
 	archiveClassifier.set null
 }
@@ -81,6 +81,8 @@ components.java {
 		skip()
 	}
 }
+
+assemble.dependsOn(downgradeJar, shadeDowngradedApi)
 
 unifiedPublishing {
 	project {

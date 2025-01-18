@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block.custom.builder;
 import dev.latvian.kubejs.block.custom.StairBlockJS;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
@@ -20,9 +21,9 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var mod = newID("block/", "").toString();
-		var modInner = newID("block/", "_inner").toString();
-		var modOuter = newID("block/", "_outer").toString();
+		val mod = newID("block/", "").toString();
+		val modInner = newID("block/", "_inner").toString();
+		val modOuter = newID("block/", "_outer").toString();
 
 		bs.variant("facing=east,half=bottom,shape=inner_left", v -> v.model(modInner).y(270).uvlock());
 		bs.variant("facing=east,half=bottom,shape=inner_right", v -> v.model(modInner));
@@ -68,7 +69,7 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		val texture = textures.get("texture").getAsString();
 
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/stairs");

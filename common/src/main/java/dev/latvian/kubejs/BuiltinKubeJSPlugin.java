@@ -11,7 +11,7 @@ import dev.latvian.kubejs.bindings.*;
 import dev.latvian.kubejs.block.*;
 import dev.latvian.kubejs.block.custom.*;
 import dev.latvian.kubejs.block.custom.builder.*;
-import dev.latvian.kubejs.block.predicate.BlockStatePredicate;
+import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.client.painter.screen.*;
 import dev.latvian.kubejs.entity.EntityJS;
@@ -566,12 +566,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	public void generateLang(Map<String, String> lang) {
-		lang.put("itemGroup.kubejs.kubejs", "KubeJS");
+	public void generateLang(Map<String, String> enusLang) {
+		enusLang.put("itemGroup.kubejs.kubejs", KubeJS.MOD_NAME);
 
 		for (val builder : RegistryInfos.ALL_BUILDERS) {
 			if (builder.overrideLangJson && builder.display != null) {
-				lang.put(builder.getTranslationKey(), builder.display.getString());
+				enusLang.put(builder.getTranslationKey(), builder.display.getString());
 			}
 		}
 	}

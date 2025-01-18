@@ -5,6 +5,7 @@ import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import lombok.val;
 import me.shedaniel.architectury.registry.CreativeTabs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -22,9 +23,9 @@ public class CreativeTabRegistryEventJS extends EventJS {
 			vanilla id is valid, but will be denied here to prevent confusion
 			""")
 	public CreativeModeTab create(String id, Supplier<ItemStackJS> icon) {
-        ResourceLocation fullId = null;
+        ResourceLocation fullId;
         try {
-            fullId = new ResourceLocation(KubeJS.MOD_ID, id);
+            fullId = KubeJS.rl(id);
         } catch (Exception e) {
             ConsoleJS.STARTUP.error(String.format("Tab id '%s' is not valid!", id), e);
             return null;
@@ -35,7 +36,7 @@ public class CreativeTabRegistryEventJS extends EventJS {
 			return KjsTabs.get(id);
 		}
 
-		var tab = CreativeTabs.create(fullId, () -> icon.get().getItemStack());
+		val tab = CreativeTabs.create(fullId, () -> icon.get().getItemStack());
 		KjsTabs.put(id, tab);
 
 		return tab;

@@ -5,6 +5,7 @@ import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
+import lombok.val;
 import me.shedaniel.architectury.registry.Registry;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
 	private static List<RegistryTypeWrapperFactory<?>> all;
 
     public static void register(TypeWrappers wrappers) {
-        for (var wrapperFactory : getAll()) {
+        for (val wrapperFactory : getAll()) {
             try {
                 wrappers.register(wrapperFactory.type, UtilsJS.cast(wrapperFactory));
             } catch (IllegalArgumentException ignored) {

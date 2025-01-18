@@ -270,7 +270,7 @@ public class BlockBuilder extends BuilderBase<Block> {
             return;
         }
 
-        var lootBuilder = new LootBuilder(null);
+        val lootBuilder = new LootBuilder(null);
         lootBuilder.type = "minecraft:block";
 
         if (lootTable != null) {
@@ -282,7 +282,7 @@ public class BlockBuilder extends BuilderBase<Block> {
             });
         }
 
-        var json = lootBuilder.toJson();
+        val json = lootBuilder.toJson();
         generator.json(newID("loot_tables/blocks/", ""), json);
     }
 
@@ -329,7 +329,7 @@ public class BlockBuilder extends BuilderBase<Block> {
             return;
         }
         generator.blockModel(id, mg -> {
-            var particle = textures.get("particle").getAsString();
+            val particle = textures.get("particle").getAsString();
 
             if (areAllTexturesEqual(textures, particle)) {
                 mg.parent("minecraft:block/cube_all");
@@ -346,11 +346,11 @@ public class BlockBuilder extends BuilderBase<Block> {
                     boxes.add(new AABB(0D, 0D, 0D, 1D, 1D, 1D));
                 }
 
-                for (var box : boxes) {
+                for (val box : boxes) {
                     mg.element(e -> {
                         e.box(box);
 
-                        for (var direction : Direction.values()) {
+                        for (val direction : Direction.values()) {
                             e.face(direction, face -> {
                                 face.tex("#" + direction.getSerializedName());
                                 face.cull();
@@ -371,7 +371,7 @@ public class BlockBuilder extends BuilderBase<Block> {
     }
 
     protected boolean areAllTexturesEqual(JsonObject tex, String t) {
-        for (var direction : Direction.values()) {
+        for (val direction : Direction.values()) {
             if (!tex.get(direction.getSerializedName()).getAsString().equals(t)) {
                 return false;
             }
@@ -486,7 +486,7 @@ public class BlockBuilder extends BuilderBase<Block> {
 
         var shape = Shapes.create(boxes.get(0));
 
-        for (var i = 1; i < boxes.size(); i++) {
+        for (int i = 1; i < boxes.size(); i++) {
             shape = Shapes.or(shape, Shapes.create(boxes.get(i)));
         }
 

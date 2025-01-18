@@ -25,7 +25,7 @@ public class REIPlugin implements REIPluginV0 {
 
 	@Override
 	public ResourceLocation getPluginIdentifier() {
-		return new ResourceLocation(KubeJS.MOD_ID, "rei");
+        return KubeJS.rl("rei");
 	}
 
 	@Override

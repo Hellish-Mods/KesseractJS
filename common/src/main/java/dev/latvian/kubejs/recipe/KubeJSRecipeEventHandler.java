@@ -21,7 +21,7 @@ public class KubeJSRecipeEventHandler {
 	}
 
 	private static void registry() {
-		SHAPED = KubeJSRegistries.recipeSerializers().register(new ResourceLocation(KubeJS.MOD_ID, "shaped"), ShapedKubeJSRecipe.SerializerKJS::new);
-		SHAPELESS = KubeJSRegistries.recipeSerializers().register(new ResourceLocation(KubeJS.MOD_ID, "shapeless"), ShapelessKubeJSRecipe.SerializerKJS::new);
+		SHAPED = KubeJSRegistries.recipeSerializers().register(KubeJS.rl("shaped"), ShapedKubeJSRecipe.SerializerKJS::new);
+		SHAPELESS = KubeJSRegistries.recipeSerializers().register(KubeJS.rl("shapeless"), ShapelessKubeJSRecipe.SerializerKJS::new);
 	}
 }

@@ -1,6 +1,5 @@
-package dev.latvian.kubejs.block.predicate;
+package dev.latvian.kubejs.block;
 
-import com.github.bsideup.jabel.Desugar;
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.util.ListJS;
 import dev.latvian.kubejs.util.MapJS;
@@ -32,6 +31,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+/**
+ * ideally should be in {@link dev.latvian.kubejs.block.predicate}, but kept here for backward compat
+ */
 @FunctionalInterface
 public interface BlockStatePredicate {
 	ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
@@ -93,7 +95,7 @@ public interface BlockStatePredicate {
 				}
 			}
 
-			return predicates.isEmpty() ? Simple.NONE : predicates.size() == 1 ? predicates.get(0) : new OrMatch(predicates);
+			return predicates.isEmpty() ? Simple.NONE : predicates.size() == 1 ? predicates.getFirst() : new OrMatch(predicates);
 		}
 
 		val map = MapJS.of(o);
@@ -210,7 +212,6 @@ public interface BlockStatePredicate {
 		}
 	}
 
-    @Desugar
 	record BlockMatch(Block block) implements BlockStatePredicate {
 		@Override
 		public boolean check(BlockState state) {
@@ -244,7 +245,6 @@ public interface BlockStatePredicate {
 		}
 	}
 
-    @Desugar
 	record StateMatch(BlockState state) implements BlockStatePredicate {
 		@Override
 		public boolean check(BlockState s) {
@@ -278,7 +278,6 @@ public interface BlockStatePredicate {
 		}
 	}
 
-    @Desugar
 	record TagMatch(Tag<Block> tag) implements BlockStatePredicate {
 		@Override
 		public boolean check(BlockState state) {
@@ -301,7 +300,6 @@ public interface BlockStatePredicate {
 		}
 	}
 
-    @Desugar
 	final class RegexMatch implements BlockStatePredicate {
 		public final Pattern pattern;
 		private final LinkedHashSet<Block> matchedBlocks;
@@ -343,7 +341,6 @@ public interface BlockStatePredicate {
 		}
 	}
 
-    @Desugar
 	record OrMatch(List<BlockStatePredicate> list) implements BlockStatePredicate {
 		@Override
 		public boolean check(BlockState state) {
@@ -410,7 +407,6 @@ public interface BlockStatePredicate {
 		}
 	}
 
-    @Desugar
 	final class NotMatch implements BlockStatePredicate {
 		private final BlockStatePredicate predicate;
 		private final Collection<BlockState> cachedStates;
@@ -470,7 +466,6 @@ public interface BlockStatePredicate {
 		}
 	}
 
-    @Desugar
 	final class AndMatch implements BlockStatePredicate {
 		private final List<BlockStatePredicate> list;
 		private final Collection<BlockState> cachedStates;
@@ -481,7 +476,7 @@ public interface BlockStatePredicate {
 
 			for (val entry : RegistryInfos.BLOCK.entrySet()) {
 				for (val state : entry.getValue().getStateDefinition().getPossibleStates()) {
-					var match = true;
+                    boolean match = true;
 					for (val predicate : list) {
 						if (!predicate.check(state)) {
 							match = false;

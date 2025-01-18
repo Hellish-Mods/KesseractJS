@@ -1,10 +1,11 @@
 plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+    id('xyz.wagyourtail.jvmdowngrader').version("${jvmdowngrader_version}").apply(false)
 }
 
 architectury {
-	minecraft = rootProject.minecraft_version
+	minecraft = minecraft_version
 }
 
 subprojects {
@@ -14,14 +15,21 @@ subprojects {
 		silentMojangMappingsLicense()
 	}
 
+    repositories {
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
+    }
+
 	dependencies {
-		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-		mappings loom.officialMojangMappings()
-		//jabel, for modern Java syntax
-        //https://central.sonatype.com/artifact/com.pkware.jabel/jabel-javac-plugin
-		annotationProcessor 'com.pkware.jabel:jabel-javac-plugin:1.0.1-1'
-		compileOnly 'com.pkware.jabel:jabel-javac-plugin:1.0.1-1'
-        //lambok: https://projectlombok.org/setup/gradle
+		minecraft("com.mojang:minecraft:${rootProject.minecraft_version}")
+        mappings(loom.layered {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-${rootProject.parchment_version}@zip")
+        })
+
+        //lombok: https://projectlombok.org/setup/gradle
         compileOnly 'org.projectlombok:lombok:1.18.34'
         annotationProcessor 'org.projectlombok:lombok:1.18.34'
 	}
@@ -31,6 +39,7 @@ allprojects {
 	apply plugin: "java"
 	apply plugin: "architectury-plugin"
 	apply plugin: "maven-publish"
+    apply plugin: 'xyz.wagyourtail.jvmdowngrader'
 
 	//not accessible from time to time
 //	apply from: "https://files.latmod.com/public/markdown-git-changelog.gradle"
@@ -40,14 +49,14 @@ allprojects {
 	group = project.maven_group
 	archivesBaseName = project.archives_base_name
 
-	tasks.withType(JavaCompile) {
+	tasks.withType(JavaCompile).configureEach {
 		options.encoding = "UTF-8"
 		sourceCompatibility = 21
 
 		// The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
 		// JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
 		// We'll use that if it's available, but otherwise we'll use the older option.
-		options.release = 8
+//		options.release = 8
 	}
 
 	repositories {

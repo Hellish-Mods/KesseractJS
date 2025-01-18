@@ -12,6 +12,7 @@ import dev.latvian.mods.rhino.util.unit.BoolUnit;
 import dev.latvian.mods.rhino.util.unit.ConstantUnit;
 import dev.latvian.mods.rhino.util.unit.FixedUnit;
 import dev.latvian.mods.rhino.util.unit.Unit;
+import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -56,11 +57,11 @@ public class ItemObject extends ScreenPainterObject {
             return;
         }
 
-        var aw = w.get();
-        var ah = h.get();
-        var ax = event.alignX(x.get(), aw, alignX);
-        var ay = event.alignY(y.get(), ah, alignY);
-        var az = z.get();
+        val aw = w.get();
+        val ah = h.get();
+        val ax = event.alignX(x.get(), aw, alignX);
+        val ay = event.alignY(y.get(), ah, alignY);
+        val az = z.get();
 
         event.push();
         event.translate(ax, ay, az);
@@ -79,9 +80,9 @@ public class ItemObject extends ScreenPainterObject {
             return;
         }
 
-        var mc = Minecraft.getInstance();
-        var itemRenderer = mc.getItemRenderer();
-        var bakedModel = itemRenderer.getModel(stack, mc.player != null ? mc.player.level : null, mc.player);
+        val mc = Minecraft.getInstance();
+        val itemRenderer = mc.getItemRenderer();
+        val bakedModel = itemRenderer.getModel(stack, mc.player != null ? mc.player.level : null, mc.player);
 
         mc.getTextureManager().getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
 //        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
@@ -96,7 +97,7 @@ public class ItemObject extends ScreenPainterObject {
 //        modelViewStack.scale(16F, 16F, 16F);
 //        RenderSystem.applyModelViewMatrix();
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        var flatLight = !bakedModel.usesBlockLight();
+        val flatLight = !bakedModel.usesBlockLight();
 
         if (flatLight) {
             Lighting.setupForFlatItems();
@@ -114,11 +115,11 @@ public class ItemObject extends ScreenPainterObject {
 //        RenderSystem.applyModelViewMatrix();
 
         if (renderOverlay) {
-            var t = Tesselator.getInstance();
-            var font = mc.font;
+            val t = Tesselator.getInstance();
+            val font = mc.font;
 
             if (stack.getCount() != 1 || text != null) {
-                var s = text == null ? String.valueOf(stack.getCount()) : text;
+                val s = text == null ? String.valueOf(stack.getCount()) : text;
                 poseStack.pushPose();
                 poseStack.translate(9D - font.width(s), 1D, 20D);
                 font.drawInBatch(s, 0F, 0F, 0xFFFFFF, true, poseStack.last().pose(), bufferSource, false, 0, 0xF000F0);
@@ -140,7 +141,7 @@ public class ItemObject extends ScreenPainterObject {
                 RenderSystem.enableDepthTest();
             }
 
-            var cooldown = mc.player == null ? 0F : mc.player.getCooldowns().getCooldownPercent(stack.getItem(), mc.getFrameTime());
+            val cooldown = mc.player == null ? 0F : mc.player.getCooldowns().getCooldownPercent(stack.getItem(), mc.getFrameTime());
 
             if (cooldown > 0F) {
                 RenderSystem.disableDepthTest();
@@ -160,8 +161,8 @@ public class ItemObject extends ScreenPainterObject {
         }
 
 //        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        var m = matrixStack.last().pose();
-        var renderer = t.getBuilder();
+        val m = matrixStack.last().pose();
+        val renderer = t.getBuilder();
         renderer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
         renderer.vertex(m, x, y, 0).color(red, green, blue, alpha).endVertex();
         renderer.vertex(m, x, y + height, 0).color(red, green, blue, alpha).endVertex();
