@@ -30,11 +30,9 @@ public class RecordItemJS extends RecordItem {
             Sets the song that will play when this record is played.
             """)
         public Builder song(
-            @JSInfo("The location of sound event.") ResourceLocation s,
-            @JSInfo("The length of the song in seconds.") int seconds
+            @JSInfo("The location of sound event.") ResourceLocation s
         ) {
             song = s;
-//            length = seconds;
             songSoundEvent = null;
             return this;
         }
