@@ -1,31 +1,22 @@
 package dev.latvian.kubejs.block;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 
 /**
  * @author LatvianModder
  */
+@Getter
+@AllArgsConstructor
 public class MaterialJS {
 	private final String id;
 	private final Material minecraftMaterial;
 	private final SoundType sound;
 
-	public MaterialJS(String i, Material m, SoundType s) {
-		id = i;
-		minecraftMaterial = m;
-		sound = s;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public Material getMinecraftMaterial() {
-		return minecraftMaterial;
-	}
-
-	public SoundType getSound() {
-		return sound;
-	}
+    public MaterialColor getColor() {
+        return minecraftMaterial.getColor();
+    }
 }

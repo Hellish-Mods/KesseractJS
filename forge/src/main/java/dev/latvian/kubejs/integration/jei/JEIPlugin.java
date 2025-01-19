@@ -6,6 +6,7 @@ import dev.latvian.kubejs.fluid.FluidStackJS;
 import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.kubejs.script.ScriptType;
+import lombok.val;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaRecipeCategoryUid;
@@ -42,10 +43,10 @@ public class JEIPlugin implements IModPlugin {
 
 		new HideJEIEventJS<>(runtime, VanillaTypes.ITEM, object -> IngredientJS.of(object)::testVanilla, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_ITEMS);
 
-		new HideJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> {
-			FluidStackJS fs = FluidStackJS.of(object);
-			return fluidStack -> fluidStack.getFluid().isSame(fs.getFluid()) && Objects.equals(fluidStack.getTag(), fs.getNbt());
-		}, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_FLUIDS);
+        new HideJEIEventJS<>(runtime, VanillaTypes.FLUID, object -> {
+            val fs = FluidStackJS.of(object);
+            return fluidStack -> fluidStack.getFluid().isSame(fs.getFluid())
+                && Objects.equals(fluidStack.getTag(), fs.getNbt());}, stack -> !stack.isEmpty()).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_FLUIDS);
 
 		new HideCustomJEIEventJS(runtime).post(ScriptType.CLIENT, JEIIntegration.JEI_HIDE_CUSTOM);
 

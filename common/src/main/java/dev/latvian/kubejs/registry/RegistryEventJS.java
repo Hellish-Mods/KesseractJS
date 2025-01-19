@@ -19,41 +19,35 @@ public class RegistryEventJS<T> extends StartupEventJS {
 	}
 
 	public BuilderBase<? extends T> create(String id, String type) {
-		val t = registry.types.get(type);
-
-		if (t == null) {
+		val builderType = registry.types.get(type);
+		if (builderType == null) {
 			throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
 		}
 
-		val b = t.factory().createBuilder(UtilsJS.getMCID(KubeJS.appendModId(id)));
-
-		if (b == null) {
+		val builder = builderType.factory().createBuilder(UtilsJS.getMCID(KubeJS.appendModId(id)));
+		if (builder == null) {
 			throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
-		} else {
-			registry.addBuilder(b);
-			created.add(b);
 		}
 
-		return b;
+        registry.addBuilder(builder);
+        created.add(builder);
+        return builder;
 	}
 
 	public BuilderBase<? extends T> create(String id) {
-		val t = registry.getDefaultType();
-
-		if (t == null) {
+		val builderType = registry.getDefaultType();
+		if (builderType == null) {
 			throw new IllegalArgumentException("Registry for type '" + registry.key.location() + "' doesn't have any builders registered!");
 		}
 
-		val b = t.factory().createBuilder(UtilsJS.getMCID(KubeJS.appendModId(id)));
-
-		if (b == null) {
-			throw new IllegalArgumentException("Unknown type '" + t.type() + "' for object '" + id + "'!");
-		} else {
-			registry.addBuilder(b);
-			created.add(b);
+		val builder = builderType.factory().createBuilder(UtilsJS.getMCID(KubeJS.appendModId(id)));
+		if (builder == null) {
+			throw new IllegalArgumentException("Unknown type '" + builderType.type() + "' for object '" + id + "'!");
 		}
 
-		return b;
+        registry.addBuilder(builder);
+        created.add(builder);
+        return builder;
 	}
 
 	@Deprecated

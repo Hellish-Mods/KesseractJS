@@ -25,7 +25,7 @@ public class FakeModBuilder {
 
     @ExpectPlatform
     @HideFromJS
-	@Contract(value = "_ -> null")
+	@Contract(value = "_ -> _")
     static void addFakeMod(FakeModBuilder builder) {
 		throw new AssertionError("Not Implemented");
     }

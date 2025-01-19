@@ -8,6 +8,7 @@ import dev.latvian.kubejs.KubeJSRegistries;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import lombok.val;
 import net.minecraft.core.Registry;
@@ -150,10 +151,12 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		return key.location().toString();
 	}
 
+    @HideFromJS
 	public int registerArch() {
 		return registerObjects(this.getArchRegistry()::registerSupplied);
 	}
 
+    @HideFromJS
 	public int registerObjects(RegistryCallback<T> function) {
 		if (CommonProperties.get().debugInfo) {
 			if (objects.isEmpty()) {

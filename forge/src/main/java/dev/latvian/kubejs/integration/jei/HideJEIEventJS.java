@@ -21,13 +21,18 @@ public class HideJEIEventJS<T> extends EventJS {
 	private final Predicate<T> isValid;
 	private final Collection<T> allIngredients;
 
-	public HideJEIEventJS(IJeiRuntime r, IIngredientType<T> t, Function<Object, Predicate<T>> f, Predicate<T> i) {
-		runtime = r;
-		type = t;
-		function = f;
+    public HideJEIEventJS(
+        IJeiRuntime runtime,
+        IIngredientType<T> type,
+        Function<Object, Predicate<T>> typeWrapper,
+        Predicate<T> filter
+    ) {
+		this.runtime = runtime;
+		this.type = type;
+		function = typeWrapper;
 		hidden = new HashSet<>();
-		isValid = i;
-		allIngredients = runtime.getIngredientManager().getAllIngredients(type);
+		isValid = filter;
+		allIngredients = this.runtime.getIngredientManager().getAllIngredients(this.type);
 	}
 
 	public Collection<T> getAllIngredients() {

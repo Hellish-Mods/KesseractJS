@@ -8,9 +8,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface PlayerKJS {
 	@Nullable
-	Stages getStagesRawKJS();
+	Stages kjs$getStagesRaw();
 
-	void setStagesKJS(Stages p);
+	void kjs$setStages(Stages p);
 
-	Stages getStagesKJS();
+	Stages kjs$getStages();
 }

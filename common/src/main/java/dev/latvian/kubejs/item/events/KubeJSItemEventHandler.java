@@ -55,7 +55,8 @@ public class KubeJSItemEventHandler {
     }
 
 	private static InteractionResultHolder<ItemStack> rightClick(Player player, InteractionHand hand) {
-		if (!player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem()) && new ItemRightClickEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK)) {
+		if (!player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem())
+            && new ItemRightClickEventJS(player, hand).post(KubeJSEvents.ITEM_RIGHT_CLICK)) {
 			return InteractionResultHolder.success(player.getItemInHand(hand));
 		}
 

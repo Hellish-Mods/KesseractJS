@@ -14,10 +14,32 @@ This project was made as a collaboration between [Hellish Mods](https://github.c
 
 ## Feature showcase
 
-* Fake mod registration
+To be honest, there are too many. So we're only showcasing some features here, there's a much more complete feature/fix list in our doc
+
+### [Doc Index](./doc/index.md)
+
+* Command Registry
+
+```js
+onEvent('command.registry', event => {
+    const Commands = event.getCommands()
+    const Arguments = event.getArguments()
+    
+    event.register(Commands.literal("say_wow")
+        .excutes(context => {
+            const player = context.source.playerOrException.asKJS()
+            player.tell("wow")
+        }))
+})
+```
+
+* Fake mod registration and Mod display name editing
 
 ```js
 // In startup_scripts
+
+Platform.getInfo('kubejs').name = "CircleJS"
+
 Platform.registerFakeMod("notarealmodid").displayName("Hello World!")
 onEvent('item.registry', event => {
 	event.create('notarealmodid:thing')
@@ -32,29 +54,28 @@ onEvent('item.registry', event => {
 // Welcome to the future babyyyy
 
 // Falling block type
-onEvent('block.registry', event => {
-    event.create('metal_pipe').material('falling')
-})
+onEvent('block.registry', event => event.create('metal_pipe', 'falling').material('anvil'))
+
 // Custom music discs (https://github.com/KubeJS-Mods/KubeJS/issues/491)
-onEvent('item.registry', event => {
-    event.create('disc_14').song('jamiroquai:vitrual_insanity')
-})
+onEvent('item.registry', event => event.create('disc_14', 'music_disc').song('jamiroquai:vitrual_insanity'))
+
 // thickTexture/thinTexture and textureThick/textureThin intercompatibility
 onEvent('fluid.registry', event => {
   event.create('you_dont_want_to_know')
     .thickTexture(0xFF0000)
     .textureThick(0xFF0000) // Both methods work!
 })
-// JsonIO
-let data = JsonIO.read('kubejs/data.json')
-JsonIO.write('kubejs/data.json', {recursion: data})
+// Modern Math Helpers
+KMath.clamp(3.4567, 4, 5) // clamp a number
+KMath.v3d(0.1, 2,3, 4,5) // create a Vertor3d
+KMath.m4f() // create a Matrix4f
 
 // + more!
 ```
 
 * Fixes. Lots of 'em.
 
-![screenshot](https://raw.githubusercontent.com/Hellish-Mods/KesseractJS/refs/heads/main/assets/jjjank.png)
+for example, fail-safe for ResourceLocation wrapping and recipe id, this can fix recipe builder with invalid id failing silently and block code execution
 
 * Full drag-and-drop compatability with old Kube scripts
 * Continuous updates. More in the future!

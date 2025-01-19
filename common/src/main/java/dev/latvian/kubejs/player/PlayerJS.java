@@ -217,6 +217,6 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	}
 
 	public Stages getStages() {
-		return ((PlayerKJS) minecraftPlayer).getStagesKJS();
+		return ((PlayerKJS) minecraftPlayer).kjs$getStages();
 	}
 }

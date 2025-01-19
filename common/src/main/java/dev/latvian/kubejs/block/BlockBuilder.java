@@ -54,7 +54,7 @@ public class BlockBuilder extends BuilderBase<Block> {
     public transient MaterialJS material = MaterialListJS.INSTANCE.map.get("wood");
     public transient SoundType soundType = material.getSound();
     public transient Function<BlockState, MaterialColor> materialColorFn
-        = b -> material.getMinecraftMaterial().getColor();
+        = b -> material.getColor();
     public transient float hardness = 0.5F;
     public transient float resistance = -1F;
     public transient float lightLevel = 0F;
@@ -730,12 +730,12 @@ public class BlockBuilder extends BuilderBase<Block> {
         this.object = block;
     }
 
-    public BlockBuilder setBlockstateJson(JsonObject blockstateJson) {
+    public BlockBuilder blockstateJson(JsonObject blockstateJson) {
         this.blockstateJson = blockstateJson;
         return this;
     }
 
-    public BlockBuilder setModelJson(JsonObject modelJson) {
+    public BlockBuilder modelJson(JsonObject modelJson) {
         this.modelJson = modelJson;
         return this;
     }
