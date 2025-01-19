@@ -8,6 +8,8 @@
 
 [Bindings](./bindings.md)
 
+[Registry: Commands](./registry/command.md)
+
 [Registry: Types](./registry/types.md)
 
 [Registry: Block](./registry/types.md)
