@@ -12,6 +12,6 @@
 
 [Registry: Types](./registry/types.md)
 
-[Registry: Block](./registry/types.md)
+[Registry: Block](./registry/block.md)
 
-[Registry: Fluid](./registry/types.md)
+[Registry: Fluid](./registry/fluid.md)
