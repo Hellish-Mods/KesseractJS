@@ -1,12 +1,10 @@
 package dev.latvian.kubejs.script;
 
-import dev.latvian.mods.rhino.mod.RhinoProperties;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -36,14 +34,8 @@ public class ScriptFile implements Comparable<ScriptFile> {
 
 		try (val stream = source.createStream(info)) {
 			val script = new String(IOUtils.toByteArray(new BufferedInputStream(stream)), StandardCharsets.UTF_8);
-            if (RhinoProperties.INSTANCE.enableCompiler) {
-                pack.context
-                    .compileString(script, info.location, 1, null)
-                    .exec(pack.context, pack.scope);
-            } else {
-                pack.context.evaluateString(pack.scope, script, info.location, 1, null);
-            }
-			return true;
+            pack.context.evaluateString(pack.scope, script, info.location, 1, null);
+            return true;
 		} catch (Throwable ex) {
 			error = ex;
 			return false;
