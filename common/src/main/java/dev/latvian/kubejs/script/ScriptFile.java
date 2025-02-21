@@ -44,6 +44,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 
 	@Override
 	public int compareTo(ScriptFile o) {
+        // reversed order because big priority -> execute early
 		return Integer.compare(o.info.getPriority(), info.getPriority());
 	}
 }
