@@ -1,5 +1,6 @@
 package dev.latvian.kubejs.script.prop;
 
+import dev.latvian.kubejs.script.ScriptType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -16,19 +17,13 @@ public final class ScriptProperty<T> {
     public static final ScriptProperty<List<String>> REQUIRE = register(
         "require",
         Collections.emptyList(),
-        (s) -> Arrays.stream(s.split(","))
-            .map(String::trim)
-            .filter((str) -> !str.isEmpty())
-            .toList()
+        ScriptProperty::readDotSplitStringList
     );
     public static final ScriptProperty<Boolean> IGNORE = register("ignore", false, Boolean::valueOf);
     public static final ScriptProperty<List<String>> AFTER = register(
         "after",
         Collections.emptyList(),
-        (s) -> Arrays.stream(s.split(","))
-            .map(String::trim)
-            .filter((str) -> !str.isEmpty())
-            .toList()
+        ScriptProperty::readDotSplitStringList
     );
     public static final ScriptProperty<String> PACKMODE = register("packmode", "default", Function.identity());
 
@@ -48,6 +43,13 @@ public final class ScriptProperty<T> {
         var prop = new ScriptProperty<>(name, indexCurrent++, defaultValue, reader);
         ALL.put(name, prop);
         return prop;
+    }
+
+    public static List<String> readDotSplitStringList(String s) {
+        return Arrays.stream(s.split(","))
+            .map(String::trim)
+            .filter((str) -> !str.isEmpty())
+            .toList();
     }
 
     private ScriptProperty(String name, int ordinal, T defaultValue, Function<String, @Nullable T> reader) {
