@@ -2,11 +2,13 @@ package dev.latvian.kubejs.item;
 
 import dev.latvian.kubejs.core.BlockKJS;
 import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
+import dev.latvian.mods.rhino.native_java.type.info.TypeInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.val;
@@ -70,7 +72,7 @@ public interface ItemTintFunction {
 	};
 
 	@Nullable
-	static ItemTintFunction of(Object o) {
+	static ItemTintFunction of(Context cx, Object o, TypeInfo target) {
 		if (o == null || Undefined.isUndefined(o)) {
 			return null;
 		} else if (o instanceof ItemTintFunction f) {
@@ -79,7 +81,7 @@ public interface ItemTintFunction {
 			val map = new Mapped();
 
 			for (int i = 0; i < list.size(); i++) {
-				val f = of(list.get(i));
+				val f = of(cx, list.get(i), target);
 
 				if (f != null) {
 					map.map.put(i, f);
@@ -99,7 +101,11 @@ public interface ItemTintFunction {
 				return fn;
 			}
 		} else if (o instanceof BaseFunction function) {
-			return (ItemTintFunction) NativeJavaObject.createInterfaceAdapter(ItemTintFunction.class, function);
+			return (ItemTintFunction) NativeJavaObject.createInterfaceAdapter(
+                cx,
+                ItemTintFunction.class,
+                function
+            );
 		}
 
 		return new Fixed(ColorWrapper.of(o));
