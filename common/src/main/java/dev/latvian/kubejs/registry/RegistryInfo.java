@@ -53,7 +53,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	private me.shedaniel.architectury.registry.Registry<T> archRegistry;
 	public String languageKeyPrefix;
 	//used for backward compatibility
-	public Supplier<RegistryEventJS<T>> customRegEvent;
+	public Supplier<RegistryEventJS<T>> registryEventProvider = () -> new RegistryEventJS<>(this);
     public final List<String> eventIds;
 
 	private RegistryInfo(ResourceKey<? extends Registry<T>> key, Class<T> type) {
@@ -64,7 +64,6 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		this.bypassServerOnly = false;
 		this.autoWrap = type != Codec.class && type != ResourceLocation.class && type != String.class;
 		this.languageKeyPrefix = key.location().getPath().replace('/', '.');
-		this.customRegEvent = null;
         eventIds = new ArrayList<>(Collections.singletonList(key.location().getPath() + KubeJSEvents.REGISTRY_SUFFIX));
     }
 
@@ -74,7 +73,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	public RegistryInfo<T> customRegistryEvent(Supplier<RegistryEventJS<T>> supplier) {
-		this.customRegEvent = supplier;
+		this.registryEventProvider = supplier;
 		return this;
 	}
 
@@ -243,9 +242,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	public void fireRegistryEvent() {
-		val event = customRegEvent == null
-				? new RegistryEventJS<>(this)
-				: customRegEvent.get();
+		val event = registryEventProvider.get();
 		event.post(ScriptType.STARTUP, eventIds);
 		event.created.forEach(BuilderBase::createAdditionalObjects);
 	}
