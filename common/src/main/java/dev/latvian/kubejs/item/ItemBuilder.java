@@ -16,6 +16,7 @@ import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.registry.types.tab.KjsTabs;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import lombok.val;
 import me.shedaniel.architectury.registry.ToolType;
@@ -48,6 +49,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
+@ReturnsSelf
 public class ItemBuilder extends BuilderBase<Item> {
 	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
 	public static final Map<String, ArmorMaterial> ARMOR_TIERS = new HashMap<>();

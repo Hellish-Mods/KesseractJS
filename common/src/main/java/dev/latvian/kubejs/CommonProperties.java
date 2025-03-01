@@ -1,5 +1,6 @@
 package dev.latvian.kubejs;
 
+import dev.latvian.kubejs.script.prop.ScriptProperty;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import lombok.val;
 
@@ -58,7 +59,9 @@ public class CommonProperties {
             hideServerScriptErrors = get("hideServerScriptErrors", false);
             serverOnly = get("serverOnly", false);
             announceReload = get("announceReload", true);
-            packMode = get("packmode", "");
+            invertClassLoader = "true".equals(properties.getProperty("invertClassLoader")); // Advanced option, not recommended to be set to true
+            packMode = get("packmode", ScriptProperty.PACKMODE.defaultValue);
+            debugInfo = get("debugInfo", false);
             saveDevPropertiesInConfig = get("saveDevPropertiesInConfig", false);
             allowAsyncStreams = get("allowAsyncStreams", true);
             matchJsonRecipes = get("matchJsonRecipes", true);

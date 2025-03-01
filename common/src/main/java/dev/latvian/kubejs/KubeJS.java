@@ -62,7 +62,7 @@ public class KubeJS {
 	public static KubeJSCommon PROXY;
 	public static boolean nextClientHasClientMod = false;
 	/**
-	 * KubeJS's own tab will be registered at {@code <init>}
+	 * KubeJS's own tab will be registered at {@link KubeJS#KubeJS()}
 	 */
 	public static CreativeModeTab tab = CreativeModeTab.TAB_MISC;
 

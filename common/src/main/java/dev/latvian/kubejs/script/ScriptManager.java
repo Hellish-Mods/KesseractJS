@@ -6,6 +6,7 @@ import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.event.EventsJS;
 import dev.latvian.kubejs.event.PlatformEventHandler;
 import dev.latvian.kubejs.event.StartupEventJS;
+import dev.latvian.kubejs.script.prop.ScriptProperty;
 import dev.latvian.kubejs.util.ClassFilter;
 import dev.latvian.kubejs.util.KubeJSPlugins;
 import dev.latvian.kubejs.util.UtilsJS;
@@ -16,10 +17,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author LatvianModder
@@ -76,22 +74,27 @@ public class ScriptManager {
 		val pack = new ScriptPack(this, new ScriptPackInfo(directory.getFileName().toString(), ""));
 		KubeJS.loadScripts(pack, directory, "");
 
+        val scriptSource = (ScriptSource.FromPath) info -> directory.resolve(info.filePath);
 		for (val fileInfo : pack.info.scripts) {
-			val scriptSource = (ScriptSource.FromPath) info -> directory.resolve(info.filePath);
-
 			val error = fileInfo.preload(scriptSource);
+            if (error != null) {
+                KubeJS.LOGGER.error("Failed to pre-load script file {}: {}", fileInfo.location, error);
+                continue;
+            }
+
+            if (fileInfo.isIgnored()) {
+                continue;
+            }
 
 			val packMode = fileInfo.getPackMode();
-			if (fileInfo.isIgnored() || (!packMode.equals("default") && !packMode.equals(CommonProperties.get().packMode))) {
+			if (!packMode.equals(ScriptProperty.PACKMODE.defaultValue)
+                && !packMode.equals(CommonProperties.get().packMode)
+            ) {
 				continue;
 			}
 
-			if (error == null) {
-				pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
-			} else {
-				KubeJS.LOGGER.error("Failed to pre-load script file {}: {}", fileInfo.location, error);
-			}
-		}
+            pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
+        }
 
 		pack.scripts.sort(null);
 		packs.put(pack.info.namespace, pack);

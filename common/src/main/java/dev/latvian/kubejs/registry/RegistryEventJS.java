@@ -19,7 +19,7 @@ public class RegistryEventJS<T> extends StartupEventJS {
 	}
 
 	public BuilderBase<? extends T> create(String id, String type) {
-		val builderType = registry.types.get(type);
+		val builderType = registry.builderTypes.get(type);
 		if (builderType == null) {
 			throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
 		}

@@ -34,7 +34,7 @@ public class EventJS {
      * @return true if the event itself can be cancelled and there's any handler that called `event.cancel()`, otherwise false
      */
     public final boolean post(@NotNull ScriptType type, @NotNull List<String> ids) {
-        if (type != ScriptType.STARTUP && post(ScriptType.STARTUP, ids) && canCancel()) {
+        if (type != ScriptType.STARTUP && post(ScriptType.STARTUP, ids)) {
             return true;
         }
         val e = type.manager.get().events;

@@ -3,10 +3,12 @@ package dev.latvian.kubejs.registry.types.particle;
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.RegistryInfos;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceLocation;
 
+@ReturnsSelf
 public class ParticleTypeBuilder extends BuilderBase<ParticleType> {
 	public transient boolean overrideLimiter;
 	public transient ParticleOptions.Deserializer deserializer;

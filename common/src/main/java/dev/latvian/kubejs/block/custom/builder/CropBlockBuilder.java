@@ -13,6 +13,7 @@ import dev.latvian.kubejs.item.ItemStackJS;
 import dev.latvian.kubejs.item.custom.SeedItemBuilder;
 import dev.latvian.kubejs.world.BlockContainerJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.core.BlockPos;
@@ -38,6 +39,7 @@ import java.util.function.Consumer;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
+@ReturnsSelf
 public class CropBlockBuilder extends BlockBuilder {
 	@FunctionalInterface
 	public interface SurviveCallback {

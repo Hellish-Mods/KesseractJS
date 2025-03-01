@@ -42,13 +42,9 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		return of(registry.key(), type);
 	}
 
-	public static RegistryInfo<?> of(ResourceKey<? extends Registry<?>> key) {
-		return of(key, Object.class);
-	}
-
     public final ResourceKey<? extends Registry<T>> key;
-	public final Class<T> objectBaseClass;
-	public final Map<String, BuilderType<T>> types;
+	public final Class<T> type;
+	public final Map<String, BuilderType<T>> builderTypes;
 	public final Map<ResourceLocation, BuilderBase<? extends T>> objects;
 	public boolean hasDefaultTags = false;
 	private BuilderType<T> defaultType;
@@ -57,18 +53,17 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	private me.shedaniel.architectury.registry.Registry<T> archRegistry;
 	public String languageKeyPrefix;
 	//used for backward compatibility
-	public Supplier<RegistryEventJS<T>> customRegEvent;
+	public Supplier<RegistryEventJS<T>> registryEventProvider = () -> new RegistryEventJS<>(this);
     public final List<String> eventIds;
 
-	private RegistryInfo(ResourceKey<? extends Registry<T>> key, Class<T> objectBaseClass) {
+	private RegistryInfo(ResourceKey<? extends Registry<T>> key, Class<T> type) {
 		this.key = key;
-		this.objectBaseClass = objectBaseClass;
-		this.types = new LinkedHashMap<>();
+		this.type = type;
+		this.builderTypes = new LinkedHashMap<>();
 		this.objects = new LinkedHashMap<>();
 		this.bypassServerOnly = false;
-		this.autoWrap = objectBaseClass != Codec.class && objectBaseClass != ResourceLocation.class && objectBaseClass != String.class;
+		this.autoWrap = type != Codec.class && type != ResourceLocation.class && type != String.class;
 		this.languageKeyPrefix = key.location().getPath().replace('/', '.');
-		this.customRegEvent = null;
         eventIds = new ArrayList<>(Collections.singletonList(key.location().getPath() + KubeJSEvents.REGISTRY_SUFFIX));
     }
 
@@ -78,7 +73,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	public RegistryInfo<T> customRegistryEvent(Supplier<RegistryEventJS<T>> supplier) {
-		this.customRegEvent = supplier;
+		this.registryEventProvider = supplier;
 		return this;
 	}
 
@@ -94,7 +89,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 
 	public void addType(String type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory, boolean isDefault) {
 		val b = new BuilderType<>(type, builderType, factory);
-		types.put(type, b);
+		builderTypes.put(type, b);
 
 		if (isDefault) {
 			if (defaultType != null) {
@@ -127,10 +122,10 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 
 	@Nullable
 	public BuilderType<T> getDefaultType() {
-		if (types.isEmpty()) {
+		if (builderTypes.isEmpty()) {
 			return null;
 		} else if (defaultType == null) {
-			defaultType = types.values().iterator().next();
+			defaultType = builderTypes.values().iterator().next();
 		}
 
 		return defaultType;
@@ -230,7 +225,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public T wrap(Object o) {
 		if (o == null) {
 			return null;
-		} else if (objectBaseClass.isInstance(o)) {
+		} else if (type.isInstance(o)) {
 			return (T) o;
 		}
 
@@ -247,9 +242,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	public void fireRegistryEvent() {
-		val event = customRegEvent == null
-				? new RegistryEventJS<>(this)
-				: customRegEvent.get();
+		val event = registryEventProvider.get();
 		event.post(ScriptType.STARTUP, eventIds);
 		event.created.forEach(BuilderBase::createAdditionalObjects);
 	}

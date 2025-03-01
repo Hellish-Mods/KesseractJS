@@ -3,6 +3,7 @@ package dev.latvian.kubejs.block.custom.builder;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import lombok.val;
 import me.shedaniel.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +11,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceBlock;
 
+@ReturnsSelf
 public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 	public FenceBlockBuilder(ResourceLocation i) {
 		super(i, "_fence");

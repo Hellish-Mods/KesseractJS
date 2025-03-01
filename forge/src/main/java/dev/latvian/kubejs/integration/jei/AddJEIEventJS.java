@@ -22,12 +22,16 @@ public class AddJEIEventJS<T> extends EventJS {
 	private final Collection<T> added;
 	private final Predicate<T> isValid;
 
-	public AddJEIEventJS(IJeiRuntime r, IIngredientType<T> t, Function<Object, T> f, Predicate<T> i) {
-		runtime = r;
-		type = t;
-		function = f;
+    public AddJEIEventJS(IJeiRuntime runtime,
+        IIngredientType<T> ingredientType,
+        Function<Object, T> toIngredient,
+        Predicate<T> validator
+    ) {
+		this.runtime = runtime;
+		type = ingredientType;
+		function = toIngredient;
 		added = new ArrayList<>();
-		isValid = i;
+		isValid = validator;
 	}
 
 	public void add(Object o) {
