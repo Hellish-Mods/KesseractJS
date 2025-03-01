@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.integration;
 
 import dev.latvian.kubejs.integration.gamestages.GameStagesIntegration;
-import dev.latvian.kubejs.integration.probejs.KessJSProbeJSPlugin;
+import dev.latvian.kubejs.integration.probejs.RegistryEventDoc;
 import dev.latvian.kubejs.recipe.RegisterRecipeHandlersEvent;
 import dev.latvian.kubejs.recipe.silentsmek.SilentsMechanismsRecipes;
 import net.minecraftforge.fml.ModList;
@@ -21,7 +21,7 @@ public class IntegrationManager {
         }
 
         if (modLoaded("probejs")) {
-            ProbeJSPlugins.register(new KessJSProbeJSPlugin());
+            ProbeJSPlugins.register(new RegistryEventDoc());
         }
     }
 
