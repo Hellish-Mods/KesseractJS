@@ -29,7 +29,9 @@ import java.util.function.Predicate;
 /**
  * @author LatvianModder
  */
-public class ListJS extends ArrayList<Object> implements StringBuilderAppendable, ChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable {
+public class ListJS extends ArrayList<Object>
+    implements StringBuilderAppendable, ChangeListener<Object>, Copyable, JsonSerializable, NBTSerializable {
+
 	@Nullable
 	public static ListJS of(@Nullable Object o) {
 		Object o1 = UtilsJS.wrap(o, JSObjectType.LIST);
