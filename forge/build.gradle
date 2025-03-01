@@ -65,6 +65,9 @@ dependencies {
 	modCompileOnly("curse.maven:bookshelf-228525:${rootProject.forge_bookshelf_version_cmaven}")
 	modCompileOnly("curse.maven:game-stages-268655:${rootProject.forge_gamestages_version_cmaven}")
 	modCompileOnly("curse.maven:bookshelf-228525:${rootProject.forge_bookshelf_version_cmaven}")
+    modCompileOnly("curse.maven:probejs-956446:${rootProject.probejs_version}") {
+        transitive = false
+    }
 
 	modLocalRuntime("mezz.jei:jei-1.16.5:${rootProject.forge_jei_version}")
     modLocalRuntime(files("devlib/letmetest-1.0.jar"))
