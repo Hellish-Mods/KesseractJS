@@ -29,7 +29,7 @@ public class RegistryTypeWrapperFactory<T> implements TypeWrapperFactory<T> {
             for (RegistryInfo info : RegistryInfos.MAP.values()) {
                 if (info.autoWrap) {
                     all.add(new RegistryTypeWrapperFactory<>(
-                        info.objectBaseClass,
+                        info.type,
                         info.getArchRegistry(),
                         info.key.location().toString()
                     ));
