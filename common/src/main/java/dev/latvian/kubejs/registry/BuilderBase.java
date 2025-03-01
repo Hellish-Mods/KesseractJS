@@ -6,6 +6,7 @@ import dev.latvian.kubejs.generator.DataJsonGenerator;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import lombok.val;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+@ReturnsSelf
 public abstract class BuilderBase<T> implements Supplier<T> {
 	public final ResourceLocation id;
 	protected String translationKey;

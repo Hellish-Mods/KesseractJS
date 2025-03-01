@@ -3,6 +3,7 @@ package dev.latvian.kubejs.registry.types.mobeffects;
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.RegistryInfos;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@ReturnsSelf
 public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 
 	@FunctionalInterface

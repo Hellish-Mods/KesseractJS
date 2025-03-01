@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.block.custom.builder;
 
 import dev.latvian.kubejs.block.BlockBuilder;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
+@ReturnsSelf
 public class FallingBlockBuilder extends BlockBuilder {
     /**
      * @see net.minecraft.world.level.block.GravelBlock#getDustColor(BlockState, BlockGetter, BlockPos)

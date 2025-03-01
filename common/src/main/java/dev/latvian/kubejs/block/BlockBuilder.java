@@ -16,6 +16,7 @@ import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.annotations.typing.JSInfo;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import lombok.val;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 /**
  * @author LatvianModder
  */
+@ReturnsSelf
 public class BlockBuilder extends BuilderBase<Block> {
 
     @Deprecated

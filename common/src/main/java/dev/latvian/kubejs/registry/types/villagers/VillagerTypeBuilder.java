@@ -3,9 +3,11 @@ package dev.latvian.kubejs.registry.types.villagers;
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.RegistryInfos;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.npc.VillagerType;
 
+@ReturnsSelf
 public class VillagerTypeBuilder extends BuilderBase<VillagerType> {
 	public VillagerTypeBuilder(ResourceLocation i) {
 		super(i);

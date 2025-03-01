@@ -8,6 +8,7 @@ import dev.latvian.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.BuilderBase;
 import dev.latvian.kubejs.registry.RegistryInfos;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.Block;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.material.Material;
 /**
  * @author LatvianModder
  */
+@ReturnsSelf
 public class FluidBuilder extends BuilderBase<Fluid> {
 	public String stillTexture;
 	public String flowingTexture;

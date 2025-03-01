@@ -5,6 +5,7 @@ import dev.latvian.kubejs.block.custom.BasicBlockJS;
 import dev.latvian.kubejs.client.ModelGenerator;
 import dev.latvian.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.rhino.annotations.typing.ReturnsSelf;
 import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@ReturnsSelf
 public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
 	// Cardinal blocks that can face any horizontal direction (NSEW).
