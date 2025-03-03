@@ -1,10 +1,14 @@
 package dev.latvian.kubejs.block;
 
+import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
+import dev.latvian.mods.rhino.native_java.type.info.TypeInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.val;
@@ -61,7 +65,7 @@ public interface BlockTintFunction {
 	};
 
 	@Nullable
-	static BlockTintFunction of(Object o) {
+	static BlockTintFunction of(Context cx, Object o, TypeInfo typeInfo) {
 		if (o == null || Undefined.isUndefined(o)) {
 			return null;
 		} else if (o instanceof BlockTintFunction f) {
@@ -70,7 +74,7 @@ public interface BlockTintFunction {
 			val map = new Mapped();
 
 			for (int i = 0, size = list.size(); i < size; i++) {
-				val fn = of(list.get(i));
+				val fn = of(cx, list.get(i), typeInfo);
 				if (fn != null) {
 					map.map.put(i, fn);
 				}
@@ -90,8 +94,8 @@ public interface BlockTintFunction {
             if (fn != null) {
                 return fn;
             }
-//		} else if (o instanceof BaseFunction function) {
-//			return (BlockTintFunction) NativeJavaObject.createInterfaceAdapter(BlockTintFunction.class, function);
+		} else if (o instanceof BaseFunction function) {
+			return (BlockTintFunction) NativeJavaObject.createInterfaceAdapter(cx, BlockTintFunction.class, function);
 		}
 
 		return new Fixed(ColorWrapper.of(o));
