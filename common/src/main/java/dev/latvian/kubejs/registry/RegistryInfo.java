@@ -59,8 +59,14 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		this.objects = new LinkedHashMap<>();
 		this.bypassServerOnly = false;
 		this.autoWrap = type != Codec.class && type != ResourceLocation.class && type != String.class;
-		this.languageKeyPrefix = key.location().getPath().replace('/', '.');
-        eventIds = new ArrayList<>(Collections.singletonList(key.location().getPath() + KubeJSEvents.REGISTRY_SUFFIX));
+
+        val location = key.location();
+        val rawName = "minecraft".equals(location.getNamespace())
+            ? location.getPath()
+            : location.getNamespace() + '.' + location.getPath();
+
+        this.languageKeyPrefix = rawName.replace('/', '.');
+        eventIds = new ArrayList<>(Arrays.asList(rawName + KubeJSEvents.REGISTRY_SUFFIX));
     }
 
 	public RegistryInfo<T> bypassServerOnly() {
