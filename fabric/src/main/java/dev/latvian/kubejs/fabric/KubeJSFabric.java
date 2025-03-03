@@ -3,6 +3,8 @@ package dev.latvian.kubejs.fabric;
 import dev.latvian.kubejs.KubeJS;
 import dev.latvian.kubejs.KubeJSEvents;
 import dev.latvian.kubejs.KubeJSInitializer;
+import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.world.gen.fabric.WorldgenAddEventJSFabric;
 import dev.latvian.kubejs.world.gen.fabric.WorldgenRemoveEventJSFabric;
@@ -24,6 +26,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
                 initializer.onKubeJSInitialization();
                 KubeJS.LOGGER.debug("[KubeJS] Initialized entrypoint {}.", initializer.getClass().getSimpleName());
             }
+            RegistryInfos.MAP.values().forEach(RegistryInfo::registerArch);
             KubeJS.instance.setup();
 
             BiomeModifications.create(KubeJS.id("worldgen_removals"))

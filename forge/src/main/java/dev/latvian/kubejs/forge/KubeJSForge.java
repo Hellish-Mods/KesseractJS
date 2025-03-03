@@ -13,6 +13,7 @@ import dev.latvian.kubejs.item.ingredient.forge.CustomPredicateIngredient;
 import dev.latvian.kubejs.item.ingredient.forge.IgnoreNBTIngredient;
 import dev.latvian.kubejs.mixin.forge.AccessRegistryManager;
 import dev.latvian.kubejs.registry.RegistryInfo;
+import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
 import lombok.val;
@@ -45,9 +46,8 @@ public class KubeJSForge {
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
 		EventBuses.registerModEventBus(KubeJS.MOD_ID, bus);
+        bus.addGenericListener(Block.class, KubeJSForge::onRegistry);
 		bus.addListener(KubeJSForge::loadComplete);
-		//bus.addGenericListener(Block.class, EventPriority.LOW, KubeJSForge::initRegistries);
-        loadForgeRegistry();
 
 		KubeJS.instance = new KubeJS();
 		KubeJS.instance.setup();
@@ -79,11 +79,13 @@ public class KubeJSForge {
 		CraftingHelper.register(KubeJS.id("ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
 	}
 
-    private static void loadForgeRegistry() {
+    private static void onRegistry(RegistryEvent.Register<Block> event) {
         val manager = (AccessRegistryManager) RegistryManager.ACTIVE;
         for (val forgeRegistry : manager.kjs$registries().values()) {
             RegistryInfo.of(forgeRegistry.getRegistryKey(), forgeRegistry.getRegistrySuperType());
         }
+
+        RegistryInfos.MAP.values().forEach(RegistryInfo::registerArch);
     }
 
 	private static void loadComplete(FMLLoadCompleteEvent event) {
