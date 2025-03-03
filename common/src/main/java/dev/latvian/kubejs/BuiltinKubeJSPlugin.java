@@ -465,7 +465,13 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
         typeWrappers.register(ItemTintFunction.class, ItemTintFunction::of);
 
         //registry
-        RegistryTypeWrapperFactory.register(typeWrappers);
+        for (val wrapperFactory : RegistryTypeWrapperFactory.getAll()) {
+            try {
+                typeWrappers.register(wrapperFactory.type, UtilsJS.cast(wrapperFactory));
+            } catch (IllegalArgumentException e) {
+                KubeJS.LOGGER.error("error when trying to register registry type wrapper: {}", wrapperFactory, e);
+            }
+        }
 
 		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}
