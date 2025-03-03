@@ -11,10 +11,12 @@ import dev.latvian.kubejs.integration.IntegrationManager;
 import dev.latvian.kubejs.item.forge.ItemDestroyedEventJS;
 import dev.latvian.kubejs.item.ingredient.forge.CustomPredicateIngredient;
 import dev.latvian.kubejs.item.ingredient.forge.IgnoreNBTIngredient;
+import dev.latvian.kubejs.mixin.forge.AccessRegistryManager;
+import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.latvian.kubejs.server.ServerJS;
+import lombok.val;
 import me.shedaniel.architectury.platform.forge.EventBuses;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -34,7 +36,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 @Mod(KubeJS.MOD_ID)
@@ -45,6 +47,7 @@ public class KubeJSForge {
 		EventBuses.registerModEventBus(KubeJS.MOD_ID, bus);
 		bus.addListener(KubeJSForge::loadComplete);
 		//bus.addGenericListener(Block.class, EventPriority.LOW, KubeJSForge::initRegistries);
+        loadForgeRegistry();
 
 		KubeJS.instance = new KubeJS();
 		KubeJS.instance.setup();
@@ -72,13 +75,16 @@ public class KubeJSForge {
 			}
 		}
 
-		CraftingHelper.register(new ResourceLocation("kubejs", "custom_predicate"), CustomPredicateIngredient.SERIALIZER);
-		CraftingHelper.register(new ResourceLocation("kubejs", "ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
+		CraftingHelper.register(KubeJS.id("custom_predicate"), CustomPredicateIngredient.SERIALIZER);
+		CraftingHelper.register(KubeJS.id("ignore_nbt"), IgnoreNBTIngredient.SERIALIZER);
 	}
 
-	private static void initRegistries(RegistryEvent.Register<Block> event) {
-		//KubeJS.LOGGER.info("registering");
-	}
+    private static void loadForgeRegistry() {
+        val manager = (AccessRegistryManager) RegistryManager.ACTIVE;
+        for (val forgeRegistry : manager.kjs$registries().values()) {
+            RegistryInfo.of(forgeRegistry.getRegistryKey(), forgeRegistry.getRegistrySuperType());
+        }
+    }
 
 	private static void loadComplete(FMLLoadCompleteEvent event) {
 		KubeJS.instance.loadComplete();

@@ -1,14 +1,15 @@
 {
-	"required": true,
-	"package": "dev.latvian.kubejs.mixin.forge",
-	"compatibilityLevel": "JAVA_8",
-	"mixins": [
-	],
-	"client": [
-		"EarlyLoaderGUIMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"minVersion": "0.8"
+  "required": true,
+  "package": "dev.latvian.kubejs.mixin.forge",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "AccessRegistryManager"
+  ],
+  "client": [
+    "EarlyLoaderGUIMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
 }
