@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * @author ZZZank
  */
-public class RegistryEventDoc implements ProbeJSPlugin {
+public class KessJSRegistryEvents implements ProbeJSPlugin {
 
     @Override
     public Set<String> disableEventDumps(ScriptDump dump) {
