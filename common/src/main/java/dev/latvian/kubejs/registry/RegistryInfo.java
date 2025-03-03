@@ -26,16 +26,12 @@ import java.util.function.Supplier;
  */
 public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>, TypeWrapperFactory<T> {
 
+    @SuppressWarnings("unchecked")
     public static <T> RegistryInfo<T> of(ResourceKey<? extends Registry<?>> key, Class<T> type) {
-		val r = RegistryInfos.MAP.get(key);
-
-		if (r == null) {
-			val reg = new RegistryInfo<>(UtilsJS.cast(key), type);
-			RegistryInfos.MAP.put(key, reg);
-			return reg;
-		}
-
-		return (RegistryInfo<T>) r;
+        return (RegistryInfo<T>) RegistryInfos.MAP.computeIfAbsent(
+            key,
+            k -> new RegistryInfo<>(UtilsJS.cast(k), type)
+        );
 	}
 
     static <T> RegistryInfo<T> of(Registry<?> registry, Class<T> type) {
@@ -201,11 +197,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		return archRegistry;
 	}
 
-	public Registry<T> getVanillaRegistry() {
-		return Registry.REGISTRY.get((ResourceKey) key);
-	}
-
-	public Set<Map.Entry<ResourceKey<T>, T>> entrySet() {
+    public Set<Map.Entry<ResourceKey<T>, T>> entrySet() {
 		return getArchRegistry().entrySet();
 	}
 
