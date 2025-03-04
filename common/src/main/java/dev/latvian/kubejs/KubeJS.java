@@ -140,8 +140,6 @@ public class KubeJS {
 		KubeJSServerEventHandler.init();
 		KubeJSRecipeEventHandler.init();
 
-		RegistryInfos.MAP.values().forEach(RegistryInfo::registerArch);
-
 		PROXY.init();
 	}
 
