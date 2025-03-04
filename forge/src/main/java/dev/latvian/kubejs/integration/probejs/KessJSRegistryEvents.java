@@ -20,22 +20,25 @@ import java.util.stream.Collectors;
 /**
  * @author ZZZank
  */
-public class RegistryEventDoc implements ProbeJSPlugin {
+public class KessJSRegistryEvents implements ProbeJSPlugin {
 
     @Override
     public Set<String> disableEventDumps(ScriptDump dump) {
-        if (dump.scriptType == ScriptType.STARTUP) {
-            return RegistryInfos.MAP.values()
-                .stream()
-                .map(r -> r.eventIds)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+        if (dump.scriptType != ScriptType.STARTUP) {
+            return Collections.emptySet();
         }
-        return ProbeJSPlugin.super.disableEventDumps(dump);
+        return RegistryInfos.MAP.values()
+            .stream()
+            .map(r -> r.eventIds)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
     }
 
     @Override
     public void addGlobals(ScriptDump scriptDump) {
+        if (scriptDump.scriptType != ScriptType.STARTUP) {
+            return;
+        }
         val converter = scriptDump.transpiler.typeConverter;
         val events = new ArrayList<FunctionDeclaration>();
 
