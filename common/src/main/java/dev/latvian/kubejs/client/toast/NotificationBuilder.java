@@ -8,6 +8,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import lombok.val;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -31,6 +32,7 @@ public class NotificationBuilder {
 	private static final int FLAG_TEXT_SHADOW = 2;
 	private static final int FLAG_DURATION = 4;
 
+    @HideFromJS
 	public static NotificationBuilder of(Context cx, Object object) {
 		if (object instanceof NotificationBuilder b) {
 			return b;
@@ -40,13 +42,11 @@ public class NotificationBuilder {
 			val consumer = (Consumer<NotificationBuilder>) NativeJavaObject.createInterfaceAdapter(cx, Consumer.class, func);
 			return make(consumer);
 		}
-        var b = new NotificationBuilder();
-        b.text = TextWrapper.componentOf(object);
-        return b;
+        return new NotificationBuilder(TextWrapper.componentOf(object));
     }
 
 	public static NotificationBuilder make(Consumer<NotificationBuilder> consumer) {
-		var b = new NotificationBuilder();
+		val b = new NotificationBuilder();
 		consumer.accept(b);
 		return b;
 	}
@@ -61,9 +61,9 @@ public class NotificationBuilder {
 	public Color backgroundColor;
 	public boolean textShadow;
 
-	public NotificationBuilder() {
+	public NotificationBuilder(Component text) {
 		duration = DEFAULT_DURATION;
-		text = new TextComponent("");
+		this.text = text;
 		iconType = 0;
 		icon = "";
 		iconSize = 16;
@@ -72,6 +72,10 @@ public class NotificationBuilder {
 		backgroundColor = DEFAULT_BACKGROUND_COLOR;
 		textShadow = true;
 	}
+
+    public NotificationBuilder() {
+        this(new TextComponent(""));
+    }
 
 	public NotificationBuilder(FriendlyByteBuf buf) {
 		int flags = buf.readVarInt();
