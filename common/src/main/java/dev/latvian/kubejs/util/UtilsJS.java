@@ -19,11 +19,14 @@ import dev.latvian.kubejs.server.ServerJS;
 import dev.latvian.kubejs.world.WorldJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.Copyable;
+import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import lombok.val;
 import me.shedaniel.architectury.registry.ToolType;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -581,5 +584,13 @@ public class UtilsJS {
 
         ALL_STATE_CACHE = Collections.unmodifiableCollection(states);
         return ALL_STATE_CACHE;
+    }
+
+    public static void writeColor(FriendlyByteBuf buf, Color color) {
+        buf.writeInt(color.getArgbKJS());
+    }
+
+    public static Color readColor(FriendlyByteBuf buf) {
+        return new SimpleColorWithAlpha(buf.readInt());
     }
 }
