@@ -1,159 +1,166 @@
 package dev.latvian.kubejs.command;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.LongArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.kubejs.util.ConsoleJS;
+import dev.latvian.kubejs.util.Lazy;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.val;
+import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.AngleArgument;
-import net.minecraft.commands.arguments.ColorArgument;
-import net.minecraft.commands.arguments.ComponentArgument;
-import net.minecraft.commands.arguments.CompoundTagArgument;
-import net.minecraft.commands.arguments.DimensionArgument;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.EntitySummonArgument;
-import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.commands.arguments.ItemEnchantmentArgument;
-import net.minecraft.commands.arguments.MessageArgument;
-import net.minecraft.commands.arguments.MobEffectArgument;
-import net.minecraft.commands.arguments.NbtPathArgument;
-import net.minecraft.commands.arguments.NbtTagArgument;
-import net.minecraft.commands.arguments.ParticleArgument;
-import net.minecraft.commands.arguments.RangeArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.commands.arguments.SlotArgument;
-import net.minecraft.commands.arguments.TimeArgument;
-import net.minecraft.commands.arguments.UuidArgument;
+import net.minecraft.commands.arguments.*;
+import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
-import net.minecraft.commands.arguments.coordinates.RotationArgument;
-import net.minecraft.commands.arguments.coordinates.SwizzleArgument;
-import net.minecraft.commands.arguments.coordinates.Vec2Argument;
-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
+import net.minecraft.commands.arguments.coordinates.*;
 import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ColumnPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static dev.latvian.kubejs.command.ArgumentTypeWrapper.Backend.of;
 
 /**
  * @author ZZZank
  */
-public enum ArgumentTypeWrapper {
-	// builtin types, other argument types can still be accessed through byName(),
-	// however those will be using class wrappers
+@SuppressWarnings("unused")
+public interface ArgumentTypeWrapper<T extends ArgumentType<?>, O> {
 
-	// numeric types
-	BOOLEAN(BoolArgumentType::bool, BoolArgumentType::getBool),
-	FLOAT(FloatArgumentType::floatArg, FloatArgumentType::getFloat),
-	DOUBLE(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble),
-	INTEGER(IntegerArgumentType::integer, IntegerArgumentType::getInteger),
-	LONG(LongArgumentType::longArg, LongArgumentType::getLong),
-	// string types
-	STRING(StringArgumentType::string, StringArgumentType::getString),
-	GREEDY_STRING(StringArgumentType::greedyString, StringArgumentType::getString),
-	WORD(StringArgumentType::word, StringArgumentType::getString),
-	// entity / player types
-	ENTITY(EntityArgument::entity, EntityArgument::getEntity),
-	ENTITIES(EntityArgument::entities, EntityArgument::getEntities),
-	PLAYER(EntityArgument::player, EntityArgument::getPlayer),
-	PLAYERS(EntityArgument::players, EntityArgument::getPlayers),
-	GAME_PROFILE(GameProfileArgument::gameProfile, GameProfileArgument::getGameProfiles),
-	// position types
-	BLOCK_POS(BlockPosArgument::blockPos, BlockPosArgument::getOrLoadBlockPos),
-	BLOCK_POS_LOADED(BlockPosArgument::blockPos, BlockPosArgument::getLoadedBlockPos),
-	COLUMN_POS(ColumnPosArgument::columnPos, ColumnPosArgument::getColumnPos),
-	// by default, vector arguments are automatically placed at the **center** of the block
-	// if no explicit offset is given, since devs may not necessarily want that, we provide both options
-	VEC3(() -> Vec3Argument.vec3(false), Vec3Argument::getVec3),
-	VEC2(() -> new Vec2Argument(false), Vec2Argument::getVec2),
-	VEC3_CENTERED(Vec3Argument::vec3, Vec3Argument::getVec3),
-	VEC2_CENTERED(Vec2Argument::vec2, Vec2Argument::getVec2),
-	// block-based types
-	BLOCK_STATE(BlockStateArgument::block, BlockStateArgument::getBlock),
-	BLOCK_PREDICATE(BlockPredicateArgument::blockPredicate, BlockPredicateArgument::getBlockPredicate),
-	// item-based types
-	ITEM_STACK(ItemArgument::item, ItemArgument::getItem),
-	ITEM_PREDICATE(ItemPredicateArgument::itemPredicate, ItemPredicateArgument::getItemPredicate),
-	// message / chat types
-	COLOR(ColorArgument::color, ColorArgument::getColor),
-	COMPONENT(ComponentArgument::textComponent, ComponentArgument::getComponent),
-	MESSAGE(MessageArgument::message, MessageArgument::getMessage),
-	// nbt
-	NBT_COMPOUND(CompoundTagArgument::compoundTag, CompoundTagArgument::getCompoundTag),
-	NBT_TAG(NbtTagArgument::nbtTag, NbtTagArgument::getNbtTag),
-	NBT_PATH(NbtPathArgument::nbtPath, NbtPathArgument::getPath),
-	// random / misc
-	PARTICLE(ParticleArgument::particle, ParticleArgument::getParticle),
-	ANGLE(AngleArgument::angle, AngleArgument::getAngle),
-	ROTATION(RotationArgument::rotation, RotationArgument::getRotation),
-	SWIZZLE(SwizzleArgument::swizzle, SwizzleArgument::getSwizzle), // i have no idea wtf this is
-	ITEM_SLOT(SlotArgument::slot, SlotArgument::getSlot),
-	RESOURCE_LOCATION(ResourceLocationArgument::id, ResourceLocationArgument::getId),
-	MOB_EFFECT(MobEffectArgument::effect, MobEffectArgument::getEffect),
-	ENTITY_ANCHOR(EntityAnchorArgument::anchor, EntityAnchorArgument::getAnchor),
-	INT_RANGE(RangeArgument::intRange, RangeArgument.Ints::getRange),
-	FLOAT_RANGE(RangeArgument::floatRange, (context, name) -> context.getArgument(name, RangeArgument.Floats.class)),
-	ITEM_ENCHANTMENT(ItemEnchantmentArgument::enchantment, ItemEnchantmentArgument::getEnchantment),
-	ENTITY_SUMMON(EntitySummonArgument::id, EntitySummonArgument::getSummonableEntity),
-	DIMENSION(DimensionArgument::dimension, DimensionArgument::getDimension),
-	TIME(TimeArgument::time, IntegerArgumentType::getInteger),
-	UUID(UuidArgument::uuid, UuidArgument::getUuid),
-	;
+    T create(CommandRegistryEventJS event);
 
-	private final Supplier<? extends ArgumentType<?>> factory;
-	private final ArgumentFunction<?> getter;
+    O getResult(CommandContext<CommandSourceStack> context, String input) throws CommandSyntaxException;
 
-	private static Map<ResourceLocation, Class<?>> byNameCache;
+    // numeric types
+    ArgumentTypeWrapper<BoolArgumentType, Boolean> BOOLEAN = of(BoolArgumentType::bool, BoolArgumentType::getBool);
+    ArgumentTypeWrapper<FloatArgumentType, Float> FLOAT = of(FloatArgumentType::floatArg, FloatArgumentType::getFloat);
+    ArgumentTypeWrapper<DoubleArgumentType, Double> DOUBLE = of(DoubleArgumentType::doubleArg, DoubleArgumentType::getDouble);
+    ArgumentTypeWrapper<IntegerArgumentType, Integer> INTEGER = of(IntegerArgumentType::integer, IntegerArgumentType::getInteger);
+    ArgumentTypeWrapper<LongArgumentType, Long> LONG = of(LongArgumentType::longArg, LongArgumentType::getLong);
+    // string types
+    ArgumentTypeWrapper<StringArgumentType, String> STRING = of(StringArgumentType::string, StringArgumentType::getString);
+    ArgumentTypeWrapper<StringArgumentType, String>
+        GREEDY_STRING = of(StringArgumentType::greedyString, StringArgumentType::getString);
+    ArgumentTypeWrapper<StringArgumentType, String> WORD = of(StringArgumentType::word, StringArgumentType::getString);
+    // entity / player types
+    ArgumentTypeWrapper<EntityArgument, Entity> ENTITY = of(EntityArgument::entity, EntityArgument::getEntity);
+    ArgumentTypeWrapper<EntityArgument, Collection<? extends Entity>>
+        ENTITIES = of(EntityArgument::entities, EntityArgument::getEntities);
+    ArgumentTypeWrapper<EntityArgument, ServerPlayer> PLAYER = of(EntityArgument::player, EntityArgument::getPlayer);
+    ArgumentTypeWrapper<EntityArgument, Collection<ServerPlayer>> PLAYERS = of(EntityArgument::players, EntityArgument::getPlayers);
+    ArgumentTypeWrapper<GameProfileArgument, Collection<GameProfile>>
+        GAME_PROFILE = of(GameProfileArgument::gameProfile, GameProfileArgument::getGameProfiles);
+    // position types
+    ArgumentTypeWrapper<BlockPosArgument, BlockPos> BLOCK_POS = of(BlockPosArgument::blockPos, BlockPosArgument::getOrLoadBlockPos);
+    ArgumentTypeWrapper<BlockPosArgument, BlockPos> BLOCK_POS_LOADED = of(BlockPosArgument::blockPos, BlockPosArgument::getLoadedBlockPos);
+    ArgumentTypeWrapper<ColumnPosArgument, ColumnPos> COLUMN_POS = of(ColumnPosArgument::columnPos, ColumnPosArgument::getColumnPos);
+    // by default, vector arguments are automatically placed at the **center** of the block
+    // if no explicit offset is given, since devs may not necessarily want that, we provide both options
+    ArgumentTypeWrapper<Vec3Argument, Vec3> VEC3 = of(() -> Vec3Argument.vec3(false), Vec3Argument::getVec3);
+    ArgumentTypeWrapper<Vec2Argument, Vec2> VEC2 = of(() -> new Vec2Argument(false), Vec2Argument::getVec2);
+    ArgumentTypeWrapper<Vec3Argument, Vec3> VEC3_CENTERED = of(Vec3Argument::vec3, Vec3Argument::getVec3);
+    ArgumentTypeWrapper<Vec2Argument, Vec2> VEC2_CENTERED = of(Vec2Argument::vec2, Vec2Argument::getVec2);
+    // block-based types
+    ArgumentTypeWrapper<BlockStateArgument, BlockInput> BLOCK_STATE = of(BlockStateArgument::block, BlockStateArgument::getBlock);
+    ArgumentTypeWrapper<BlockPredicateArgument, Predicate<BlockInWorld>>
+        BLOCK_PREDICATE = of(BlockPredicateArgument::blockPredicate, BlockPredicateArgument::getBlockPredicate);
+    // item-based types
+    ArgumentTypeWrapper<ItemArgument, ItemInput> ITEM_STACK = of(ItemArgument::item, ItemArgument::getItem);
+    ArgumentTypeWrapper<ItemPredicateArgument, Predicate<ItemStack>>
+        ITEM_PREDICATE = of(ItemPredicateArgument::itemPredicate, ItemPredicateArgument::getItemPredicate);
+    // message / chat types
+    ArgumentTypeWrapper<ColorArgument, ChatFormatting> COLOR = of(ColorArgument::color, ColorArgument::getColor);
+    ArgumentTypeWrapper<ComponentArgument, Component> COMPONENT = of(ComponentArgument::textComponent, ComponentArgument::getComponent);
+    ArgumentTypeWrapper<MessageArgument, Component> MESSAGE = of(MessageArgument::message, MessageArgument::getMessage);
+    // nbt
+    ArgumentTypeWrapper<CompoundTagArgument, CompoundTag>
+        NBT_COMPOUND = of(CompoundTagArgument::compoundTag, CompoundTagArgument::getCompoundTag);
+    ArgumentTypeWrapper<NbtTagArgument, Tag> NBT_TAG = of(NbtTagArgument::nbtTag, NbtTagArgument::getNbtTag);
+    ArgumentTypeWrapper<NbtPathArgument, NbtPathArgument.NbtPath>
+        NBT_PATH = of(NbtPathArgument::nbtPath, NbtPathArgument::getPath);
+    // random / misc
+    ArgumentTypeWrapper<ParticleArgument, ParticleOptions> PARTICLE = of(ParticleArgument::particle, ParticleArgument::getParticle);
+    ArgumentTypeWrapper<AngleArgument, Float> ANGLE = of(AngleArgument::angle, AngleArgument::getAngle);
+    ArgumentTypeWrapper<RotationArgument, Coordinates> ROTATION = of(RotationArgument::rotation, RotationArgument::getRotation);
+    ArgumentTypeWrapper<SwizzleArgument, EnumSet<Direction.Axis>> SWIZZLE = of(SwizzleArgument::swizzle, SwizzleArgument::getSwizzle);
+    ArgumentTypeWrapper<SlotArgument, Integer> ITEM_SLOT = of(SlotArgument::slot, SlotArgument::getSlot);
+    ArgumentTypeWrapper<ResourceLocationArgument, ResourceLocation>
+        RESOURCE_LOCATION = of(ResourceLocationArgument::id, ResourceLocationArgument::getId);
+    ArgumentTypeWrapper<MobEffectArgument, MobEffect> MOB_EFFECT = of(MobEffectArgument::effect, MobEffectArgument::getEffect);
+    ArgumentTypeWrapper<EntityAnchorArgument, EntityAnchorArgument.Anchor>
+        ENTITY_ANCHOR = of(EntityAnchorArgument::anchor, EntityAnchorArgument::getAnchor);
+    ArgumentTypeWrapper<RangeArgument.Ints, MinMaxBounds.Ints> INT_RANGE = of(RangeArgument::intRange, RangeArgument.Ints::getRange);
+    ArgumentTypeWrapper<RangeArgument.Floats, RangeArgument.Floats>
+        FLOAT_RANGE = of(RangeArgument::floatRange, (context, name) -> context.getArgument(name, RangeArgument.Floats.class));
+    ArgumentTypeWrapper<ItemEnchantmentArgument, Enchantment>
+        ITEM_ENCHANTMENT = of(ItemEnchantmentArgument::enchantment, ItemEnchantmentArgument::getEnchantment);
+    ArgumentTypeWrapper<EntitySummonArgument, ResourceLocation>
+        ENTITY_SUMMON = of(EntitySummonArgument::id, EntitySummonArgument::getSummonableEntity);
+    ArgumentTypeWrapper<DimensionArgument, ServerLevel> DIMENSION = of(DimensionArgument::dimension, DimensionArgument::getDimension);
+    ArgumentTypeWrapper<TimeArgument, Integer> TIME = of(TimeArgument::time, IntegerArgumentType::getInteger);
+    ArgumentTypeWrapper<UuidArgument, UUID> UUID = of(UuidArgument::uuid, UuidArgument::getUuid);
 
-	public static Class<?> byName(ResourceLocation name) {
-		val wrapper = getOrCacheByName().get(name);
-		if (wrapper == null) {
-			throw new IllegalStateException("No argument type found for " + name);
-		}
-		return wrapper;
-	}
+    static Class<?> byName(ResourceLocation name) {
+        val wrapper = Backend.CACHE.get().get(name);
+        if (wrapper == null) {
+            throw new IllegalStateException("No argument type found for " + name);
+        }
+        return wrapper;
+    }
 
-	public static void printAll() {
-		for (val argType : getOrCacheByName().entrySet()) {
-			ConsoleJS.SERVER.info("Argument type: " + argType.getKey() + " -> " + argType.getValue());
-		}
-	}
+    static void printAll() {
+        for (val argType : Backend.CACHE.get().entrySet()) {
+            ConsoleJS.SERVER.info("Argument type: %s -> %s".formatted(argType.getKey(), argType.getValue()));
+        }
+    }
 
-	private static Map<ResourceLocation, Class<?>> getOrCacheByName() {
-		if (byNameCache == null) {
-			byNameCache = new HashMap<>();
-			for (val argType : ArgumentTypes.BY_CLASS.entrySet()) {
-				byNameCache.putIfAbsent(argType.getValue().name, argType.getKey());
-			}
-		}
-		return byNameCache;
-	}
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    class Backend<T extends ArgumentType<?>, O> implements ArgumentTypeWrapper<T, O> {
+        static final Lazy<Map<ResourceLocation, Class<?>>> CACHE = Lazy.of(() -> ArgumentTypes.BY_CLASS.entrySet()
+            .stream()
+            .collect(Collectors.toMap(e -> e.getValue().name, Map.Entry::getKey)));
 
-	ArgumentTypeWrapper(Supplier<? extends ArgumentType<?>> factory, ArgumentFunction<?> getter) {
-		this.factory = factory;
-		this.getter = getter;
-	}
+        static <T extends ArgumentType<?>, O> ArgumentTypeWrapper<T, O> of(Supplier<T> factory,
+            ArgumentFunction<O> getter) {
+            return new Backend<>(factory, getter);
+        }
+        
+        private final Supplier<T> factory;
+        private final ArgumentFunction<O> getter;
 
-	public ArgumentType<?> create(CommandRegistryEventJS event) {
-		return factory.get();
-	}
+        @Override
+        public T create(CommandRegistryEventJS event) {
+            return factory.get();
+        }
 
-	public Object getResult(CommandContext<CommandSourceStack> context, String input) throws CommandSyntaxException {
-		return getter.getResult(context, input);
-	}
+        @Override
+        public O getResult(CommandContext<CommandSourceStack> context, String input) throws CommandSyntaxException {
+            return getter.getResult(context, input);
+        }
+    }
 }
