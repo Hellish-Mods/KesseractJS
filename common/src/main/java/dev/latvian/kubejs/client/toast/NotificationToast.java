@@ -1,21 +1,16 @@
 package dev.latvian.kubejs.client.toast;
 
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import dev.latvian.kubejs.bindings.TextWrapper;
-import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.client.toast.icon.*;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,96 +19,12 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 public class NotificationToast implements Toast {
-    public interface ToastIcon {
-        void draw(Minecraft mc, PoseStack graphics, int x, int y, int size);
-    }
 
     public static final Map<Integer, BiFunction<Minecraft, String, ToastIcon>> ICONS = new HashMap<>(Map.of(
         1, TextureIcon::new,
         2, ItemIcon::new,
         3, AtlasIcon::of
     ));
-
-    public record TextureIcon(ResourceLocation texture) implements ToastIcon {
-        public TextureIcon(Minecraft ignored, String icon) {
-            this(new ResourceLocation(icon));
-        }
-
-        @Override
-        public void draw(Minecraft mc, PoseStack matrixStack, int x, int y, int size) {
-            mc.getTextureManager().bind(this.texture);
-            int p0 = -size / 2;
-            int p1 = p0 + size;
-
-            val tessellator = Tesselator.getInstance();
-            val buf = tessellator.getBuilder();
-            val matrix4f = matrixStack.last().pose();
-            buf.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
-            buf.vertex(matrix4f, x + p0, y + p1, 0F).uv(0F, 1F).color(255, 255, 255, 255).endVertex();
-            buf.vertex(matrix4f, x + p1, y + p1, 0F).uv(1F, 1F).color(255, 255, 255, 255).endVertex();
-            buf.vertex(matrix4f, x + p1, y + p0, 0F).uv(1F, 0F).color(255, 255, 255, 255).endVertex();
-            buf.vertex(matrix4f, x + p0, y + p0, 0F).uv(0F, 0F).color(255, 255, 255, 255).endVertex();
-            tessellator.end();
-        }
-    }
-
-    public record ItemIcon(ItemStack stack) implements ToastIcon {
-        public ItemIcon(Minecraft ignored, String icon) {
-            this(ItemStackJS.of(icon).getItemStack());
-        }
-
-        @Override
-        public void draw(Minecraft mc, PoseStack poseStack, int x, int y, int size) {
-            RenderSystem.pushMatrix();
-            RenderSystem.multMatrix(poseStack.last().pose());
-            RenderSystem.enableDepthTest();
-
-            RenderSystem.translated(x - 2D, y + 2D, 0D);
-            val s = size / 16F;
-            RenderSystem.scalef(s, s, s);
-
-            Lighting.turnBackOn();
-            mc.getItemRenderer().renderAndDecorateFakeItem(stack, -8, -8);
-
-            RenderSystem.disableBlend();
-            Lighting.turnOff();
-            RenderSystem.popMatrix();
-        }
-    }
-
-    public record AtlasIcon(TextureAtlasSprite sprite) implements ToastIcon {
-        public static AtlasIcon of(Minecraft mc, String icon) {
-            val s = icon.split("\\|");
-
-            if (s.length == 2) {
-                return new AtlasIcon(mc.getTextureAtlas(new ResourceLocation(s[0])).apply(new ResourceLocation(s[1])));
-            } else {
-                return new AtlasIcon(mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(icon)));
-            }
-        }
-
-        @Override
-        public void draw(Minecraft mc, PoseStack poseStack, int x, int y, int size) {
-            val m = poseStack.last().pose();
-
-            val p0 = -size / 2;
-            val p1 = p0 + size;
-
-            val u0 = sprite.getU0();
-            val v0 = sprite.getV0();
-            val u1 = sprite.getU1();
-            val v1 = sprite.getV1();
-
-            val tesselator = Tesselator.getInstance();
-            val buf = tesselator.getBuilder();
-            buf.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
-            buf.vertex(m, x + p0, y + p1, 0F).uv(u0, v1).color(255, 255, 255, 255).endVertex();
-            buf.vertex(m, x + p1, y + p1, 0F).uv(u1, v1).color(255, 255, 255, 255).endVertex();
-            buf.vertex(m, x + p1, y + p0, 0F).uv(u1, v0).color(255, 255, 255, 255).endVertex();
-            buf.vertex(m, x + p0, y + p0, 0F).uv(u0, v0).color(255, 255, 255, 255).endVertex();
-            tesselator.end();
-        }
-    }
 
     private final NotificationBuilder notification;
 
