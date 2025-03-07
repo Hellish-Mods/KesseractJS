@@ -1,7 +1,6 @@
 package dev.latvian.kubejs.client.toast;
 
 import dev.latvian.kubejs.bindings.TextWrapper;
-import dev.latvian.kubejs.registry.RegistryInfo;
 import dev.latvian.kubejs.registry.RegistryInfos;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -42,7 +41,7 @@ public class NotificationBuilder {
 			return make(consumer);
 		}
         var b = new NotificationBuilder();
-        b.text = TextWrapper.of(object).component();
+        b.text = TextWrapper.componentOf(object);
         return b;
     }
 
@@ -155,7 +154,7 @@ public class NotificationBuilder {
 
 	@Environment(EnvType.CLIENT)
 	public void show() {
-		var mc = Minecraft.getInstance();
+		val mc = Minecraft.getInstance();
 		mc.getToasts().addToast(new NotificationToast(mc, this));
 	}
 }
