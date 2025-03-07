@@ -4,6 +4,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.latvian.kubejs.util.ConsoleJS;
+import dev.latvian.kubejs.util.Lazy;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.val;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.CommandSourceStack;
@@ -15,6 +20,7 @@ import net.minecraft.commands.arguments.coordinates.*;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
+import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -33,12 +39,12 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import static dev.latvian.kubejs.command.ArgumImpl.of;
+import static dev.latvian.kubejs.command.ArgumentTypeWrapper.Backend.of;
 
 /**
  * @author ZZZank
@@ -118,4 +124,43 @@ public interface ArgumentTypeWrapper<T extends ArgumentType<?>, O> {
     ArgumentTypeWrapper<DimensionArgument, ServerLevel> DIMENSION = of(DimensionArgument::dimension, DimensionArgument::getDimension);
     ArgumentTypeWrapper<TimeArgument, Integer> TIME = of(TimeArgument::time, IntegerArgumentType::getInteger);
     ArgumentTypeWrapper<UuidArgument, UUID> UUID = of(UuidArgument::uuid, UuidArgument::getUuid);
+
+    static Class<?> byName(ResourceLocation name) {
+        val wrapper = Backend.CACHE.get().get(name);
+        if (wrapper == null) {
+            throw new IllegalStateException("No argument type found for " + name);
+        }
+        return wrapper;
+    }
+
+    static void printAll() {
+        for (val argType : Backend.CACHE.get().entrySet()) {
+            ConsoleJS.SERVER.info("Argument type: %s -> %s".formatted(argType.getKey(), argType.getValue()));
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    class Backend<T extends ArgumentType<?>, O> implements ArgumentTypeWrapper<T, O> {
+        static final Lazy<Map<ResourceLocation, Class<?>>> CACHE = Lazy.of(() -> ArgumentTypes.BY_CLASS.entrySet()
+            .stream()
+            .collect(Collectors.toMap(e -> e.getValue().name, Map.Entry::getKey)));
+
+        static <T extends ArgumentType<?>, O> ArgumentTypeWrapper<T, O> of(Supplier<T> factory,
+            ArgumentFunction<O> getter) {
+            return new Backend<>(factory, getter);
+        }
+        
+        private final Supplier<T> factory;
+        private final ArgumentFunction<O> getter;
+
+        @Override
+        public T create(CommandRegistryEventJS event) {
+            return factory.get();
+        }
+
+        @Override
+        public O getResult(CommandContext<CommandSourceStack> context, String input) throws CommandSyntaxException {
+            return getter.getResult(context, input);
+        }
+    }
 }
