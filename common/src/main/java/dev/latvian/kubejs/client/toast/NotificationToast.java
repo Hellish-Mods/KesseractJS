@@ -229,7 +229,11 @@ public class NotificationToast implements Toast {
         val tv = (h - text.size() * 10) / 2 + 1;
 
         for (var i = 0; i < text.size(); i++) {
-            mc.font.drawShadow(poseStack, text.get(i), th, tv + i * 10, 0xFFFFFF);
+            if (notification.textShadow) {
+                mc.font.drawShadow(poseStack, text.get(i), th, tv + i * 10, 0xFFFFFF);
+            } else {
+                mc.font.draw(poseStack, text.get(i), th, tv + i * 10, 0xFFFFFF);
+            }
         }
 
         poseStack.popPose();
