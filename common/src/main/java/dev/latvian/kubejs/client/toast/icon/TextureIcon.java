@@ -3,6 +3,8 @@ package dev.latvian.kubejs.client.toast.icon;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +13,11 @@ import net.minecraft.resources.ResourceLocation;
  * @author ZZZank
  */
 public record TextureIcon(ResourceLocation texture) implements ToastIcon {
+    public static final Codec<TextureIcon> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ResourceLocation.CODEC.fieldOf("texture").forGetter(TextureIcon::texture)
+        ).apply(instance, TextureIcon::new)
+    );
+
     public TextureIcon(Minecraft ignored, String icon) {
         this(new ResourceLocation(icon));
     }
@@ -30,5 +37,10 @@ public record TextureIcon(ResourceLocation texture) implements ToastIcon {
         buf.vertex(matrix4f, x + p1, y + p0, 0F).uv(1F, 0F).color(255, 255, 255, 255).endVertex();
         buf.vertex(matrix4f, x + p0, y + p0, 0F).uv(0F, 0F).color(255, 255, 255, 255).endVertex();
         tessellator.end();
+    }
+
+    @Override
+    public ToastIconType getType() {
+        return ToastIconRegistry.TEXTURE;
     }
 }

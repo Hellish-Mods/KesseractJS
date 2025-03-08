@@ -1,7 +1,7 @@
 package dev.latvian.kubejs.client.toast;
 
 import dev.latvian.kubejs.bindings.TextWrapper;
-import dev.latvian.kubejs.registry.RegistryInfos;
+import dev.latvian.kubejs.client.toast.icon.*;
 import dev.latvian.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -16,10 +16,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class NotificationBuilder {
@@ -29,8 +31,8 @@ public class NotificationBuilder {
 	public static final Color DEFAULT_BACKGROUND_COLOR = new SimpleColor(0x241335);
 
 	private static final int FLAG_ICON = 1;
-	private static final int FLAG_TEXT_SHADOW = 2;
-	private static final int FLAG_DURATION = 4;
+	private static final int FLAG_TEXT_SHADOW = FLAG_ICON << 1;
+	private static final int FLAG_DURATION = FLAG_TEXT_SHADOW << 1;
 
     @HideFromJS
 	public static NotificationBuilder of(Context cx, Object object) {
@@ -54,7 +56,7 @@ public class NotificationBuilder {
 	public Duration duration;
 	public Component text;
 	public transient int iconType;
-	public transient String icon;
+	public transient ToastIcon icon;
 	public int iconSize;
 	public Color outlineColor;
 	public Color borderColor;
@@ -64,8 +66,6 @@ public class NotificationBuilder {
 	public NotificationBuilder(Component text) {
 		duration = DEFAULT_DURATION;
 		this.text = text;
-		iconType = 0;
-		icon = "";
 		iconSize = 16;
 		outlineColor = SimpleColor.BLACK;
 		borderColor = DEFAULT_BORDER_COLOR;
@@ -81,17 +81,12 @@ public class NotificationBuilder {
 		int flags = buf.readVarInt();
 		text = buf.readComponent();
 
-		duration = ((flags & FLAG_DURATION) != 0) ? Duration.ofMillis(buf.readVarLong()) : DEFAULT_DURATION;
+		duration = ((flags & FLAG_DURATION) != 0)
+            ? Duration.ofMillis(buf.readVarLong())
+            : DEFAULT_DURATION;
 
-		if ((flags & FLAG_ICON) != 0) {
-			iconType = buf.readVarInt();
-			icon = buf.readUtf();
-			iconSize = buf.readByte();
-		} else {
-			iconType = 0;
-			icon = "";
-			iconSize = 16;
-		}
+        icon = ToastIcon.read(buf);
+        iconSize = buf.readByte();
 
 		outlineColor = UtilsJS.readColor(buf);
 		borderColor = UtilsJS.readColor(buf);
@@ -121,40 +116,30 @@ public class NotificationBuilder {
 			buf.writeVarLong(duration.toMillis());
 		}
 
-		if (iconType != 0) {
-			buf.writeVarInt(iconType);
-			buf.writeUtf(icon);
-			buf.writeByte(iconSize);
-		}
+        icon.write(buf);
+        buf.writeByte(iconSize);
 
 		UtilsJS.writeColor(buf, outlineColor);
 		UtilsJS.writeColor(buf, borderColor);
 		UtilsJS.writeColor(buf, backgroundColor);
 	}
 
-	public void setIcon(String icon) {
-		this.icon = icon;
+	public void setTextureIcon(ResourceLocation textureLocation) {
+		this.icon = new TextureIcon(textureLocation);
 		this.iconType = 1;
 	}
 
 	public void setItemIcon(ItemStack stack) {
-		this.icon = RegistryInfos.ITEM.getId(stack.getItem()).toString();
-
-		if (stack.getCount() > 1) {
-			this.icon = stack.getCount() + "x " + this.icon;
-		}
-
-		if (stack.getTag() != null) {
-			this.icon = this.icon + " " + stack.getTag();
-		}
-
-		this.iconType = 2;
+		icon = new ItemIcon(stack);
 	}
 
-	public void setAtlasIcon(String icon) {
-		this.icon = icon;
-		this.iconType = 3;
-	}
+    public void setAtlasIcon(ResourceLocation atlas, ResourceLocation sprite) {
+        this.icon = new AtlasIcon(Optional.ofNullable(atlas), sprite);
+    }
+
+    public void setAtlasIcon(ResourceLocation sprite) {
+        setAtlasIcon(null, sprite);
+    }
 
 	@Environment(EnvType.CLIENT)
 	public void show() {

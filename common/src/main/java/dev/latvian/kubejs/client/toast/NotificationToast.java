@@ -13,18 +13,9 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
 
 public class NotificationToast implements Toast {
-
-    public static final Map<Integer, BiFunction<Minecraft, String, ToastIcon>> ICONS = new HashMap<>(Map.of(
-        1, TextureIcon::new,
-        2, ItemIcon::new,
-        3, AtlasIcon::of
-    ));
 
     private final NotificationBuilder notification;
 
@@ -40,9 +31,7 @@ public class NotificationToast implements Toast {
         this.notification = notification;
         this.duration = notification.duration.toMillis();
 
-        this.icon = ICONS.containsKey(this.notification.iconType)
-            ? ICONS.get(this.notification.iconType).apply(mc, this.notification.icon)
-            : null;
+        this.icon = notification.icon;
 
         this.text = new ArrayList<>(2);
         this.width = 0;
