@@ -77,7 +77,7 @@ public class NotificationBuilder {
         this(new TextComponent(""));
     }
 
-	public NotificationBuilder(FriendlyByteBuf buf) throws IOException {
+	public NotificationBuilder(FriendlyByteBuf buf) {
 		int flags = buf.readVarInt();
 		text = buf.readComponent();
 
@@ -99,7 +99,7 @@ public class NotificationBuilder {
 		textShadow = (flags & FLAG_TEXT_SHADOW) != 0;
 	}
 
-	public void write(FriendlyByteBuf buf) throws IOException {
+	public void write(FriendlyByteBuf buf) {
 		int flags = 0;
 
 		if (icon != null) {

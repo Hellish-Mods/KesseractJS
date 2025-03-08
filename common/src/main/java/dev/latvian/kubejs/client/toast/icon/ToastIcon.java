@@ -16,14 +16,21 @@ public interface ToastIcon {
 
     ToastIconType getType();
 
-    static ToastIcon read(FriendlyByteBuf buf) throws IOException {
+    static ToastIcon read(FriendlyByteBuf buf) {
         val index = buf.readVarInt();
         val type = ToastIconRegistry.getOrDefault(index, ToastIconRegistry.NONE);
-        return buf.readWithCodec(type.codec());
+        try {
+            return buf.readWithCodec(type.codec());
+        } catch (IOException e) {
+            return null;
+        }
     }
 
-    default void write(FriendlyByteBuf buf) throws IOException {
+    default void write(FriendlyByteBuf buf) {
         buf.writeInt(this.getType().index());
-        buf.writeWithCodec(this.getType().codec(), UtilsJS.cast(this));
+        try {
+            buf.writeWithCodec(this.getType().codec(), UtilsJS.cast(this));
+        } catch (IOException ignored) {
+        }
     }
 }

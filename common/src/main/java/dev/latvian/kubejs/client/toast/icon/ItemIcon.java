@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.kubejs.item.ItemStackJS;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
