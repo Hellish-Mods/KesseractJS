@@ -20,10 +20,6 @@ public record ItemIcon(ItemStack stack) implements ToastIcon {
         ).apply(instance, ItemIcon::new)
     );
 
-    public ItemIcon(Minecraft ignored, String icon) {
-        this(ItemStackJS.of(icon).getItemStack());
-    }
-
     @Override
     public void draw(Minecraft mc, PoseStack poseStack, int x, int y, int size) {
         RenderSystem.pushMatrix();

@@ -19,6 +19,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
@@ -55,8 +56,7 @@ public class NotificationBuilder {
 
 	public Duration duration;
 	public Component text;
-	public transient int iconType;
-	public transient ToastIcon icon;
+    public ToastIcon icon;
 	public int iconSize;
 	public Color outlineColor;
 	public Color borderColor;
@@ -77,7 +77,7 @@ public class NotificationBuilder {
         this(new TextComponent(""));
     }
 
-	public NotificationBuilder(FriendlyByteBuf buf) {
+	public NotificationBuilder(FriendlyByteBuf buf) throws IOException {
 		int flags = buf.readVarInt();
 		text = buf.readComponent();
 
@@ -85,8 +85,13 @@ public class NotificationBuilder {
             ? Duration.ofMillis(buf.readVarLong())
             : DEFAULT_DURATION;
 
-        icon = ToastIcon.read(buf);
-        iconSize = buf.readByte();
+        if ((flags & FLAG_ICON) != 0) {
+            icon = ToastIcon.read(buf);
+            iconSize = buf.readByte();
+        } else {
+            icon = null;
+            iconSize = 16;
+        }
 
 		outlineColor = UtilsJS.readColor(buf);
 		borderColor = UtilsJS.readColor(buf);
@@ -94,10 +99,10 @@ public class NotificationBuilder {
 		textShadow = (flags & FLAG_TEXT_SHADOW) != 0;
 	}
 
-	public void write(FriendlyByteBuf buf) {
+	public void write(FriendlyByteBuf buf) throws IOException {
 		int flags = 0;
 
-		if (iconType != 0) {
+		if (icon != null) {
 			flags |= FLAG_ICON;
 		}
 
@@ -116,8 +121,10 @@ public class NotificationBuilder {
 			buf.writeVarLong(duration.toMillis());
 		}
 
-        icon.write(buf);
-        buf.writeByte(iconSize);
+        if (icon != null) {
+            icon.write(buf);
+            buf.writeByte(iconSize);
+        }
 
 		UtilsJS.writeColor(buf, outlineColor);
 		UtilsJS.writeColor(buf, borderColor);
@@ -126,7 +133,6 @@ public class NotificationBuilder {
 
 	public void setTextureIcon(ResourceLocation textureLocation) {
 		this.icon = new TextureIcon(textureLocation);
-		this.iconType = 1;
 	}
 
 	public void setItemIcon(ItemStack stack) {

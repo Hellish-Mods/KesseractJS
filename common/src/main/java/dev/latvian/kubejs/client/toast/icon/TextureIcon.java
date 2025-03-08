@@ -18,10 +18,6 @@ public record TextureIcon(ResourceLocation texture) implements ToastIcon {
         ).apply(instance, TextureIcon::new)
     );
 
-    public TextureIcon(Minecraft ignored, String icon) {
-        this(new ResourceLocation(icon));
-    }
-
     @Override
     public void draw(Minecraft mc, PoseStack matrixStack, int x, int y, int size) {
         mc.getTextureManager().bind(this.texture);

@@ -23,16 +23,6 @@ public record AtlasIcon(Optional<ResourceLocation> atlas, ResourceLocation sprit
         ).apply(instance, AtlasIcon::new)
     );
 
-    public static AtlasIcon of(Minecraft mc, String icon) {
-        val s = icon.split("\\|");
-
-        if (s.length == 2) {
-            return new AtlasIcon(Optional.of(new ResourceLocation(s[0])), new ResourceLocation(s[1]));
-        } else {
-            return new AtlasIcon(Optional.empty(), new ResourceLocation(icon));
-        }
-    }
-
     @Override
     public void draw(Minecraft mc, PoseStack poseStack, int x, int y, int size) {
         val m = poseStack.last().pose();
