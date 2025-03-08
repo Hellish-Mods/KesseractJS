@@ -8,6 +8,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
+import dev.latvian.mods.rhino.native_java.type.info.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import lombok.val;
 import net.fabricmc.api.EnvType;
@@ -19,7 +20,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class NotificationBuilder {
 	private static final int FLAG_DURATION = FLAG_TEXT_SHADOW << 1;
 
     @HideFromJS
-	public static NotificationBuilder of(Context cx, Object object) {
+	public static NotificationBuilder of(Context cx, Object object, TypeInfo target) {
 		if (object instanceof NotificationBuilder b) {
 			return b;
 		} else if (object instanceof Map<?, ?> map) {
@@ -46,6 +46,14 @@ public class NotificationBuilder {
 			return make(consumer);
 		}
         return new NotificationBuilder(TextWrapper.componentOf(object));
+    }
+
+    public static NotificationBuilder ofText(Component title) {
+        return new NotificationBuilder(title);
+    }
+
+    public static NotificationBuilder ofTitles(Component title, Component subTitle) {
+        return new NotificationBuilder(title.copy().append("\n").append(subTitle));
     }
 
 	public static NotificationBuilder make(Consumer<NotificationBuilder> consumer) {

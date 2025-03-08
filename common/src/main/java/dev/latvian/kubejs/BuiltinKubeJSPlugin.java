@@ -464,6 +464,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
         typeWrappers.register(BlockTintFunction.class, BlockTintFunction::of);
         typeWrappers.register(ItemTintFunction.class, ItemTintFunction::of);
 
+        typeWrappers.register(NotificationBuilder.class, NotificationBuilder::of);
+
         //registry
         for (val wrapperFactory : RegistryTypeWrapperFactory.getAll()) {
             try {
