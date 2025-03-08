@@ -16,6 +16,7 @@ public interface KubeJSNet {
 	MessageType ADD_STAGE = NET.registerS2C("add_stage", AddStageMessage::new);
 	MessageType REMOVE_STAGE = NET.registerS2C("remove_stage", RemoveStageMessage::new);
 	MessageType SYNC_STAGES = NET.registerS2C("sync_stages", SyncStagesMessage::new);
+    MessageType NOTIFICATION = NET.registerS2C("toast", NotificationMessage::new);
 
 	static void init() {
 	}

@@ -14,6 +14,7 @@ import dev.latvian.kubejs.block.custom.builder.*;
 import dev.latvian.kubejs.block.BlockStatePredicate;
 import dev.latvian.kubejs.client.painter.Painter;
 import dev.latvian.kubejs.client.painter.screen.*;
+import dev.latvian.kubejs.client.toast.NotificationBuilder;
 import dev.latvian.kubejs.entity.EntityJS;
 import dev.latvian.kubejs.event.IEventHandler;
 import dev.latvian.kubejs.fluid.FluidBuilder;
@@ -353,11 +354,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		//matrix
 		event.add("Matrix3f", Matrix3f.class);
 		event.add("Matrix4f", Matrix4f.class);
-		//
-		event.add("BlockPos", BlockPos.class);
 
-        //block
+        event.add("BlockPos", BlockPos.class);
         event.add("BlockProperties", BlockStateProperties.class);
+        event.add("Notification", NotificationBuilder.class);
 
 		KubeJS.PROXY.clientBindings(event);
 	}
@@ -463,6 +463,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
         //tint
         typeWrappers.register(BlockTintFunction.class, BlockTintFunction::of);
         typeWrappers.register(ItemTintFunction.class, ItemTintFunction::of);
+
+        typeWrappers.register(NotificationBuilder.class, NotificationBuilder::of);
 
         //registry
         for (val wrapperFactory : RegistryTypeWrapperFactory.getAll()) {

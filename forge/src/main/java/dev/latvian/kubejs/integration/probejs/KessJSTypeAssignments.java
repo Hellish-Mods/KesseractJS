@@ -1,9 +1,11 @@
 package dev.latvian.kubejs.integration.probejs;
 
 import dev.latvian.kubejs.block.BlockTintFunction;
+import dev.latvian.kubejs.client.toast.NotificationBuilder;
 import dev.latvian.kubejs.item.ItemTintFunction;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import lombok.val;
+import net.minecraft.network.chat.Component;
 import zzzank.probejs.lang.typescript.ScriptDump;
 import zzzank.probejs.lang.typescript.code.type.Types;
 import zzzank.probejs.plugin.ProbeJSPlugin;
@@ -26,5 +28,7 @@ public class KessJSTypeAssignments implements ProbeJSPlugin {
         for (val s : new String[]{"block", "potion", "map", "display_color_nbt"}) {
             scriptDump.assignType(ItemTintFunction.class, Types.literal(s));
         }
+
+        scriptDump.assignType(NotificationBuilder.class, Types.type(Component.class));
     }
 }

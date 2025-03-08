@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import dev.latvian.kubejs.KubeJS;
+import dev.latvian.kubejs.client.toast.NotificationBuilder;
 import dev.latvian.kubejs.entity.RayTraceResultJS;
 import dev.latvian.kubejs.net.SendDataFromClientMessage;
 import net.minecraft.client.Minecraft;
@@ -56,4 +57,9 @@ public class ClientPlayerJS extends PlayerJS<Player> {
 	public RayTraceResultJS rayTrace(double distance) {
 		return isSelf ? new RayTraceResultJS(this, Minecraft.getInstance().hitResult, distance) : super.rayTrace(distance);
 	}
+
+    @Override
+    public void notify(NotificationBuilder notification) {
+        notification.show();
+    }
 }

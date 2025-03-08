@@ -1,14 +1,12 @@
 package dev.latvian.kubejs.integration.jei;
 
+import com.google.common.base.Predicates;
 import dev.latvian.kubejs.event.EventJS;
 import dev.latvian.kubejs.util.ListJS;
-import dev.latvian.kubejs.util.UtilsJS;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IJeiRuntime;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author LatvianModder
@@ -22,19 +20,17 @@ public class HideCustomJEIEventJS extends EventJS {
 		events = new HashMap<>();
 	}
 
-	@SuppressWarnings("all")
-	public HideJEIEventJS get(IIngredientType s) {
-		return events.computeIfAbsent(s, type -> {
-			return new HideJEIEventJS(runtime, type, o -> {
-				List list = new ArrayList();
-
-				for (Object o1 : ListJS.orSelf(o)) {
-					list.add(UtilsJS.cast(o1));
-				}
-
-				return list;
-			}, o -> true);
-		});
+    @SuppressWarnings("unchecked")
+	public <T> HideJEIEventJS<T> get(IIngredientType<T> ingredientType) {
+        return (HideJEIEventJS<T>) events.computeIfAbsent(
+            ingredientType,
+            type -> new HideJEIEventJS<>(
+                runtime,
+                type,
+                o -> ListJS.orSelf(o)::contains,
+                Predicates.alwaysTrue()
+            )
+        );
 	}
 
 	@Override
