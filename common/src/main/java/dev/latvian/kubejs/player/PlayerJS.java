@@ -1,6 +1,7 @@
 package dev.latvian.kubejs.player;
 
 import com.mojang.authlib.GameProfile;
+import dev.latvian.kubejs.client.toast.NotificationBuilder;
 import dev.latvian.kubejs.core.PlayerKJS;
 import dev.latvian.kubejs.entity.LivingEntityJS;
 import dev.latvian.kubejs.item.InventoryJS;
@@ -219,4 +220,7 @@ public abstract class PlayerJS<E extends Player> extends LivingEntityJS implemen
 	public Stages getStages() {
 		return ((PlayerKJS) minecraftPlayer).kjs$getStages();
 	}
+
+    public void notify(NotificationBuilder notification) {
+    }
 }

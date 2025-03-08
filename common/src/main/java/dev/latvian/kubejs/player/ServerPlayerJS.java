@@ -1,7 +1,9 @@
 package dev.latvian.kubejs.player;
 
+import dev.latvian.kubejs.client.toast.NotificationBuilder;
 import dev.latvian.kubejs.core.PlayerInteractionManagerKJS;
 import dev.latvian.kubejs.item.ItemStackJS;
+import dev.latvian.kubejs.net.NotificationMessage;
 import dev.latvian.kubejs.net.PaintMessage;
 import dev.latvian.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.kubejs.server.ServerJS;
@@ -165,4 +167,9 @@ public class ServerPlayerJS extends PlayerJS<ServerPlayer> {
 	public void setSpawnLocation(BlockContainerJS c) {
 		minecraftPlayer.setRespawnPosition(c.minecraftLevel.dimension(), c.getPos(), 0F, true, false);
 	}
+
+    @Override
+    public void notify(NotificationBuilder notification) {
+        new NotificationMessage(notification).sendTo(this.minecraftPlayer);
+    }
 }
