@@ -30,9 +30,19 @@ subprojects {
         })
 
         //lombok: https://projectlombok.org/setup/gradle
-        compileOnly 'org.projectlombok:lombok:1.18.34'
-        annotationProcessor 'org.projectlombok:lombok:1.18.34'
+        compileOnly("org.projectlombok:lombok:$lombok_version")
+        annotationProcessor("org.projectlombok:lombok:$lombok_version")
+        testCompileOnly("org.projectlombok:lombok:$lombok_version")
+        testAnnotationProcessor("org.projectlombok:lombok:$lombok_version")
+
+        // Unit Testing
+        testImplementation("org.junit.jupiter:junit-jupiter-api:$junit_version")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit_version")
 	}
+
+    test {
+		useJUnitPlatform()
+    }
 }
 
 allprojects {

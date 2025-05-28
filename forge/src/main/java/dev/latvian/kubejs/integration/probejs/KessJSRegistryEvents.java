@@ -83,7 +83,7 @@ public class KessJSRegistryEvents implements ProbeJSPlugin {
             .stream()
             .map(r -> r.registryEventProvider)
             .map(Supplier::get)
-            .map(e -> e.getClass())
+            .map(Object::getClass)
             .forEach(classes::add);
         RegistryInfos.MAP.values()
             .stream()
